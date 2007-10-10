@@ -13,20 +13,40 @@ While exporting document you need to specify a valid export format (-e pdf). Imp
 
 List all documents for a user
 {{{
-./gdoc-cp.py -u devraj@gmail.com -p password -l
+./gdoc-cp.py -u someone@gmail.com -p password -l
 }}}
 
 List only documents for a user
 {{{
-./gdoc-cp.py -u devraj@gmail.com -p password -d
+./gdoc-cp.py -u someone@gmail.com -p password -d
 }}}
 
 List only spreadsheets for a user
 {{{
-./gdoc-cp.py -u devraj@gmail.com -p password -s
+./gdoc-cp.py -u someone@gmail.com -p password -s
 }}}
 
 === Export documents and spreadsheets to local disk ===
 
+Download a single document to disk
+{{{
+./gdoc-cp.py -u someone@gmail.com -p password -g documentid -f files/google
+}}}
+
+Download all spreadsheets to disk
+{{{
+./gdoc-cp.py -u someone@gmail.com -p password -g spreadsheets -f files/google
+}}}
+
+Download all documents to disk
+{{{
+./gdoc-cp.py -u someone@gmail.com -p password -g documents -f files/google
+}}}
+
+Download every document to disk (default, exports in OASIS formats)
+{{{
+./gdoc-cp.py -u someone@gmail.com -p password -e default -g all -f files/google
+./gdoc-cp.py -u someone@gmail.com -p password -e pdf -g all -f files/google
+}}}
 
 === Importing documents to Google Docs ===
