@@ -7,6 +7,7 @@ GoogleDocCopier was developed and tested using UNIX style operating systems with
 * Google Data Python libraries, available from http://code.google.com/apis/
 * Not to mention a connection to the Internet :-)
 
+
 == Quick installation steps ==
 
 * Use 'python --version' to reveal the installed version of Python
