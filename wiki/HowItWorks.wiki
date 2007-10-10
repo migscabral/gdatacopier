@@ -28,11 +28,11 @@ This is done by sending a POST request to https://www.google.com/accounts/Servic
 
 We need to send the following POST data:
 
-- PersistentCookies		true
-- Email					username@gmail.com
-- Passwd					password
-- continue				Is the URL you get redirected to after login
-- followup				Same as above, used at different instances
+    * PersistentCookies: true
+    * Email: username@gmail.com
+    * Passwd: password
+    * continue: Is the URL you get redirected to after login
+    * followup: Same as above, used at different instances
 
 Notice that the value of PersistentCookies is set to true, this sends back a copy of the cookies for us to use later. Look at the login function in gdatacopier.py for a Python implementation of the above.
 
@@ -53,8 +53,7 @@ URLs for Hosted accounts differ from the URLs for normal Google accounts for all
     
 Hosted accounts URLs look like, where yoursdomain.com is the hosted domain
 
-    
-- Authentication URL, https://www.google.com/a/yourdomain.com/LoginAction
-- Portal page for documents, http://docs.google.com/a/yourdomain.com/
-- Documents download URL, http://docs.google.com/a/yourdomain.com/MiscCommands?command=saveasdoc&exportformat=oo&docID=docid
-- Spreadsheet download URL, http://spreadsheets.google.com/a/yourdomain.com/pub?output=odf&key=docid
+    * Authentication URL, https://www.google.com/a/yourdomain.com/LoginAction
+    * Portal page for documents, http://docs.google.com/a/yourdomain.com/
+    * Documents download URL, http://docs.google.com/a/yourdomain.com/MiscCommands?command=saveasdoc&exportformat=oo&docID=docid
+    * Spreadsheet download URL, http://spreadsheets.google.com/a/yourdomain.com/pub?output=odf&key=docid
