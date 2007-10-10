@@ -1,45 +1,44 @@
 #summary Quick tour of the GoogleDocCopier class
 #labels Phase-Implementation,Featured
 
+== API documentation ==
+
 GoogleDocCopier is a class that consits of the following methods, here is a brief commentary on each of them.
 
 *def login(self, username, password):*
-    Used to perform a login using the GData API and urllib2
+ Used to perform a login using the GData API and urllib2
 
-      This method may raise the following exceptions:
-        - NotLoggedInSimulatedBrowser
-        - SimluatedBrowserLoginFailed
-        - NotEnoughCookiesFromGoogle
+  This method may raise the following exceptions:
+      * NotLoggedInSimulatedBrowser
+      * SimluatedBrowserLoginFailed
+      * NotEnoughCookiesFromGoogle
 
-    def logout(self):
-      Closes all connections and re-sets instance variables to default values.
-      May be required if your script needs to re-login as multiple users
+*def logout(self):*
+ 
+ Closes all connections and re-sets instance variables to default values. May be required if your script needs to re-login as multiple users.
         
-    def export_document(self, document_id, file_format, output_path):
-      Exports a document, you will require to provide the Google document id,
-      a file format that Google recognizes and a file name to write to.
-      
-      The GoogleDocFormat class helps you get the file_formats right, the valid
-      programatic values are:
-      
-        - GoogleDocFormat.OOWriter
-        - GoogleDocFormat.MSWord
-        - GoogleDocFormat.PDF
-        - GoogleDocFormat.RichText
-        - GoogleDocFormat.Text
-      
-      This method may raise the following exceptions:
-        - DocumentDownloadURLError
-        - FailedToWriteDocumentToFile
-        - FailedToDownloadFile
-        - NotLoggedInSimulatedBrowser
+*def export_document(self, document_id, file_format, output_path):*
+
+ Exports a document, you will require to provide the Google document id, a file format that Google recognizes and a file name to write to.
+
+ The GoogleDocFormat class helps you get the file_formats right, the valid programmatic values are:
+
+          * GoogleDocFormat.OOWriter
+          * GoogleDocFormat.MSWord
+          * GoogleDocFormat.PDF
+          * GoogleDocFormat.RichText
+          * GoogleDocFormat.Text
+ 
+ This method may raise the following exceptions:
+          * DocumentDownloadURLError
+          * FailedToWriteDocumentToFile
+          * FailedToDownloadFile
+          * NotLoggedInSimulatedBrowser
         
-    def import_document(self, document_path, document_title = None):
-      Detects the content type of a document and accordingly imports it as a 
-      spreadsheet or a document. If a title is not provided, the first part of
-      the file name will be used as the title.
-      
-      This method may raise the following exceptions:
+*def import_document(self, document_path, document_title = None):*
+ Detects the content type of a document and accordingly imports it as a spreadsheet or a document. If a title is not provided, the first part of the file name will be used as the title.
+
+ This method may raise the following exceptions:
         - FileNotFound
         - InvalidContentType
         - FailedToUploadFile
@@ -69,14 +68,11 @@ GoogleDocCopier is a class that consits of the following methods, here is a brie
         - google_id, the document id extracted from the alternate url
         - title, the descriptive title for the document
 
-    def has_item(self, document_id):
-      Checks to see if the provided Google document id exists.
-      Returns True or False
+*def has_item(self, document_id):*
+ Checks to see if the provided Google document id exists. Returns True or False
         
-    def is_spreadsheet(self, document_id):
-      Checks to see if the provided Google document id is a spreadsheet or not.
-      Returns True or False
-        
-    def is_document(self, document_id):
-      Checks to see if the provided Google document id is a document or not.
-      Returns True or False
+*def is_spreadsheet(self, document_id):*
+ Checks to see if the provided Google document id is a spreadsheet or not. Returns True or False.
+
+*def is_document(self, document_id):*
+ Checks to see if the provided Google document id is a document or not. Returns True or False
