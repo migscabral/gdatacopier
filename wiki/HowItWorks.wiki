@@ -20,7 +20,7 @@ Google's servers are really fussy about unknown user agents. I found this the ha
 
 All requests must be accompanied with a known User-agent. GoogleDocCopier pretends to be FireFox 2.0.0.6.
 
-Login POST request:
+== Login POST request ==
 
 To be able to download documents by making RESTful URL calls to the Google servers, we have to first be able to login and get a copy of the Cookies set by the authentication server.
 
@@ -38,15 +38,15 @@ Notice that the value of PersistentCookies is set to true, this sends back a cop
 
 If the authentication succeeded we will get at least 2 cookies back and a request to redirect outselves to the location specified by the continue or  followup parameter
 
-= Handling Cookies and Redirects =
+== Handling Cookies and Redirects ==
 
 The authentication servers send about three HTTP redirects, primarily to check for Cookies, Browsers, and then finally a page that has a META tag and some JavaScript to redirect the user to the value in continue or followup (POST parameters).
 
 In this case urllib2 will handle all the redirect requests and end up with the contents of the final page. We will ignore the final redirect request since its sent as HTML content.
 
-=  Download POST requests =
+==  Download POST requests ==
 
-=  Hosted versus Normal Google accounts =
+==  Hosted versus Normal Google accounts ==
 
 URLs for Hosted accounts differ from the URLs for normal Google accounts for all the above examples. GoogleDocCopier will use the appropriate URLs based on the nature of the user account.
 
