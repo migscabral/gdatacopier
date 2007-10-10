@@ -1,11 +1,10 @@
 #summary Quick tour of the GoogleDocCopier class
 #labels Phase-Implementation,Featured
 
-  GoogleDocCopier is a class that consits of the following methods, here is a
-  brief commentary on each of them.
+GoogleDocCopier is a class that consits of the following methods, here is a brief commentary on each of them.
 
-    def login(self, username, password):
-      Used to perform a login using the GData API and urllib2
+*def login(self, username, password):*
+    Used to perform a login using the GData API and urllib2
 
       This method may raise the following exceptions:
         - NotLoggedInSimulatedBrowser
