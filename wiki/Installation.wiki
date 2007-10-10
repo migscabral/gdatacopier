@@ -12,7 +12,7 @@ GoogleDocCopier was developed and tested using UNIX style operating systems with
 
     * Use 'python --version' to reveal the installed version of Python
     * Copy the two files (gdatacopier.py, gdoc-cp.py to a directory you like)
-    * chmod +x *py (to make the scripts runnable)
+    * chmod +x "*"py (to make the scripts runnable)
     * You are ready to use gdoc-cp or gdatacopier, see Usage examples or read Developer documentation to see how you can use it in your own scripts
 
 == Checking you have gdata libraries installed properly ==
