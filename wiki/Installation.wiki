@@ -3,17 +3,17 @@
 
 GoogleDocCopier was developed and tested using UNIX style operating systems with the following bits and pieces installed
 
-* Python 2.5 or better, this is because we use cookielib
-* Google Data Python libraries, available from http://code.google.com/apis/
-* Not to mention a connection to the Internet :-)
+    * Python 2.5 or better, this is because we use cookielib
+    * Google Data Python libraries, available from http://code.google.com/apis/
+    * Not to mention a connection to the Internet :-)
 
 
 == Quick installation steps ==
 
-* Use 'python --version' to reveal the installed version of Python
-* Copy the two files (gdatacopier.py, gdoc-cp.py to a directory you like)
-* chmod +x *py (to make the scripts runnable)
-* You are ready to use gdoc-cp or gdatacopier, see Usage examples or read Developer documentation to see how you can use it in your own scripts
+    * Use 'python --version' to reveal the installed version of Python
+    * Copy the two files (gdatacopier.py, gdoc-cp.py to a directory you like)
+    * chmod +x *py (to make the scripts runnable)
+    * You are ready to use gdoc-cp or gdatacopier, see Usage examples or read Developer documentation to see how you can use it in your own scripts
 
 == Checking you have gdata libraries installed properly ==
 
