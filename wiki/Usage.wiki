@@ -1,0 +1,9 @@
+#summary Usage examples of gdoc-cp.py
+
+== List documents ==
+
+
+== Export documents and spreadsheets to local disk ==
+
+
+== Importing documents to Google Docs ==
