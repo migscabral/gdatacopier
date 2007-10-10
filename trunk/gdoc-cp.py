@@ -44,9 +44,9 @@ def usage():
          to enter it, use this if using gdoc-cp interactively
 
     -g=  --google-id=    A valid Google document id, or one the following
-                         sheets - for all spreadsheets
-                         docs   - for all documents
-                         all    - for spreadsheets and documents
+                         spreadsheets - for all spreadsheets
+                         documents    - for all documents
+                         all          - for spreadsheets and documents
                          
     -f=  --local-file=   Local file name, wildcards accepted for imports
                          may be the name of a dir while exporting documents
@@ -231,11 +231,11 @@ def copy_google_to_local(document_id, file_format, local_path):
         local_path == ""
 
     """ Judge what the the user wants """
-    if document_id == "sheets":
+    if document_id == "spreadsheets":
         is_sane_dir(local_path)
         download_docs(file_format, local_path)
         sys.exit(0)
-    elif document_id == "docs":
+    elif document_id == "documents":
         is_sane_dir(local_path)
         download_sheets(file_format, local_path)
         sys.exit(0)
@@ -256,7 +256,7 @@ def copy_google_to_local(document_id, file_format, local_path):
 def parse_user_options():
 
     short_opts = "u:p:g:f:e:lsdiht:"
-    long_opts  = ["useranme=", "password=", "google-id=", 
+    long_opts  = ["username=", "password=", "google-id=", 
                   "local-file=", "export=", "list-all", "list-sheets",
                   "list-docs", "import", "help", "title="]
     try:
