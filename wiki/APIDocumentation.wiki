@@ -45,7 +45,6 @@ GoogleDocCopier is a class that consits of the following methods, here is a brie
 
 *def export_spreadsheet(self, document_id, file_format, output_path = None):*
 
-        
 *def cache_document_lists(self):*
 
 Calls get_document_list and get_spreadsheet_list and stores the output into two instance variables. This minimizes the number of restful calls that we make if we are downloading a whole bunch of documents.
@@ -55,12 +54,13 @@ You don't have to use the caching features if you don't want to.
 *def get_cached_document_list(self):*
 
 Returns a set [] of documents entries that have been previously cached. If the cache is empty, the method will download a live list, cache it and return the cached list.
-       
+
 *def get_cached_spreadsheet_list(self):*
-        
+
 *def get_document_list(self):*
-   
+
 *def get_spreadsheet_list(self):*
+
 
 Returns a set [] of dictionaries {} of spreadsheet information live from the Google servers. Each dictionary entry contains:
 
