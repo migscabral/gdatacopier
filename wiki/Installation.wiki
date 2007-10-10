@@ -14,21 +14,3 @@ GoogleDocCopier was developed and tested using UNIX style operating systems with
     * Copy the two files (gdatacopier.py, gdoc-cp.py to a directory you like)
     * chmod +x (to make the scripts runnable)
     * You are ready to use gdoc-cp or gdatacopier, see Usage examples or read APIDocumentation documentation to see how you can use it in your own scripts
-
-== Checking you have gdata libraries installed properly ==
-
-Use the python shell to validate if you can import the gdata libraries type python into a shell and do the following
-
-Python 2.5.1 (r251:54863, May  2 2007, 16:56:35)
-[GCC 4.1.2 (Ubuntu 4.1.2-0ubuntu4)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import gdata
->>>
-
-If Python returns to the default prompt (>>>) everything is OK, if there was a problem you would see something like
-
->>> import somethingthatdoesntexists 
-    Traceback (most recent call last):
-      File "<stdin>", line 1, in <module>
-    ImportError: No module named somethingthatdoesntexists
->>>
