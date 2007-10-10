@@ -14,39 +14,38 @@ The session information and cookies retruned using the GData API don't  provide 
     
 GoogleDocCopier uses the GData API to obtain information about documents but creates another connection using the Python urllib2 libraries to  download the documents
 
-= Google is fussy about User agents =
+== Google is fussy about User agents ==
 
 Google's servers are really fussy about unknown user agents. I found this the hard way, by sending various POST requests and wondering why they were getting redirected.
-    
+
 All requests must be accompanied with a known User-agent. GoogleDocCopier pretends to be FireFox 2.0.0.6.
 
 Login POST request:
 
 To be able to download documents by making RESTful URL calls to the Google servers, we have to first be able to login and get a copy of the Cookies set by the authentication server.
-    
-This is done by sending a POST request to
-https://www.google.com/accounts/ServiceLoginAuth
-    
+
+This is done by sending a POST request to https://www.google.com/accounts/ServiceLoginAuth
+
 We need to send the following POST data:
-    
-PersistentCookies		true
-Email					username@gmail.com
-Passwd					password
-continue				Is the URL you get redirected to after login
-followup				Same as above, used at different instances
-    
+
+- PersistentCookies		true
+- Email					username@gmail.com
+- Passwd					password
+- continue				Is the URL you get redirected to after login
+- followup				Same as above, used at different instances
+
 Notice that the value of PersistentCookies is set to true, this sends back a copy of the cookies for us to use later. Look at the login function in gdatacopier.py for a Python implementation of the above.
-    
+
 If the authentication succeeded we will get at least 2 cookies back and a request to redirect outselves to the location specified by the continue or  followup parameter
-    
+
 = Handling Cookies and Redirects =
 
 The authentication servers send about three HTTP redirects, primarily to check for Cookies, Browsers, and then finally a page that has a META tag and some JavaScript to redirect the user to the value in continue or followup (POST parameters).
-    
-In this case urllib2 will handle all the redirect requests and end up with the contents of the final page. We will ignore the final redirect request since its sent as HTML content. 
-  
-=  Download POST requests =  
-  
+
+In this case urllib2 will handle all the redirect requests and end up with the contents of the final page. We will ignore the final redirect request since its sent as HTML content.
+
+=  Download POST requests =
+
 =  Hosted versus Normal Google accounts =
 
 URLs for Hosted accounts differ from the URLs for normal Google accounts for all the above examples. GoogleDocCopier will use the appropriate URLs based on the nature of the user account.
