@@ -1,5 +1,5 @@
+#summary Quick tour of the GoogleDocCopier class
 #labels Phase-Implementation,Featured
-# Quick tour of the GoogleDocCopier class
 
   GoogleDocCopier is a class that consits of the following methods, here is a
   brief commentary on each of them.
