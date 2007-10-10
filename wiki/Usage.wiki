@@ -50,3 +50,8 @@ Download every document to disk (default, exports in OASIS formats)
 }}}
 
 === Importing documents to Google Docs ===
+
+To create a new Google document called "New Document" from an OpenOffice file called sample.odt
+{{{
+./gdoc-cp.py -u someone@gmail.com -p password -i -f files/sample.odt -t "New Document"
+}}}
