@@ -79,7 +79,9 @@ class FileNotFound(exceptions.Exception):
     pass
 class InvalidContentType(exceptions.Exception):
     pass
-    
+class NoConnectionHandlerFound(exceptions.Exception):
+    pass
+        
 """
     DocumentFormats, for use with the API
 """
@@ -192,11 +194,23 @@ class GoogleDocCopier:
             login_data        = {'PersistentCookies': 'true', 'Email': username, 'Passwd': password, 
                                  'continue': self.__url_google_followup, 'followup': self.__url_google_followup}
             prepared_auth_url = self.__url_google_auth
-
                 
         if (not login_data == None) and (not prepared_auth_url == None):
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
+            opener = None
+            proxy_handler = self.__get_proxy_handler(ssl = True)
+            
+            # If we dont have a proxy, construct opener without proxy params
+            if proxy_handler == None:
+                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
+            else:
+                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar), proxy_handler)
+                
+            # Opener shouldn't be None, raise exception if it is
+            if opener == None:
+                raise NoConnectionHandlerFound
+            
             opener.addheaders = [('User-agent', self.__user_agent)]
+            
             response = opener.open(prepared_auth_url, urllib.urlencode(login_data))
             self.__is_logged_in = True
             
@@ -294,10 +308,6 @@ class GoogleDocCopier:
         else:
             raise DocumentDownloadURLError
         
-    # Imports a local file to a Google spreadsheet
-    def import_spreadsheet(self, spreadsheet_path):        
-        print "not implemented"
-        
     # Caches the documents lists
     def cache_document_lists(self):
         self.__cached_doc_list   = self.get_document_list()
@@ -364,8 +374,15 @@ class GoogleDocCopier:
     def __export(self, download_url, file_name):
         if (not self.__is_logged_in):
             raise NotLoggedInSimulatedBrowser
-                   
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
+            
+        proxy_handler = self.__get_proxy_handler(ssl = False)
+        opener = None
+        
+        if proxy_handler == None:
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
+        else:
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar), proxy_handler)
+            
         opener.addheaders = [('User-agent', self.__user_agent)]
         
         try:
@@ -422,6 +439,19 @@ class GoogleDocCopier:
             if category.label == item_type:
                 return True
         return False
+        
+    # Check to see if a Proxy configuration is required
+    def __get_proxy_handler(self, ssl = False):
+        # If a suitable proxy setting is found it will be assigned to this
+        proxy_handler = None
+        # If SSL proxy required    
+        if ssl and not os.environ.get('https_proxy') == None:
+            proxy_handler = urllib2.ProxyHandler({'https': os.environ.get('https_proxy')})
+        elif not ssl and not os.environ.get('http_proxy') == None:
+            proxy_handler = urllib2.ProxyHandler({'http': os.environ.get('http_proxy')})
+        
+        # Return a hanlder or None
+        return proxy_handler
         
 """
     End of Python API
