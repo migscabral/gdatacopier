@@ -60,11 +60,11 @@ def usage():
     -d   --list-docs     lists only documents
    
     -e=  --export=       exports the Google document is the format
-                         valid params ods, xls, rtf, txt, pdf, oo, csv
-                         or use default for OASIS formats
+                         valid params default, ods, xls, rtf, txt, pdf, oo, csv
+                         default exports files in OASIS formats
 
     -i   --import       imports a local document to Google servers
-                         valid params sheets, docs
+
     """
 
 # Validate email address function courtsey
