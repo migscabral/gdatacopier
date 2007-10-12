@@ -48,7 +48,7 @@ def usage():
                          documents    - for all documents
                          all          - for spreadsheets and documents
                          
-    -f=  --local-file=   Local file name, wildcards accepted for imports
+    -f=  --local=        Local file name, wildcards accepted for imports
                          may be the name of a dir while exporting documents
                          
     -t=  --title         Title for a document, used only while importing
@@ -125,7 +125,7 @@ def list_spreadsheets():
 # Checks to see if its  sane directory or stops the program
 def is_sane_dir(local_path):
     if not os.path.isdir(local_path):
-        print"ERROR: The path provided to -f or --local-file parameter must be a directory"
+        print"ERROR: The path provided to -f or --local parameter must be a directory"
         sys.exit(2)
 
 # Ellaborately handles the login includes exceptions
@@ -257,7 +257,7 @@ def parse_user_options():
 
     short_opts = "u:p:g:f:e:lsdiht:"
     long_opts  = ["username=", "password=", "google-id=", 
-                  "local-file=", "export=", "list-all", "list-sheets",
+                  "local=", "export=", "list-all", "list-sheets",
                   "list-docs", "import", "help", "title="]
     try:
         opts, args = getopt.getopt(sys.argv[1:], short_opts, long_opts)
@@ -312,9 +312,9 @@ def parse_user_options():
         sys.exit(0)
 
     # Import a local file to a Google document
-    if has_required_parameters(options, ['-i', '--import']) and has_required_parameters(options, ['-f', '--local-file']):
+    if has_required_parameters(options, ['-i', '--import']) and has_required_parameters(options, ['-f', '--local']):
         document_title = value_for_parameter(options, ['-t', '--title'])
-        local_file  = value_for_parameter(options, ['-f', '--local-file'])
+        local_file  = value_for_parameter(options, ['-f', '--local'])
             
         copy_local_to_google(local_file, document_title)
         sys.exit(0)
@@ -323,7 +323,7 @@ def parse_user_options():
     if has_required_parameters(options, ['-e', '--export']) and (has_required_parameters(options, ['-g', '--google-id'])):
         export_format = (value_for_parameter(options, ['-e', '--export'])).lower()
         document_id   = value_for_parameter(options, ['-g', '--google-id'])
-        local_file    = value_for_parameter(options, ['-f', '--local-file'])
+        local_file    = value_for_parameter(options, ['-f', '--local'])
         
         if not export_format in ['default', 'oo', 'rtf', 'doc', 'pdf', 'txt', 'csv', 'xls', 'ods']:
             print "ERROR: The specified export format is invalid, please check usage (-h)"
