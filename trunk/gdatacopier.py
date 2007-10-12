@@ -196,8 +196,7 @@ class GoogleDocCopier:
                 
         if (not login_data == None) and (not prepared_auth_url == None):
 
-            opener = self.__get_https_opener()
-            response = opener.open(prepared_auth_url, urllib.urlencode(login_data))
+            response = self.__open_https_url(prepared_auth_url, login_data)
             
             # Check to see if we have enough cookies
             if len(self.__cookie_jar) < 2:
@@ -364,10 +363,8 @@ class GoogleDocCopier:
         if (not self.__is_logged_in):
             raise NotLoggedInSimulatedBrowser
             
-        opener = self.__get_http_opener()
-
         try:
-            response = opener.open(download_url)
+            response = self.__open_http_url(download_url, post_data = None)
         except HTTPError:
             raise FailedToDownloadFile
             
@@ -421,13 +418,66 @@ class GoogleDocCopier:
                 return True
         return False
 
-    # Get a url opener, with proxy options        
+    # Get a url opener, with proxy options
+    # urllib2 doesn't support the CONNECT command for pass through of proxies
+    # read this article for an excellent description of the issue
+    # http://www.voidspace.org.uk/python/articles/urllib2.shtml
 
-    def __get_https_opener(self):
+    def __open_https_url(self, target_url, post_data = None):
+        # The opener in the SSL case is the same, we modify the sock options
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
-        return opener
+
+        proxy_username = os.environ.get('proxy-username') 
+        proxy_password = os.environ.get('proxy-password')
+        proxy_url      = os.environ.get('https_proxy')
         
-    def __get_http_opener(self):
+        server = "www.google.com"
+        port = "443"
+        
+        proxy_server_host = "localhost"
+        proxy_server_port = 3128
+        
+        if proxy_url:
+            # Make the fake socket to support pass through of HTTPS
+            proxy_string = ''
+            if proxy_username and proxy_password:
+                proxy_string = 'Proxy-authorization: Basic '+ base64.encodestring('%s:%s' % (proxy_username, proxy_password)) + '\r\n'
+            
+            proxy_string += "CONNECT %s:%s HTTP/1.0\r\n" % (server, port)
+            proxy_string += "User-Agent: %s\r\n" % self.__user_agent + "\r\n\r\n"
+
+            proxy_sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            proxy_sock.connect((proxy_server_host, proxy_server_port))
+            proxy_sock.sendall(proxy_string)
+
+            proxy_response = ''
+
+            # Try and get something useful from the proxy
+            while proxy_response.find("\r\n\r\n") == -1:
+                proxy_response += proxy_sock.recv(8192)
+        
+            proxy_status = proxy_response.split()[1]
+        
+            # Raise the same excpetion that GData raises
+            if not proxy_status == str(200):
+                raise 'Error status=', str(proxy_status)
+
+            # Make a fake socket and assign it to the opener
+            ssl = socket.ssl(proxy_sock, None, None)
+            fake_sock = httplib.FakeSocket(proxy_sock, ssl)
+            opener.sock = fake_sock
+
+        # Proxy or not, add the headers and place the POST reuqest
+        opener.addheaders = [('User-agent', self.__user_agent)]
+ 
+        response = None
+        if post_data:
+            response = opener.open(target_url, urllib.urlencode(post_data))
+        else:
+            response = opener.open(target_url)
+        return response
+        
+    def __open_http_url(self, target_url, post_data = None):
         opener = None
         proxy_username = os.environ.get('proxy-username') 
         proxy_password = os.environ.get('proxy-password')
@@ -445,20 +495,12 @@ class GoogleDocCopier:
             opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
 
         opener.addheaders = [('User-agent', self.__user_agent)]
-        return opener
-        
-    # Check to see if a Proxy configuration is required
-    def __get_proxy_handler(self, ssl = False):
-        # If a suitable proxy setting is found it will be assigned to this
-        proxy_handler = None
-        # If SSL proxy required    
-        if ssl and not os.environ.get('https_proxy') == None:
-            proxy_handler = urllib2.ProxyHandler({'https': os.environ.get('https_proxy')})
-        elif not ssl and not os.environ.get('http_proxy') == None:
-            proxy_handler = urllib2.ProxyHandler({'http': os.environ.get('http_proxy')})
-        
-        # Return a hanlder or None
-        return proxy_handler
+        response = None
+        if post_data:
+            response = opener.open(target_url, urllib.urlencode(post_data))
+        else:
+            response = opener.open(target_url)
+        return response
         
 """
     End of Python API
