@@ -79,8 +79,7 @@ class FileNotFound(exceptions.Exception):
     pass
 class InvalidContentType(exceptions.Exception):
     pass
-class NoConnectionHandlerFound(exceptions.Exception):
-    pass
+
         
 """
     DocumentFormats, for use with the API
@@ -196,26 +195,16 @@ class GoogleDocCopier:
             prepared_auth_url = self.__url_google_auth
                 
         if (not login_data == None) and (not prepared_auth_url == None):
-            opener = None
-            proxy_handler = self.__get_proxy_handler(ssl = True)
-            
-            # If we dont have a proxy, construct opener without proxy params
-            if proxy_handler == None:
-                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
-            else:
-                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar), proxy_handler)
-                
-            # Opener shouldn't be None, raise exception if it is
-            if opener == None:
-                raise NoConnectionHandlerFound
-            
-            opener.addheaders = [('User-agent', self.__user_agent)]
-            
+
+            opener = self.__get_https_opener()
             response = opener.open(prepared_auth_url, urllib.urlencode(login_data))
-            self.__is_logged_in = True
             
+            # Check to see if we have enough cookies
             if len(self.__cookie_jar) < 2:
                 raise NotEnoughCookiesFromGoogle
+            else:
+                self.__is_logged_in = True
+            
         else:
             raise SimluatedBrowserLoginFailed
 
@@ -375,16 +364,8 @@ class GoogleDocCopier:
         if (not self.__is_logged_in):
             raise NotLoggedInSimulatedBrowser
             
-        proxy_handler = self.__get_proxy_handler(ssl = False)
-        opener = None
-        
-        if proxy_handler == None:
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
-        else:
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar), proxy_handler)
-            
-        opener.addheaders = [('User-agent', self.__user_agent)]
-        
+        opener = self.__get_http_opener()
+
         try:
             response = opener.open(download_url)
         except HTTPError:
@@ -439,6 +420,32 @@ class GoogleDocCopier:
             if category.label == item_type:
                 return True
         return False
+
+    # Get a url opener, with proxy options        
+
+    def __get_https_opener(self):
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
+        return opener
+        
+    def __get_http_opener(self):
+        opener = None
+        proxy_username = os.environ.get('proxy-username') 
+        proxy_password = os.environ.get('proxy-password')
+        proxy_url      = os.environ.get('http_proxy')
+        
+        if proxy_url:
+            proxy_handler = urllib2.ProxyHandler({'http': proxy_url})
+            if proxy_username and proxy_password:
+                proxy_auth_handler = urllib2.HTTPPasswordMgrWithDefaultRealm()
+                proxy_auth_handler.add_password(None, proxy_host, proxy_username, proxy_password)
+                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar), proxy_handler, proxy_auth_handler)
+            else:
+                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar), proxy_handler)
+        else:
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
+
+        opener.addheaders = [('User-agent', self.__user_agent)]
+        return opener
         
     # Check to see if a Proxy configuration is required
     def __get_proxy_handler(self, ssl = False):
