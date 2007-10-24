@@ -1,7 +1,7 @@
 #summary Installation instructions for GoogleDocCopier
 #labels Featured,Phase-Implementation
 
-GoogleDocCopier was developed and tested using UNIX style operating systems with the following bits and pieces installed
+GDataCopier was developed and tested using UNIX style operating systems with the following bits and pieces installed
 
     * Python 2.5 or better, this is because we use cookielib
     * Google Data Python libraries, available from http://code.google.com/apis/
