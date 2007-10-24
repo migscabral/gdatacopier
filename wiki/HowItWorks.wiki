@@ -43,7 +43,6 @@ A Wget example of the above POST request would look like
 {{{
 wget --save-cookies cookies.txt --post-data"continue=http://docs.google.com&followup=http://docs.google.com&
 Email=devraj&Passwd=password&PersistentCookie=true" https://www.google.com/accounts/ServiceLoginAuth?service=writely -O file.txt -c
-
 }}}
 
 == Handling Cookies and Redirects ==
