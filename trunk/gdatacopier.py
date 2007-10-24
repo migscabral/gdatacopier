@@ -198,7 +198,7 @@ class ConnectHTTPSHandler(urllib2.HTTPSHandler):
 class GoogleDocCopier:
 
     _gd_client            = None     # GData object
-    _cokie_jar            = None     # Cookie jar object to handle cookies
+    _cookie_jar           = None     # Cookie jar object to handle cookies
     _is_logged_in         = False    # State of login for this session
     _is_hosted_account    = False    # True or False
     _hosted_domain        = None     # We need the hosted domain to construct urls
@@ -245,7 +245,7 @@ class GoogleDocCopier:
     __author__            = "Devraj Mukherjee <devraj@gmail.com>"
     
     # Default constructors, basically sets up a few a things, much like logout
-    def _init_(self):
+    def __init__(self):
         self.logout()
         return
         
@@ -299,7 +299,6 @@ class GoogleDocCopier:
 
     # Logout clears out all cookies, caches etc
     def logout(self):
-        self._cookie_jar        = None
         self._cookie_jar        = cookielib.CookieJar()
         self._is_logged_in      = False
         self._cached_doc_list   = []
@@ -507,25 +506,29 @@ class GoogleDocCopier:
             if category.label == item_type:
                 return True
         return False
-
-    # Get a url opener, with proxy options
-    # urllib2 doesn't support the CONNECT command for pass through of proxies
-    # read this article for an excellent description of the issue
-    # http://www.voidspace.org.uk/python/articles/urllib2.shtml
-
+    
+    """
+    
+      Get a url opener, with proxy options
+      urllib2 doesn't support the CONNECT command for pass through of proxies
+      read this article for an excellent description of the issue
+      http://www.voidspace.org.uk/python/articles/urllib2.shtml
+    
+    """
+    
     def _open_https_url(self, target_url, post_data = None):
     
+        # Opener will be assigned to either a proxy enabled or disabled opener
+        opener = None
+
         proxy_username = os.environ.get('proxy-username') 
         proxy_password = os.environ.get('proxy-password')
         proxy_url      = os.environ.get('https_proxy')
-        
-        # Opener will be assigned to either a proxy enabled or disabled opener
-        opener = None
-        
+                
         if proxy_url:
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self._cookie_jar))
-        else:
             opener = urllib2.build_opener(ConnectHTTPHandler(proxy = proxy_string), ConnectHTTPSHandler(proxy = proxy_string), urllib2.HTTPCookieProcessor(self._cookie_jar))
+        else:
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self._cookie_jar))
 
         # Proxy or not, add the headers and place the POST reuqest
         opener.addheaders = [('User-agent', self._user_agent)]
@@ -535,10 +538,14 @@ class GoogleDocCopier:
             response = opener.open(target_url, urllib.urlencode(post_data))
         else:
             response = opener.open(target_url)
+            
         return response
         
     def _open_http_url(self, target_url, post_data = None):
+    
+        # Opener will be assigned to either a proxy enabled or disabled opener
         opener = None
+
         proxy_username = os.environ.get('proxy-username') 
         proxy_password = os.environ.get('proxy-password')
         proxy_url      = os.environ.get('http_proxy')
@@ -560,6 +567,7 @@ class GoogleDocCopier:
             response = opener.open(target_url, urllib.urlencode(post_data))
         else:
             response = opener.open(target_url)
+            
         return response
         
 """
