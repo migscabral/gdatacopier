@@ -1,7 +1,8 @@
 #!/usr/bin/env python2.5
 
 """
-    gdoc-cp, Copyright (c) 2007 De Bortoli Wines Pty Ltd
+    gdoc-cp.py, Copyright (c) 2007 De Bortoli Wines Pty Ltd
+    http://code.google.com/p/gdatacopier/
     Released under the terms and conditions of the GNU/GPL
 
     Developed by Eternity Technologies Pty Ltd.
@@ -27,7 +28,7 @@ from gdatacopier import *
 __author__  = "Devraj Mukherjee <devraj@etk.com.au>"
 
 __version__ = "1.0"    # Version of the user interface program
-__copier    = None     # Globally available object of GoogleDocCopier
+_copier     = None     # Globally available object of GoogleDocCopier
 
 
 # Humbly prints the proper usage of this user interface
@@ -106,8 +107,8 @@ def list_all():
 
 # Lists documents only
 def list_documents():
-    global __copier
-    document_list = __copier.get_cached_document_list()
+    global _copier
+    document_list = _copier.get_cached_document_list()
     print "Documents:\n=========="
     display_list(document_list)
     print ""
@@ -115,8 +116,8 @@ def list_documents():
     
 # Lists spreadsheets only
 def list_spreadsheets():
-    global __copier
-    document_list = __copier.get_cached_spreadsheet_list()
+    global _copier
+    document_list = _copier.get_cached_spreadsheet_list()
     print "Spreadsheets:\n============="
     display_list(document_list)
     print ""
@@ -130,13 +131,13 @@ def is_sane_dir(local_path):
 
 # Ellaborately handles the login includes exceptions
 def handle_login(username, password):
-    global __copier
+    global _copier
     try:
         sys.stdout.write("Logging into Google server as %s ..." % (username))
-        __copier.login(username, password)
+        _copier.login(username, password)
         print " done"
         sys.stdout.write("Caching a list of documents and spreadsheets ... ")
-        __copier.cache_document_lists()
+        _copier.cache_document_lists()
         print "done\n"
     except gdata.service.BadAuthentication:
         print "\nERROR: Authentication via the Google data API failed, check username and password"
@@ -163,13 +164,13 @@ def sanatize_filename(document_title, file_format):
 
 # Copies a local file to Google    
 def copy_local_to_google(source_file, document_title):
-    global __copier
+    global _copier
         
     base_path, full_file_name = os.path.split(source_file)
     file_name, file_extension = os.path.splitext(full_file_name)
        
     try:
-        google_url = __copier.import_document(source_file, document_title)
+        google_url = _copier.import_document(source_file, document_title)
         print "%s -g-> %s" % (full_file_name, google_url)
     except FileNotFound:
         print "Error: Failed to locate the source file, check path names"
@@ -181,14 +182,14 @@ def copy_local_to_google(source_file, document_title):
 
 # Downloads a single Google document to disk
 def download_document(document_id, file_format, local_path):
-    global __copier
+    global _copier
     try:
-        if __copier.is_document(document_id):
+        if _copier.is_document(document_id):
             print "%-25s -d-> %s" % (document_id, local_path)
-            __copier.export_document(document_id, file_format, local_path)
-        elif __copier.is_spreadsheet(document_id):
+            _copier.export_document(document_id, file_format, local_path)
+        elif _copier.is_spreadsheet(document_id):
             print "%-25s -s-> %s" % (document_id, local_path)
-            __copier.export_spreadsheet(document_id, file_format, local_path)
+            _copier.export_spreadsheet(document_id, file_format, local_path)
         else:
             print "	WARNING: Failed to find Google doc with id", document_id
     except FailedToDownloadFile:
@@ -200,7 +201,7 @@ def download_document(document_id, file_format, local_path):
         
 # Downloads all a set of documents or spreadsheets
 def download_set(doc_list, file_format, local_path):
-    global __copier
+    global _copier
     for document in doc_list:
         file_name = local_path + "/" + sanatize_filename(document['title'], file_format)
         download_document(document['google_id'], file_format, file_name)
@@ -211,20 +212,20 @@ def download_set(doc_list, file_format, local_path):
 def download_docs(file_format, local_path):
     if file_format == "default":
         file_format = "ods"
-    doc_list = __copier.get_cached_spreadsheet_list()
+    doc_list = _copier.get_cached_spreadsheet_list()
     download_set(doc_list, file_format, local_path)
 
 # DOwnloads a set of sheets, handles default formats etc
 def download_sheets(file_format, local_path):
     if file_format == "default":
         file_format = "oo"
-    doc_list = __copier.get_cached_document_list()
+    doc_list = _copier.get_cached_document_list()
     download_set(doc_list, file_format, local_path)
 
     
 # Copies a Google document to a local file, handles multiple downloads as well
 def copy_google_to_local(document_id, file_format, local_path):
-    global __copier
+    global _copier
 
     # If no local path specified then its the current directory
     if local_path == None:
@@ -244,7 +245,7 @@ def copy_google_to_local(document_id, file_format, local_path):
         download_docs(file_format, local_path)
         download_sheets(file_format, local_path)
         sys.exit(0)
-    elif __copier.has_item(document_id):
+    elif _copier.has_item(document_id):
         download_document(document_id, file_format, local_path)
         sys.exit(0)
     else:
@@ -276,25 +277,25 @@ def parse_user_options():
         sys.exit(0)
         
     # Local variables to handle username and password
-    __username = ""
-    __password = None
+    _username = ""
+    _password = None
                 
     # Extract the username and password into vars so we can use it all around
     if has_required_parameters(options, ['-u', '--username']):
-        __username = value_for_parameter(options, ['-u', '--username'])
+        _username = value_for_parameter(options, ['-u', '--username'])
     # We must have a proper email address for this to work
-    while(not validate_email(__username)):
-        __username = raw_input("Google email: ")
+    while(not validate_email(_username)):
+        _username = raw_input("Google email: ")
     
     # Get password from getopt or ask user to enter it in    
     if has_required_parameters(options, ['-p', '--password']):
-        __password = value_for_parameter(options, ['-p', '--password'])
+        _password = value_for_parameter(options, ['-p', '--password'])
     else:
-         __password = getpass.getpass("Password: ")
+         _password = getpass.getpass("Password: ")
     
     
     # Have to login for all the above functions
-    handle_login(__username, __password)
+    handle_login(_username, _password)
         
     # List all documents and spreadsheets
     if has_required_parameters(options, ['-l', '--list-all']):
@@ -339,10 +340,10 @@ def parse_user_options():
 
 # The humble main function, useful because things stay in place        
 def main():
-    global __copier
-    print "gdoc-cp version %s, content copy & backup utility for gdata" % __version__
+    global _copier
+    print "gdoc-cp.py version %s, content copy & backup utility for gdata" % __version__
     print "Written by: Devraj Mukherjee, Copyright (c) De Bortoli Wines <http://debortoli.com.au>"
-    __copier = GoogleDocCopier()
+    _copier = GoogleDocCopier()
     parse_user_options()
 
 # If this is the end of the script and we have done nothing then lets
