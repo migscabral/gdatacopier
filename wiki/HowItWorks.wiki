@@ -51,7 +51,17 @@ The authentication servers send about three HTTP redirects, primarily to check f
 
 In this case urllib2 will handle all the redirect requests and end up with the contents of the final page. We will ignore the final redirect request since its sent as HTML content.
 
-==  Download POST requests ==
+==  Downloading the document using a GET requests ==
+
+Once you have logged in downloading the document can be done by making the following GET requests. Note that the User-agent must be set to something popular otherwise your reuqest will be rejected.
+
+You will need to load the cookies file and you will need to provide a meaningful file name to save the output to. The GET will need to contain the following variables
+
+  * command - tells the web application what to do
+  * exportformat - a valid export format string
+  * docID - Google ID of the document you are interested in
+
+Here is a Wget example to download a document
 
 {{{
 wget --user-agent "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20061201 Firefox/2.0.0.6 (Ubuntu-feisty)" 
