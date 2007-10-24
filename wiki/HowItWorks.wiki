@@ -53,10 +53,15 @@ In this case urllib2 will handle all the redirect requests and end up with the c
 
 ==  Download POST requests ==
 
+{{{
+wget --user-agent "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20061201 Firefox/2.0.0.6 (Ubuntu-feisty)" 
+--load-cookies cookies.txt -O somedoc.odf 
+"http://docs.google.com/MiscCommands?command=saveasdoc&exportformat=oo&docID=docment_id"
+}}}
+
 ==  Hosted versus Normal Google accounts ==
 
 URLs for Hosted accounts differ from the URLs for normal Google accounts for all the above examples. GoogleDocCopier will use the appropriate URLs based on the nature of the user account.
-
     
 Hosted accounts URLs look like, where yoursdomain.com is the hosted domain
 
