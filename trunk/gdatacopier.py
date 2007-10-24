@@ -57,7 +57,7 @@ import gdata.docs
 import gdata.docs.service
 
 """
-    Exceptions
+    Exceptions, quite self explainatory
 """
 
 class NotLoggedInSimulatedBrowser(exceptions.Exception):
@@ -83,7 +83,8 @@ class InvalidContentType(exceptions.Exception):
 
         
 """
-    DocumentFormats, for use with the API
+    DocumentFormats, for use with the API, to used as constants while
+    programming with GDataCopier
 """
 
 class GoogleDocFormat:
@@ -110,7 +111,6 @@ class GoogleSpreadsheetFormat:
 class ProxyHTTPConnection(httplib.HTTPConnection):
 
     _ports = {'http' : 80, 'https' : 443}
-
 
     def request(self, method, url, body=None, headers={}):
         #request is called before connect, so can interpret url and get
@@ -195,7 +195,7 @@ class ConnectHTTPSHandler(urllib2.HTTPSHandler):
     Main document downloader class
 """
 
-class GoogleDocCopier:
+class GDataCopier:
 
     _gd_client            = None     # GData object
     _cookie_jar           = None     # Cookie jar object to handle cookies
@@ -525,6 +525,10 @@ class GoogleDocCopier:
         proxy_password = os.environ.get('proxy-password')
         proxy_url      = os.environ.get('https_proxy')
                 
+        proto, rest = urllib.splittype(proxy_url)
+        host, rest  = urllib.splithost(rest)
+        proxy_host, port  = urllib.splitport(host)
+
         if proxy_url:
             opener = urllib2.build_opener(ConnectHTTPHandler(proxy = proxy_string), ConnectHTTPSHandler(proxy = proxy_string), urllib2.HTTPCookieProcessor(self._cookie_jar))
         else:
@@ -549,6 +553,10 @@ class GoogleDocCopier:
         proxy_username = os.environ.get('proxy-username') 
         proxy_password = os.environ.get('proxy-password')
         proxy_url      = os.environ.get('http_proxy')
+
+        proto, rest = urllib.splittype(proxy_url)
+        host, rest  = urllib.splithost(rest)
+        proxy_host, port  = urllib.splitport(host)
         
         if proxy_url:
             proxy_handler = urllib2.ProxyHandler({'http': proxy_url})

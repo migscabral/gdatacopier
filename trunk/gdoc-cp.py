@@ -49,8 +49,8 @@ def usage():
                          documents    - for all documents
                          all          - for spreadsheets and documents
                          
-    -f=  --local=        Local file name, wildcards accepted for imports
-                         may be the name of a dir while exporting documents
+    -f=  --local=        Local file name, or directory if exporting
+                         multiple documents
                          
     -t=  --title         Title for a document, used only while importing
     
@@ -64,7 +64,7 @@ def usage():
                          valid params default, ods, xls, rtf, txt, pdf, oo, csv
                          default exports files in OASIS formats
 
-    -i   --import       imports a local document to Google servers
+    -i   --import        imports a local document to Google servers
 
     """
 
@@ -341,9 +341,9 @@ def parse_user_options():
 # The humble main function, useful because things stay in place        
 def main():
     global _copier
-    print "gdoc-cp.py version %s, content copy & backup utility for gdata" % __version__
-    print "Written by: Devraj Mukherjee, Copyright (c) De Bortoli Wines <http://debortoli.com.au>"
-    _copier = GoogleDocCopier()
+    print "gdoc-cp.py version %s, content copy & backup utility for Google documents & spreadsheets" % __version__
+    print "Distributed under the GNU/GPL v2, Copyright (c) De Bortoli Wines <http://debortoli.com.au>"
+    _copier = GDataCopier()
     parse_user_options()
 
 # If this is the end of the script and we have done nothing then lets
