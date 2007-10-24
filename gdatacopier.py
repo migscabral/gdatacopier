@@ -1,7 +1,8 @@
 #!/usr/bin/env python2.5
 
 """
-    GoogleDocCopier, Copyright (c) 2007 De Bortoli Wines Pty Ltd
+    gdatacopier.py, Copyright (c) 2007 De Bortoli Wines Pty Ltd
+    http://code.google.com/p/gdatacopier/
     Released under the terms and conditions of the GNU/GPL
 
     Developed by Eternity Technologies Pty Ltd.
@@ -10,7 +11,7 @@
     NO WARRANTY and its use is completely at YOUR OWN RISK.
    
     Relies on:
-     - Python version 2.5 or greater
+     - Python version 2.4 or greater
      - Google Data Python libraries
        http://code.google.com/apis/gdata/clientlibs.html
 
@@ -102,60 +103,149 @@ class GoogleSpreadsheetFormat:
     OOCalc    = "ods"
 
 """
+    HTTPS proxy handling classes, adaption of original source availabe at
+    http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/456195
+"""
+
+class ProxyHTTPConnection(httplib.HTTPConnection):
+
+    _ports = {'http' : 80, 'https' : 443}
+
+
+    def request(self, method, url, body=None, headers={}):
+        #request is called before connect, so can interpret url and get
+        #real host/port to be used to make CONNECT request to proxy
+        proto, rest = urllib.splittype(url)
+        if proto is None:
+            raise ValueError, "unknown URL type: %s" % url
+        #get host
+        host, rest = urllib.splithost(rest)
+        #try to get port
+        host, port = urllib.splitport(host)
+        #if port is not defined try to get from proto
+        if port is None:
+            try:
+                port = self._ports[proto]
+            except KeyError:
+                raise ValueError, "unknown protocol for: %s" % url
+        self._real_host = host
+        self._real_port = port
+        httplib.HTTPConnection.request(self, method, url, body, headers)
+        
+
+    def connect(self):
+        httplib.HTTPConnection.connect(self)
+        #send proxy CONNECT request
+        self.send("CONNECT %s:%d HTTP/1.0\r\n\r\n" % (self._real_host, self._real_port))
+        #expect a HTTP/1.0 200 Connection established
+        response = self.response_class(self.sock, strict=self.strict, method=self._method)
+        (version, code, message) = response._read_status()
+        #probably here we can handle auth requests...
+        if code != 200:
+            #proxy returned and error, abort connection, and raise exception
+            self.close()
+            raise socket.error, "Proxy connection failed: %d %s" % (code, message.strip())
+        #eat up header block from proxy....
+        while True:
+            #should not use directly fp probablu
+            line = response.fp.readline()
+            if line == '\r\n': break
+
+
+class ProxyHTTPSConnection(ProxyHTTPConnection):
+    
+    default_port = 443
+
+    def __init__(self, host, port = None, key_file = None, cert_file = None, strict = None):
+        ProxyHTTPConnection.__init__(self, host, port)
+        self.key_file = key_file
+        self.cert_file = cert_file
+    
+    def connect(self):
+        ProxyHTTPConnection.connect(self)
+        #make the sock ssl-aware
+        ssl = socket.ssl(self.sock, self.key_file, self.cert_file)
+        self.sock = httplib.FakeSocket(self.sock, ssl)
+        
+                                       
+class ConnectHTTPHandler(urllib2.HTTPHandler):
+   
+    def __init__(self, proxy=None, debuglevel=0):
+        self.proxy = proxy
+        urllib2.HTTPHandler.__init__(self, debuglevel)
+
+    def do_open(self, http_class, req):
+        if self.proxy is not None:
+            req.set_proxy(self.proxy, 'http')
+        return urllib2.HTTPHandler.do_open(self, ProxyHTTPConnection, req)
+
+class ConnectHTTPSHandler(urllib2.HTTPSHandler):
+
+    def __init__(self, proxy=None, debuglevel=0):
+        self.proxy = proxy
+        urllib2.HTTPSHandler.__init__(self, debuglevel)
+
+    def do_open(self, http_class, req):
+        if self.proxy is not None:
+            req.set_proxy(self.proxy, 'https')
+        return urllib2.HTTPSHandler.do_open(self, ProxyHTTPSConnection, req)
+
+
+"""
     Main document downloader class
 """
 
 class GoogleDocCopier:
 
-    __gd_client            = None     # GData object
-    __cokie_jar            = None     # Cookie jar object to handle cookies
-    __is_logged_in         = False    # State of login for this session
-    __is_hosted_account    = False    # True or False
-    __hosted_domain        = None     # We need the hosted domain to construct urls
+    _gd_client            = None     # GData object
+    _cokie_jar            = None     # Cookie jar object to handle cookies
+    _is_logged_in         = False    # State of login for this session
+    _is_hosted_account    = False    # True or False
+    _hosted_domain        = None     # We need the hosted domain to construct urls
     
-    __cached_doc_list      = []       # Cached document list
-    __cached_sheet_list    = []       # Cached spreadsheet list
+    _cached_doc_list      = []       # Cached document list
+    _cached_sheet_list    = []       # Cached spreadsheet list
     
-    __proxy_strings        = {}       # Proxy strings, if blank ignored
+    _proxy_strings        = {}       # Proxy strings, if blank ignored
     
     # Some pre-set strings and urls that are required to perform the magic
     # http://googlesystem.blogspot.com/2007/07/download-published-documents-and.html
        
-    __url_google_auth      = "https://www.google.com/accounts/ServiceLoginAuth"
-    __url_google_followup  = "http://docs.google.com"
-    __url_google_get_doc   = "http://docs.google.com/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
-    __url_google_get_sheet = "http://spreadsheets.google.com/ccc?output=%s&key=%s"
+    _url_google_auth      = "https://www.google.com/accounts/ServiceLoginAuth"
+    _url_google_followup  = "http://docs.google.com"
+    _url_google_get_doc   = "http://docs.google.com/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
+    _url_google_get_sheet = "http://spreadsheets.google.com/ccc?output=%s&key=%s"
     
     # If you are using Google hosted applications the URLs are somewhat different
     # these variables hold the pattern, and the API switches accordingly
     
-    __url_hosted_auth      = "https://www.google.com/a/%s/LoginAction"
-    __url_hosted_followup  = "http://docs.google.com/a/%s/"
-    __url_hosted_get_doc   = "http://docs.google.com/a/%s/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
-    __url_hosted_get_sheet = "http://spreadsheets.google.com/a/%s/pub?output=%s&key=%s"
+    _url_hosted_auth      = "https://www.google.com/a/%s/LoginAction"
+    _url_hosted_followup  = "http://docs.google.com/a/%s/"
+    _url_hosted_get_doc   = "http://docs.google.com/a/%s/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
+    _url_hosted_get_sheet = "http://spreadsheets.google.com/a/%s/pub?output=%s&key=%s"
     
     # Set the user agent to whatever you please, but make sure its accepted by Google
     # also, please leave the authors name in there, I put in a lot of hard work
     
-    __valid_doc_formats    = ['doc', 'oo', 'txt', 'pdf', 'rtf']
-    __valid_sheet_formats  = ['xls', 'ods', 'csv', 'pdf', 'txt']
-    __sheet_content_types  = { 'ods': 'application/vnd.oasis.opendocument.spreadsheet', 'csv': 'text/comma-separated-values',
+    _valid_doc_formats    = ['doc', 'oo', 'txt', 'pdf', 'rtf']
+    _valid_sheet_formats  = ['xls', 'ods', 'csv', 'pdf', 'txt']
+    _sheet_content_types  = { 'ods': 'application/vnd.oasis.opendocument.spreadsheet', 'csv': 'text/comma-separated-values',
                                'xls': 'application/vnd.ms-excel' }
-    __doc_content_types    = { 'doc': 'application/msword', 'odt': 'application/vnd.oasis.opendocument.text',
+    _doc_content_types    = { 'doc': 'application/msword', 'odt': 'application/vnd.oasis.opendocument.text',
                                'rtf': 'application/rtf', 'sxw': 'application/vnd.sun.xml.writer',
                                'txt': 'text/plain' }
                                
     # Default formats the files are exported in
-    __default_sheet_format = "ods"
-    __default_doc_format   = "oo"
+    _default_sheet_format = "ods"
+    _default_doc_format   = "oo"
 
     # User agent sent to Google's servers
-    __user_agent           = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20061201 Firefox/2.0.0.6 (Ubuntu-feisty)"
+    _user_agent           = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20061201 Firefox/2.0.0.6 (Ubuntu-feisty)"
     
-    __author__             = "Devraj Mukherjee <devraj@gmail.com>"
+    __author__            = "Devraj Mukherjee <devraj@gmail.com>"
     
     # Default constructors, basically sets up a few a things, much like logout
-    def __init__(self):
+    def _init_(self):
         self.logout()
         return
         
@@ -164,16 +254,16 @@ class GoogleDocCopier:
     def login(self, username, password):
     
         # Lets establish if this is a hoted or a Google account by the email 
-        self.__set_account_type(username)
+        self._set_account_type(username)
     
         # Establish a connection for the Google document feeds
-        self.__gd_client          = gdata.docs.service.DocsService()
+        self._gd_client          = gdata.docs.service.DocsService()
         
-        self.__gd_client.email    = username
-        self.__gd_client.password = password
-        self.__gd_client.service  = "writely"
+        self._gd_client.email    = username
+        self._gd_client.password = password
+        self._gd_client.service  = "writely"
         
-        self.__gd_client.ProgrammaticLogin()
+        self._gd_client.ProgrammaticLogin()
         
         # Establish a connection via urllib2 for downloading, implement this request
         # wget --save-cookies cookies.txt --post-data "continue=http://docs.google.com&followup=
@@ -183,37 +273,37 @@ class GoogleDocCopier:
         prepared_auth_url = None
         login_data = None
         
-        if self.__is_hosted_account:
+        if self._is_hosted_account:
             app_username, domain = username.split('@')
-            followup_url      = self.__url_hosted_followup % self.__hosted_domain
+            followup_url      = self._url_hosted_followup % self._hosted_domain
             login_data        = {'persistent': 'true', 'userName': app_username, 'password': password, 
                                  'continue': followup_url, 'followup': followup_url}
-            prepared_auth_url = self.__url_hosted_auth % (self.__hosted_domain)
+            prepared_auth_url = self._url_hosted_auth % (self._hosted_domain)
         else:
             login_data        = {'PersistentCookies': 'true', 'Email': username, 'Passwd': password, 
-                                 'continue': self.__url_google_followup, 'followup': self.__url_google_followup}
-            prepared_auth_url = self.__url_google_auth
+                                 'continue': self._url_google_followup, 'followup': self._url_google_followup}
+            prepared_auth_url = self._url_google_auth
                 
         if (not login_data == None) and (not prepared_auth_url == None):
 
-            response = self.__open_https_url(prepared_auth_url, login_data)
+            response = self._open_https_url(prepared_auth_url, login_data)
             
             # Check to see if we have enough cookies
-            if len(self.__cookie_jar) < 2:
+            if len(self._cookie_jar) < 2:
                 raise NotEnoughCookiesFromGoogle
             else:
-                self.__is_logged_in = True
+                self._is_logged_in = True
             
         else:
             raise SimluatedBrowserLoginFailed
 
     # Logout clears out all cookies, caches etc
     def logout(self):
-        self.__cookie_jar        = None
-        self.__cookie_jar        = cookielib.CookieJar()
-        self.__is_logged_in      = False
-        self.__cached_doc_list   = []
-        self.__cached_sheet_list = []
+        self._cookie_jar        = None
+        self._cookie_jar        = cookielib.CookieJar()
+        self._is_logged_in      = False
+        self._cached_doc_list   = []
+        self._cached_sheet_list = []
 
     # Imports a local file to a Google document
     def import_document(self, document_path, document_title = None):
@@ -237,14 +327,14 @@ class GoogleDocCopier:
 
         entry = None
         
-        if self.__sheet_content_types.has_key(file_extension):
-            content_type = self.__sheet_content_types[file_extension]
+        if self._sheet_content_types.has_key(file_extension):
+            content_type = self._sheet_content_types[file_extension]
             media_source = gdata.MediaSource(file_path = document_path, content_type = content_type)
-            entry = self.__gd_client.UploadSpreadsheet(media_source, document_title)
-        elif self.__doc_content_types.has_key(file_extension):
-            content_type = self.__doc_content_types[file_extension]
+            entry = self._gd_client.UploadSpreadsheet(media_source, document_title)
+        elif self._doc_content_types.has_key(file_extension):
+            content_type = self._doc_content_types[file_extension]
             media_source = gdata.MediaSource(file_path = document_path, content_type = content_type)
-            entry = self.__gd_client.UploadDocument(media_source, document_title)
+            entry = self._gd_client.UploadDocument(media_source, document_title)
         else:
             raise InvalidContentType
             
@@ -258,20 +348,20 @@ class GoogleDocCopier:
     def export_document(self, document_id, file_format ="default", output_path = None):
         # Set file format to oo if user has chosen default
         if file_format == "default":
-            file_format = self.__default_doc_format
+            file_format = self._default_doc_format
         # We must have a valid file format
-        if not file_format in self.__valid_doc_formats:
+        if not file_format in self._valid_doc_formats:
             raise InvalidExportFormat
         
         prepared_download_url = None
         
-        if self.__is_hosted_account:
-            prepared_download_url = self.__url_hosted_get_doc % (self.__hosted_domain, file_format, document_id)
+        if self._is_hosted_account:
+            prepared_download_url = self._url_hosted_get_doc % (self._hosted_domain, file_format, document_id)
         else:
-            prepared_download_url = self.__url_google_get_doc % (file_format, document_id)
+            prepared_download_url = self._url_google_get_doc % (file_format, document_id)
             
         if not prepared_download_url == None:
-            self.__export(prepared_download_url, output_path)
+            self._export(prepared_download_url, output_path)
         else:
             raise DocumentDownloadURLError              
                
@@ -279,43 +369,43 @@ class GoogleDocCopier:
     def export_spreadsheet(self, document_id, file_format = "default", output_path = None):
         # Set file format to ods if user has chosen default
         if file_format == "default":
-            file_format = self.__default_sheet_format
+            file_format = self._default_sheet_format
         # We must have a valid file format
-        if not file_format in self.__valid_sheet_formats:
+        if not file_format in self._valid_sheet_formats:
             raise InvalidExportFormat
             
         prepared_download_url = None
         
-        if self.__is_hosted_account:
-            prepared_download_url = self.__url_hosted_get_sheet % (self.__hosted_domain, file_format, document_id)
+        if self._is_hosted_account:
+            prepared_download_url = self._url_hosted_get_sheet % (self._hosted_domain, file_format, document_id)
         else:
-            prepared_download_url = self.__url_google_get_sheet % (file_format, document_id)
+            prepared_download_url = self._url_google_get_sheet % (file_format, document_id)
 
         if not prepared_download_url == None:
-            self.__export(prepared_download_url, output_path)
+            self._export(prepared_download_url, output_path)
         else:
             raise DocumentDownloadURLError
         
     # Caches the documents lists
     def cache_document_lists(self):
-        self.__cached_doc_list   = self.get_document_list()
-        self.__cached_sheet_list = self.get_spreadsheet_list()
+        self._cached_doc_list   = self.get_document_list()
+        self._cached_sheet_list = self.get_spreadsheet_list()
         
     # Returns the currently cached list of documents
     def get_cached_document_list(self):
-        return self.__cached_doc_list
+        return self._cached_doc_list
        
     # Returns the currently cached list of spreadhseets
     def get_cached_spreadsheet_list(self):
-        return self.__cached_sheet_list
+        return self._cached_sheet_list
         
     # Gets a live list of documents from Google
     def get_document_list(self):
-        return self.__get_item_list('document')
+        return self._get_item_list('document')
     
     # Gets a live list of spreadsheets from Google
     def get_spreadsheet_list(self):
-        return self.__get_item_list('spreadsheet')
+        return self._get_item_list('spreadsheet')
         
     # Checks to see if a document or spreadsheet exists
     def has_item(self, document_id):
@@ -324,10 +414,10 @@ class GoogleDocCopier:
     # Given a document id checks to see if its a spreadsheet
     def is_spreadsheet(self, document_id):
         # If the spreadsheet cache is empty the fill it up
-        if len(self.__cached_sheet_list) == 0:
-            self.__cached_sheet_list = self.get_spreadsheet_list()
+        if len(self._cached_sheet_list) == 0:
+            self._cached_sheet_list = self.get_spreadsheet_list()
             
-        for document in self.__cached_sheet_list:
+        for document in self._cached_sheet_list:
             if document['google_id'] == document_id:
                 return True
         return False
@@ -335,10 +425,10 @@ class GoogleDocCopier:
     # Given a document id checks to see if its a spreadsheet
     def is_document(self, document_id):
         # If the cache is empty then try and cache again
-        if len(self.__cached_doc_list) == 0:
-            self.__cached_doc_list = self.get_document_list()
+        if len(self._cached_doc_list) == 0:
+            self._cached_doc_list = self.get_document_list()
             
-        for document in self.__cached_doc_list:
+        for document in self._cached_doc_list:
             if document['google_id'] == document_id:
                 return True
         return False
@@ -349,22 +439,22 @@ class GoogleDocCopier:
     """
     
     # Function to check if this is a hosted or Google account
-    def __set_account_type(self, username):
+    def _set_account_type(self, username):
         # By default lets assume this is not a hosted account
-        self.__is_hosted_account = False
+        self._is_hosted_account = False
         
         user, domain = username.split('@')
         if not domain == "gmail.com":
-            self.__is_hosted_account = True
-            self.__hosted_domain = domain
+            self._is_hosted_account = True
+            self._hosted_domain = domain
    
     # Helper export function  
-    def __export(self, download_url, file_name):
-        if (not self.__is_logged_in):
+    def _export(self, download_url, file_name):
+        if (not self._is_logged_in):
             raise NotLoggedInSimulatedBrowser
             
         try:
-            response = self.__open_http_url(download_url, post_data = None)
+            response = self._open_http_url(download_url, post_data = None)
         except HTTPError:
             raise FailedToDownloadFile
             
@@ -378,12 +468,12 @@ class GoogleDocCopier:
         response.close()
     
     # Gets a list of items from Google docs and filters its based on type        
-    def __get_item_list(self, item_type = None):
-        if (not self.__is_logged_in):
+    def _get_item_list(self, item_type = None):
+        if (not self._is_logged_in):
             raise NotLoggedInSimulatedBrowser
 
         item_list = []
-        feed = self.__gd_client.GetDocumentListFeed()
+        feed = self._gd_client.GetDocumentListFeed()
         feed_entries = feed.entry
         
         # Return to caller if there are no feed items
@@ -391,28 +481,28 @@ class GoogleDocCopier:
         	return item_list
 
         for entry in feed_entries:
-            if self.__is_item_of_type(entry.category, item_type):
+            if self._is_item_of_type(entry.category, item_type):
                 item_list.append({'title': entry.title.text.encode('UTF-8'), 
-                                  'google_id': self.__get_document_id(entry.GetAlternateLink().href), 
-                                  'updated': self.__get_document_date(entry.updated.text)})
+                                  'google_id': self._get_document_id(entry.GetAlternateLink().href), 
+                                  'updated': self._get_document_date(entry.updated.text)})
 
         return item_list
 
     # Parses the document id out of the alternate link url, the atom feed
     # doesn't actually provide the document id      
-    def __get_document_id(self, alternate_link):
+    def _get_document_id(self, alternate_link):
     	parsed_url = urlparse(alternate_link)
     	url_params = parsed_url[4]
     	document_id = url_params.split('=')[1]
         return document_id
         
     # Parses the date out of the string    
-    def __get_document_date(self, updated_date):
+    def _get_document_date(self, updated_date):
     	return updated_date[0:10]
         
     # Checks to see if the item is of a particular type, document or spreadhseet
     # the Google atom library sends a tuple of categories    
-    def __is_item_of_type(self, categories, item_type):
+    def _is_item_of_type(self, categories, item_type):
         for category in categories:
             if category.label == item_type:
                 return True
@@ -423,52 +513,22 @@ class GoogleDocCopier:
     # read this article for an excellent description of the issue
     # http://www.voidspace.org.uk/python/articles/urllib2.shtml
 
-    def __open_https_url(self, target_url, post_data = None):
-        # The opener in the SSL case is the same, we modify the sock options
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
-
+    def _open_https_url(self, target_url, post_data = None):
+    
         proxy_username = os.environ.get('proxy-username') 
         proxy_password = os.environ.get('proxy-password')
         proxy_url      = os.environ.get('https_proxy')
         
-        server = "www.google.com"
-        port = "443"
-        
-        proxy_server_host = "localhost"
-        proxy_server_port = 3128
+        # Opener will be assigned to either a proxy enabled or disabled opener
+        opener = None
         
         if proxy_url:
-            # Make the fake socket to support pass through of HTTPS
-            proxy_string = ''
-            if proxy_username and proxy_password:
-                proxy_string = 'Proxy-authorization: Basic '+ base64.encodestring('%s:%s' % (proxy_username, proxy_password)) + '\r\n'
-            
-            proxy_string += "CONNECT %s:%s HTTP/1.0\r\n" % (server, port)
-            proxy_string += "User-Agent: %s\r\n" % self.__user_agent + "\r\n\r\n"
-
-            proxy_sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-            proxy_sock.connect((proxy_server_host, proxy_server_port))
-            proxy_sock.sendall(proxy_string)
-
-            proxy_response = ''
-
-            # Try and get something useful from the proxy
-            while proxy_response.find("\r\n\r\n") == -1:
-                proxy_response += proxy_sock.recv(8192)
-        
-            proxy_status = proxy_response.split()[1]
-        
-            # Raise the same excpetion that GData raises
-            if not proxy_status == str(200):
-                raise 'Error status=', str(proxy_status)
-
-            # Make a fake socket and assign it to the opener
-            ssl = socket.ssl(proxy_sock, None, None)
-            fake_sock = httplib.FakeSocket(proxy_sock, ssl)
-            opener.sock = fake_sock
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self._cookie_jar))
+        else:
+            opener = urllib2.build_opener(ConnectHTTPHandler(proxy = proxy_string), ConnectHTTPSHandler(proxy = proxy_string), urllib2.HTTPCookieProcessor(self._cookie_jar))
 
         # Proxy or not, add the headers and place the POST reuqest
-        opener.addheaders = [('User-agent', self.__user_agent)]
+        opener.addheaders = [('User-agent', self._user_agent)]
  
         response = None
         if post_data:
@@ -477,7 +537,7 @@ class GoogleDocCopier:
             response = opener.open(target_url)
         return response
         
-    def __open_http_url(self, target_url, post_data = None):
+    def _open_http_url(self, target_url, post_data = None):
         opener = None
         proxy_username = os.environ.get('proxy-username') 
         proxy_password = os.environ.get('proxy-password')
@@ -488,13 +548,13 @@ class GoogleDocCopier:
             if proxy_username and proxy_password:
                 proxy_auth_handler = urllib2.HTTPPasswordMgrWithDefaultRealm()
                 proxy_auth_handler.add_password(None, proxy_host, proxy_username, proxy_password)
-                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar), proxy_handler, proxy_auth_handler)
+                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self._cookie_jar), proxy_handler, proxy_auth_handler)
             else:
-                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar), proxy_handler)
+                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self._cookie_jar), proxy_handler)
         else:
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self._cookie_jar))
 
-        opener.addheaders = [('User-agent', self.__user_agent)]
+        opener.addheaders = [('User-agent', self._user_agent)]
         response = None
         if post_data:
             response = opener.open(target_url, urllib.urlencode(post_data))
