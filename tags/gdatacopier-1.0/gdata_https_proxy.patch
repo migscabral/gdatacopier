@@ -1,0 +1,12 @@
+--- gdata.py-1.0.9.original/src/atom/service.py	2007-08-28 10:55:31.000000000 +1000
++++ gdata.py-1.0.9/src/atom/service.py	2007-10-25 21:26:10.000000000 +1000
+@@ -129,6 +129,9 @@
+     if ssl:
+       # destination is https
+       proxy = os.environ.get('https_proxy')
++      # if https_proxy not found then try to find http_proxy
++      if not proxy:
++        proxy = os.environ.get('http_proxy')
+       if proxy:
+         (p_server, p_port, p_ssl, p_uri) = self._ProcessUrl(proxy, True)
+         proxy_username = os.environ.get('proxy-username')
