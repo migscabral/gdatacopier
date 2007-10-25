@@ -48,6 +48,8 @@ import urllib
 import exceptions
 import urllib2
 import time
+import base64
+import os
 
 import cookielib
 from urllib2  import *
@@ -116,6 +118,7 @@ class ProxyHTTPConnection(httplib.HTTPConnection):
         #request is called before connect, so can interpret url and get
         #real host/port to be used to make CONNECT request to proxy
         proto, rest = urllib.splittype(url)
+    
         if proto is None:
             raise ValueError, "unknown URL type: %s" % url
         #get host
@@ -131,12 +134,16 @@ class ProxyHTTPConnection(httplib.HTTPConnection):
         self._real_host = host
         self._real_port = port
         httplib.HTTPConnection.request(self, method, url, body, headers)
-        
 
     def connect(self):
         httplib.HTTPConnection.connect(self)
+    
+        # Modified by Devraj Mukherjee to add authentication support basic auth
         #send proxy CONNECT request
-        self.send("CONNECT %s:%d HTTP/1.0\r\n\r\n" % (self._real_host, self._real_port))
+        extra_string = "CONNECT %s:%d HTTP/1.0\r\n" % (self._real_host, self._real_port)
+        extra_string += self._get_authentication_string() + "\r\n"
+        self.send(extra_string)
+
         #expect a HTTP/1.0 200 Connection established
         response = self.response_class(self.sock, strict=self.strict, method=self._method)
         (version, code, message) = response._read_status()
@@ -150,6 +157,16 @@ class ProxyHTTPConnection(httplib.HTTPConnection):
             #should not use directly fp probablu
             line = response.fp.readline()
             if line == '\r\n': break
+        
+    def _get_authentication_string(self):
+        auth_string = ""
+        proxy_username = os.environ.get("proxy-username")
+        proxy_password = os.environ.get("proxy-password")
+        if proxy_username and proxy_password:
+            encoded_user_pass = base64.encodestring("%s:%s" % (proxy_username, proxy_password))
+            auth_string = "Proxy-authorization: Basic %s\r\n" % encoded_user_pass
+        
+        return auth_string
 
 
 class ProxyHTTPSConnection(ProxyHTTPConnection):
@@ -160,18 +177,16 @@ class ProxyHTTPSConnection(ProxyHTTPConnection):
         ProxyHTTPConnection.__init__(self, host, port)
         self.key_file = key_file
         self.cert_file = cert_file
-    
     def connect(self):
         ProxyHTTPConnection.connect(self)
         #make the sock ssl-aware
         ssl = socket.ssl(self.sock, self.key_file, self.cert_file)
         self.sock = httplib.FakeSocket(self.sock, ssl)
-        
-                                       
+
 class ConnectHTTPHandler(urllib2.HTTPHandler):
-   
+
     def __init__(self, proxy=None, debuglevel=0):
-        self.proxy = proxy
+        self.proxy = self._parse_proxy_details(proxy)
         urllib2.HTTPHandler.__init__(self, debuglevel)
 
     def do_open(self, http_class, req):
@@ -179,17 +194,28 @@ class ConnectHTTPHandler(urllib2.HTTPHandler):
             req.set_proxy(self.proxy, 'http')
         return urllib2.HTTPHandler.do_open(self, ProxyHTTPConnection, req)
 
+    def _parse_proxy_details(self, proxy_string):
+        proto, rest = urllib.splittype(proxy_string)
+        host,  rest = urllib.splithost(rest)
+        host,  port = urllib.splitport(host)
+        return "%s:%s" % (host, port)
+
 class ConnectHTTPSHandler(urllib2.HTTPSHandler):
 
     def __init__(self, proxy=None, debuglevel=0):
-        self.proxy = proxy
+        self.proxy = self._parse_proxy_details(proxy)
         urllib2.HTTPSHandler.__init__(self, debuglevel)
 
     def do_open(self, http_class, req):
         if self.proxy is not None:
             req.set_proxy(self.proxy, 'https')
         return urllib2.HTTPSHandler.do_open(self, ProxyHTTPSConnection, req)
-
+    
+    def _parse_proxy_details(self, proxy_string):
+        proto, rest = urllib.splittype(proxy_string)
+        host,  rest = urllib.splithost(rest)
+        host,  port = urllib.splitport(host)
+        return "%s:%s" % (host, port)	
 
 """
     Main document downloader class
@@ -230,10 +256,10 @@ class GDataCopier:
     _valid_doc_formats    = ['doc', 'oo', 'txt', 'pdf', 'rtf']
     _valid_sheet_formats  = ['xls', 'ods', 'csv', 'pdf', 'txt']
     _sheet_content_types  = { 'ods': 'application/vnd.oasis.opendocument.spreadsheet', 'csv': 'text/comma-separated-values',
-                               'xls': 'application/vnd.ms-excel' }
+                              'xls': 'application/vnd.ms-excel' }
     _doc_content_types    = { 'doc': 'application/msword', 'odt': 'application/vnd.oasis.opendocument.text',
-                               'rtf': 'application/rtf', 'sxw': 'application/vnd.sun.xml.writer',
-                               'txt': 'text/plain' }
+                              'rtf': 'application/rtf', 'sxw': 'application/vnd.sun.xml.writer',
+                              'txt': 'text/plain' }
                                
     # Default formats the files are exported in
     _default_sheet_format = "ods"
@@ -264,11 +290,6 @@ class GDataCopier:
         self._gd_client.service  = "writely"
         
         self._gd_client.ProgrammaticLogin()
-        
-        # Establish a connection via urllib2 for downloading, implement this request
-        # wget --save-cookies cookies.txt --post-data "continue=http://docs.google.com&followup=
-        # http://docs.google.com&Email=devraj&Passwd=password&PersistentCookie=true" 
-        # https://www.google.com/accounts/ServiceLoginAuth?service=writely -O file.txt -c
         
         prepared_auth_url = None
         login_data = None
@@ -517,26 +538,18 @@ class GDataCopier:
     """
     
     def _open_https_url(self, target_url, post_data = None):
-    
         # Opener will be assigned to either a proxy enabled or disabled opener
-        opener = None
-
-        proxy_username = os.environ.get('proxy-username') 
-        proxy_password = os.environ.get('proxy-password')
-        proxy_url      = os.environ.get('https_proxy')
-                
-        proto, rest = urllib.splittype(proxy_url)
-        host, rest  = urllib.splithost(rest)
-        proxy_host, port  = urllib.splitport(host)
+        opener    = None
+        proxy_url = os.environ.get('http_proxy')
 
         if proxy_url:
-            opener = urllib2.build_opener(ConnectHTTPHandler(proxy = proxy_string), ConnectHTTPSHandler(proxy = proxy_string), urllib2.HTTPCookieProcessor(self._cookie_jar))
+            opener = urllib2.build_opener(ConnectHTTPHandler(proxy = proxy_url), ConnectHTTPSHandler(proxy = proxy_url), urllib2.HTTPCookieProcessor(self._cookie_jar))
         else:
             opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self._cookie_jar))
 
         # Proxy or not, add the headers and place the POST reuqest
         opener.addheaders = [('User-agent', self._user_agent)]
- 
+        
         response = None
         if post_data:
             response = opener.open(target_url, urllib.urlencode(post_data))
