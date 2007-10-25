@@ -7,6 +7,16 @@ If you are behind a HTTP/HTTPS proxy then this document is for you, it outlines 
 
 For consistency, all GDataCopier components use the sam proxy variables as the GData API.
 
+== Proxy and problems with GData API ==
+
+urllib2 seems to do unexpected things if the environment variable https_proxy is exported.  The GData API is dependent on the https_proxy environment variable to identify which proxy to use for HTTPS connections.
+
+The solution is to use the http_proxy environment variable instead.
+
+== Patching the GData API ==
+
+We have provided a patch to the GData API to fix the above issue. Please refer to the various posts on the forums reporting the issue to the related groups.
+ 
 
 == Howto ==
 
