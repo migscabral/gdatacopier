@@ -7,3 +7,7 @@ This project aims to provide an API that allows you to easily list, download and
 The other to provide a command line interface to the library that borrow ideas from cp and rsync. It presents the feel of being able to copy documents to and from the Google doc servers.
 
 Both parts of this project are written using the Python programming language and depend on various libraries released by Google. If you are interested in developing software using this API please read the APIDocumentation for an ellaborate discussion.
+
+== Credits ==
+
+  * *Bill Robertson* for coming with the idea and pointing out that the GET requests could be accessed via HTTPS, which saved me implementing cookie handling for HTTP proxies.
