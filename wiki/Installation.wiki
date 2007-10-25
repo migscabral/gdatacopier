@@ -13,6 +13,8 @@ GDataCopier was developed and tested using UNIX style operating systems with the
 
 == Quick installation steps ==
 
+If you are intending to use gdatacopier behind a proxy then please read the wiki article on  ProxySupport
+
     * Use 'python --version' to reveal the installed version of Python
     * Copy the two files (gdatacopier.py, gdoc-cp.py to a directory you like)
     * chmod +x (to make the scripts runnable)
