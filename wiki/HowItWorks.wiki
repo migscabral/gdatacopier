@@ -1,6 +1,15 @@
 #summary The secrets behind how the document downloader works
 #labels Phase-Design
 
+== Dependencies ==
+
+Everything works and works really well, but since GDataCopier works around the current limitations of the Google Data API, here is what it assumes. If any of this is changed by Google GDataCopier will cease to work.
+
+  * POST parameters for the login request
+  * Dependencies on Cookies to maintain an authenticated session
+  * GET parameters for the export requests
+  * List of accepted User-agent values
+
 == GData API ==
 
 Google make available an API that allows people to list documents via Atom feeds. Each document in Google docs is identified using a docment id. The API has various functions to be able to upload content into the Google document server but none to extract documents out.
