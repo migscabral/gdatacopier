@@ -9,6 +9,7 @@ Everything works and works really well, but since GDataCopier works around the c
   * Dependencies on Cookies to maintain an authenticated session
   * GET parameters for the export requests
   * List of accepted User-agent values
+  * Accessing the GET requests over HTTPS (GDataCopier conducts all its transactions over HTTPS)
 
 == GData API ==
 
