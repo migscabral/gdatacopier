@@ -7,6 +7,9 @@ GDataCopier was developed and tested using UNIX style operating systems with the
     * Google Data Python libraries, available from http://code.google.com/apis/
     * Not to mention a connection to the Internet :-)
 
+== Python library dependencies ==
+
+  * GData API depends on the python-elementree libraries
 
 == Quick installation steps ==
 
