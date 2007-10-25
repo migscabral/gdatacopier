@@ -10,12 +10,13 @@ For consistency, all GDataCopier components use the sam proxy variables as the G
 
 == Howto ==
 
-Simply export these variables 
+Simply export these variables using your shell before you run GDataCopier
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+  * _proxy-username_ with the proxy username
+  * _proxy-password_ with the password for the proxy user
+  * _https_proxy_ with the url of the proxy to be used for https connections
+  * _http_proxy_ with the url of the proxy to be used for http connections
+
 
 == BASH hyphen issues ==
 
