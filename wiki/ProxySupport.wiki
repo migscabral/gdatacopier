@@ -1,0 +1,29 @@
+#summary Using proxies with gdatacopier, also outlines the use proxies in gdata-api.
+#labels Featured,Phase-Implementation
+
+== Introduction ==
+
+If you are behind a HTTP/HTTPS proxy then this document is for you, it outlines the environment variables you need to set to make gdoc-cp work with proxies.
+
+For consistency, all GDataCopier components use the sam proxy variables as the GData API.
+
+
+== Howto ==
+
+Simply export these variables 
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
+
+== BASH hyphen issues ==
+
+If you are a BASH user then you will notice if you try and export a variable you will get the following error
+
+{{{
+surfboard:~/Work/gdatacopier devraj$ export proxy-username="username"
+-bash: export: `proxy-username=username': not a valid identifier
+}}}
+
+== Working around BASH ==
