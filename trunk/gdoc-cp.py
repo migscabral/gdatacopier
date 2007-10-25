@@ -147,7 +147,10 @@ def handle_login(username, password):
         sys.exit(2)
     except NotEnoughCookiesFromGoogle:
         print "\nERROR: Google returned a shorter response than expected, there's something wrong"
-        sys.exit(2)		
+        sys.exit(2)
+    except:
+        print "\nUknown error while attempting to login to Google servers"
+        sys.exit(2)
 
 # Make a file name sane so the OS doesn't bomb it out
 def sanatize_filename(document_title, file_format):
@@ -198,6 +201,8 @@ def download_document(document_id, file_format, local_path):
         print "Error: Failed to write to", local_path
     except InvalidExportFormat:
         print "Warning: Document id %s cannot be exported to %s" % (document_id, file_format)
+    except:
+        print "Unknow error while trying to dowload the last document"
         
 # Downloads all a set of documents or spreadsheets
 def download_set(doc_list, file_format, local_path):

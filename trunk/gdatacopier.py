@@ -238,17 +238,17 @@ class GDataCopier:
     # http://googlesystem.blogspot.com/2007/07/download-published-documents-and.html
        
     _url_google_auth      = "https://www.google.com/accounts/ServiceLoginAuth"
-    _url_google_followup  = "http://docs.google.com"
-    _url_google_get_doc   = "http://docs.google.com/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
-    _url_google_get_sheet = "http://spreadsheets.google.com/ccc?output=%s&key=%s"
+    _url_google_followup  = "https://docs.google.com"
+    _url_google_get_doc   = "https://docs.google.com/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
+    _url_google_get_sheet = "https://spreadsheets.google.com/ccc?output=%s&key=%s"
     
     # If you are using Google hosted applications the URLs are somewhat different
     # these variables hold the pattern, and the API switches accordingly
     
     _url_hosted_auth      = "https://www.google.com/a/%s/LoginAction"
-    _url_hosted_followup  = "http://docs.google.com/a/%s/"
-    _url_hosted_get_doc   = "http://docs.google.com/a/%s/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
-    _url_hosted_get_sheet = "http://spreadsheets.google.com/a/%s/pub?output=%s&key=%s"
+    _url_hosted_followup  = "https://docs.google.com/a/%s/"
+    _url_hosted_get_doc   = "https://docs.google.com/a/%s/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
+    _url_hosted_get_sheet = "https://spreadsheets.google.com/a/%s/pub?output=%s&key=%s"
     
     # Set the user agent to whatever you please, but make sure its accepted by Google
     # also, please leave the authors name in there, I put in a lot of hard work
@@ -474,7 +474,7 @@ class GDataCopier:
             raise NotLoggedInSimulatedBrowser
             
         try:
-            response = self._open_http_url(download_url, post_data = None)
+            response = self._open_https_url(download_url, post_data = None)
         except HTTPError:
             raise FailedToDownloadFile
             
@@ -550,39 +550,6 @@ class GDataCopier:
         # Proxy or not, add the headers and place the POST reuqest
         opener.addheaders = [('User-agent', self._user_agent)]
         
-        response = None
-        if post_data:
-            response = opener.open(target_url, urllib.urlencode(post_data))
-        else:
-            response = opener.open(target_url)
-            
-        return response
-        
-    def _open_http_url(self, target_url, post_data = None):
-    
-        # Opener will be assigned to either a proxy enabled or disabled opener
-        opener = None
-
-        proxy_username = os.environ.get('proxy-username') 
-        proxy_password = os.environ.get('proxy-password')
-        proxy_url      = os.environ.get('http_proxy')
-
-        proto, rest = urllib.splittype(proxy_url)
-        host, rest  = urllib.splithost(rest)
-        proxy_host, port  = urllib.splitport(host)
-        
-        if proxy_url:
-            proxy_handler = urllib2.ProxyHandler({'http': proxy_url})
-            if proxy_username and proxy_password:
-                proxy_auth_handler = urllib2.HTTPPasswordMgrWithDefaultRealm()
-                proxy_auth_handler.add_password(None, proxy_host, proxy_username, proxy_password)
-                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self._cookie_jar), proxy_handler, proxy_auth_handler)
-            else:
-                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self._cookie_jar), proxy_handler)
-        else:
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self._cookie_jar))
-
-        opener.addheaders = [('User-agent', self._user_agent)]
         response = None
         if post_data:
             response = opener.open(target_url, urllib.urlencode(post_data))
