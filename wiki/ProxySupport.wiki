@@ -24,9 +24,9 @@ Simply export these variables using your shell before you run GDataCopier
 
   * _proxy-username_ with the proxy username
   * _proxy-password_ with the password for the proxy user
-  * _https_proxy_ with the url of the proxy to be used for https connections
   * _http_proxy_ with the url of the proxy to be used for http connections
 
+DO NOT export the environment variable called https_proxy, this will cease the script to work because of a issue in urllib2.
 
 == BASH hyphen issues ==
 
