@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.5
+#!/usr/bin/env python
 
 """
     gdoc-cp.py, Copyright (c) 2007 De Bortoli Wines Pty Ltd
@@ -21,6 +21,7 @@ import getopt
 import getpass
 import re
 import os
+import signal
     
 from gdatacopier import *
 
@@ -69,6 +70,11 @@ def usage():
     -i   --import        imports a local document to Google servers
 
     """
+
+# Signal handler for Ctrl+C etc
+def signal_handler(signal, frame):
+    print "\n[Interrupted] You seemed to have changed your mind, aborting last action"
+    sys.exit(0)
 
 # Validate email address function courtsey using regular expressions
 # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/65215
@@ -347,7 +353,7 @@ def parse_user_options():
         write_metadata    = has_required_parameters(options, ['-m', '--metadata'])
         
         if write_metadata:
-            print "[Info] Metadata export enabled for this export"
+            print "[Info] Metadata export enabled for this export\n"
         
         if not export_format in ['default', 'oo', 'rtf', 'doc', 'pdf', 'txt', 'csv', 'xls', 'ods']:
             print "ERROR: The specified export format is invalid, please check usage (-h)"
@@ -363,9 +369,14 @@ def parse_user_options():
 
 # The humble main function, useful because things stay in place        
 def main():
+    # Add some signal handlers to make it easier for users
+    signal.signal(signal.SIGINT, signal_handler)
+    # Get a reference to the global var
     global _copier
+    # Print a welcome message
     print "gdoc-cp.py version %s, content copy & backup utility for Google documents & spreadsheets" % __version__
     print "Distributed under the GNU/GPL v2, Copyright (c) De Bortoli Wines <http://debortoli.com.au>"
+    # Make a new GDataCopier object and start parsing options to see what the user wants
     _copier = GDataCopier()
     parse_user_options()
 

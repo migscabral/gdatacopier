@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.5
+#!/usr/bin/env python
 
 """
     gdatacopier.py, Copyright (c) 2007 De Bortoli Wines Pty Ltd
