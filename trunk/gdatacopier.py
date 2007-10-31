@@ -364,6 +364,29 @@ class GDataCopier:
 
         return entry.GetAlternateLink().href
         
+    # Export the metadata for a given document id
+    def export_metadata(self, document_id, file_name = None, output_path = None):
+        # If file name is None then make a file name
+        
+        # If output_path is none then the local directory is where we write to
+        
+        # If caches aren't availabe, make them now
+        if len(self._cached_sheet_list) == 0:
+            self._cached_sheet_list = self.get_spreadsheet_list()
+        if len(self._cached_doc_list) == 0:
+            self._cached_doc_list = self.get_document_list()
+
+        # Find the document details
+        doc_details = self.get_entry_details(document_id)
+        
+        if doc_details:
+            md_file = open(file_name, "w")
+            md_file.close()
+            
+            return
+
+        raise FailedToWriteMetadata
+        
     # Exports a Google document to a local file
     def export_document(self, document_id, file_format ="default", output_path = None):
         # Set file format to oo if user has chosen default
