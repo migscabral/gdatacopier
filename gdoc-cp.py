@@ -53,6 +53,8 @@ def usage():
                          multiple documents
                          
     -t=  --title         Title for a document, used only while importing
+
+    -m=  --metadata=     Writes an additional text file with document metadata
     
     Valid actions:
    
@@ -60,9 +62,6 @@ def usage():
     -s   --list-sheets   lists only spreadsheets
     -d   --list-docs     lists only documents
     
-    -m=  --metadata=     Writes an additional text file with document metadata
-                         optionally provide a an alternative directory                
-   
     -e=  --export=       exports the Google document is the format
                          valid params default, ods, xls, rtf, txt, pdf, oo, csv
                          default exports files in OASIS formats
@@ -71,7 +70,7 @@ def usage():
 
     """
 
-# Validate email address function courtsey
+# Validate email address function courtsey using regular expressions
 # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/65215
 def validate_email(email):
     if len(email) > 7:
@@ -96,9 +95,13 @@ def value_for_parameter(options, required_list):
 	
 # Displays a list of three in a beautiful way
 def display_list(document_list):
-    print "%-25s%-12s%s" % ("Google id", "yyyy-mm-dd", "Document title")
+    print "%-25s%-12s%-20s%s" % ("Google id", "yyyy-mm-dd", "Owner", "Document title")
     for document in document_list:
-        print "%-25s%-12s%s" % (document['google_id'], document['updated'], document['title'])
+        # Only want the first 30 chars of the document title
+        document_title = document['title']
+        if len(document_title) > 30:
+            document_title = document['title'][0:30] + ".."
+        print "%-25s%-12s%-20s%s" % (document['google_id'], document['updated'][0:10], document['author_name'][0:18] + "..", document_title)
     print "\n%s item(s) found" % (len(document_list))
     return
     
@@ -136,7 +139,7 @@ def is_sane_dir(local_path):
 def handle_login(username, password):
     global _copier
     try:
-        sys.stdout.write("Logging into Google server as %s ..." % (username))
+        sys.stdout.write("Logging into Google authentication server as %s ..." % (username))
         _copier.login(username, password)
         print " done"
         sys.stdout.write("Caching a list of documents and spreadsheets ... ")
@@ -151,11 +154,10 @@ def handle_login(username, password):
     except NotEnoughCookiesFromGoogle:
         print "\nERROR: Google returned a shorter response than expected, there's something wrong"
         sys.exit(2)
-"""
     except:
         print "\nUnknown error while attempting to login to Google servers"
         sys.exit(2)
-"""
+
 # Make a file name sane so the OS doesn't bomb it out
 def sanatize_filename(document_title, file_format):
     bad_char_list = ['\\', '/', ':', '~', '!', '@', '#', '$', '%', '^', '&', '*', '?', ',', '.', '|', ]
@@ -188,54 +190,57 @@ def copy_local_to_google(source_file, document_title):
 
 
 # Downloads a single Google document to disk
-def download_document(document_id, file_format, local_path, metadata_filename = None):
+def download_document(document_id, file_format, local_path, write_metadata = False):
     global _copier
     try:
         if _copier.is_document(document_id):
             print "%-25s -d-> %s" % (document_id, local_path)
             _copier.export_document(document_id, file_format, local_path)
+            if write_metadata:
+                _copier.export_metadata(document_id, local_path)
         elif _copier.is_spreadsheet(document_id):
             print "%-25s -s-> %s" % (document_id, local_path)
             _copier.export_spreadsheet(document_id, file_format, local_path)
-            if metadata_filename:
-                _coper.export_metadata(document_id, metadata_filename)
+            if write_metadata:
+                _copier.export_metadata(document_id, local_path)
         else:
-            print "	WARNING: Failed to find Google doc with id", document_id
+            print "WARNING: Failed to find Google doc with id", document_id
     except FailedToDownloadFile:
         print "Error: The last download was not successful"
     except FailedToWriteDocumentToFile:
         print "Error: Failed to write to", local_path
     except InvalidExportFormat:
         print "Warning: Document id %s cannot be exported to %s" % (document_id, file_format)
+"""
     except:
         print "Unknown error while trying to dowload the last document"
-        
+"""        
 # Downloads all a set of documents or spreadsheets
-def download_set(doc_list, file_format, local_path, metadata_filename = None):
+def download_set(doc_list, file_format, local_path, write_metadata = False):
     global _copier
     for document in doc_list:
         file_name = local_path + "/" + sanatize_filename(document['title'] + " - " + document['google_id'], file_format)
-        download_document(document['google_id'], file_format, file_name, metadata_filename)
+        download_document(document['google_id'], file_format, file_name, write_metadata)
     return
     
 
 # Download a set of documents, handles default formats etc    
-def download_docs(file_format, local_path, metadata_filename = None):
+def download_docs(file_format, local_path, write_metadata = False):
     if file_format == "default":
         file_format = "ods"
     doc_list = _copier.get_cached_spreadsheet_list()
-    download_set(doc_list, file_format, local_path, metadata_filename)
+    download_set(doc_list, file_format, local_path, write_metadata)
 
 # Downloads a set of sheets, handles default formats etc
-def download_sheets(file_format, local_path, metadata_filename = None):
+def download_sheets(file_format, local_path, write_metadata = False):
     if file_format == "default":
         file_format = "oo"
     doc_list = _copier.get_cached_document_list()
-    download_set(doc_list, file_format, local_path, metadata_filename)
+    download_set(doc_list, file_format, local_path, write_metadata)
 
     
 # Copies a Google document to a local file, handles multiple downloads as well
-def copy_google_to_local(document_id, file_format, local_path, metadata_filename = None):
+def copy_google_to_local(document_id, file_format, local_path, write_metadata = False):
     global _copier
     # If no local path specified then its the current directory
     if local_path == None:
@@ -244,19 +249,19 @@ def copy_google_to_local(document_id, file_format, local_path, metadata_filename
     """ Judge what the the user wants """
     if document_id == "spreadsheets":
         is_sane_dir(local_path)
-        download_docs(file_format, local_path, metadata_filename)
+        download_docs(file_format, local_path, write_metadata)
         sys.exit(0)
     elif document_id == "documents":
         is_sane_dir(local_path)
-        download_sheets(file_format, local_path, metadata_filename)
+        download_sheets(file_format, local_path, write_metadata)
         sys.exit(0)
     elif document_id == "all":
         is_sane_dir(local_path)
-        download_docs(file_format, local_path, metadata_filename)
-        download_sheets(file_format, local_path, metadata_filename)
+        download_docs(file_format, local_path, write_metadata)
+        download_sheets(file_format, local_path, write_metadata)
         sys.exit(0)
     elif _copier.has_item(document_id):
-        download_document(document_id, file_format, local_path, metadata_filename)
+        download_document(document_id, file_format, local_path, write_metadata)
         sys.exit(0)
     else:
         print "ERROR: Couldn't find %s in your set of documents\n" % (document_id)
@@ -339,23 +344,17 @@ def parse_user_options():
                
         document_id       = value_for_parameter(options, ['-g', '--google-id'])
         local_file        = value_for_parameter(options, ['-f', '--local'])
-
-        # Does the user want to export Metadata
-        metadata_filename = None
-        if has_required_parameters(options, ['-m', '--metadata']):
-            # Metadata to be export to this directory
-            metadata_filename = value_for_parameter(options, ['-m', '--metadata'])
-            # If user wants metadata and the user hasn't provided a directory then write them
-            # to the same directory as the documents
-            if not metadata_filename:
-                metadata_filename = "."
+        write_metadata    = has_required_parameters(options, ['-m', '--metadata'])
+        
+        if write_metadata:
+            print "[Info] Metadata export enabled for this export"
         
         if not export_format in ['default', 'oo', 'rtf', 'doc', 'pdf', 'txt', 'csv', 'xls', 'ods']:
             print "ERROR: The specified export format is invalid, please check usage (-h)"
             sys.exit(2)
             
         # If local file name is None then the script will assign a name
-        copy_google_to_local(document_id, export_format, local_file, metadata_filename)
+        copy_google_to_local(document_id, export_format, local_file, write_metadata)
         sys.exit(0)
     
     # No valid options found so lets tell the user how to use this
