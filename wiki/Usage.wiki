@@ -55,3 +55,12 @@ To create a new Google document called "New Document" from an OpenOffice file ca
 {{{
 ./gdoc-cp.py -u someone@gmail.com -p password -i -f files/sample.odt -t "New Document"
 }}}
+
+== Document & spreadsheet metadata export ==
+
+While exporting documents you can also export extra information that Google makes available via the Atom feeds by using the -m option
+
+{{{
+./gdoc-cp.py -u someone@gmail.com -p password -e default -g all -f files/google -m
+./gdoc-cp.py -u someone@gmail.com -p password -e pdf -g all -f files/google -m
+}}}
