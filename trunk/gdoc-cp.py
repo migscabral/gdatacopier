@@ -27,7 +27,7 @@ from gdatacopier import *
 # Global variables
 __author__  = "Devraj Mukherjee <devraj@etk.com.au>"
 
-__version__ = "1.0"    # Version of the user interface program
+__version__ = "1.0.1"  # Version of the user interface program
 _copier     = None     # Globally available object of GoogleDocCopier
 
 
@@ -149,7 +149,7 @@ def handle_login(username, password):
         print "\nERROR: Google returned a shorter response than expected, there's something wrong"
         sys.exit(2)
     except:
-        print "\nUknown error while attempting to login to Google servers"
+        print "\nUnknown error while attempting to login to Google servers"
         sys.exit(2)
 
 # Make a file name sane so the OS doesn't bomb it out
@@ -208,7 +208,7 @@ def download_document(document_id, file_format, local_path):
 def download_set(doc_list, file_format, local_path):
     global _copier
     for document in doc_list:
-        file_name = local_path + "/" + sanatize_filename(document['title'], file_format)
+        file_name = local_path + "/" + sanatize_filename(document['title'] + " - " + document['google_id'], file_format)
         download_document(document['google_id'], file_format, file_name)
     return
     
