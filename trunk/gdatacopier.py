@@ -82,6 +82,8 @@ class FileNotFound(exceptions.Exception):
     pass
 class InvalidContentType(exceptions.Exception):
     pass
+class NoSuchGoogleDocument(exceptions.Exception):
+    pass
 
         
 """
@@ -269,6 +271,7 @@ class GDataCopier:
     _user_agent           = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20061201 Firefox/2.0.0.6 (Ubuntu-feisty)"
     
     __author__            = "Devraj Mukherjee <devraj@gmail.com>"
+    __version__           = "1.0.1"
     
     # Default constructors, basically sets up a few a things, much like logout
     def __init__(self):
@@ -365,11 +368,7 @@ class GDataCopier:
         return entry.GetAlternateLink().href
         
     # Export the metadata for a given document id
-    def export_metadata(self, document_id, file_name = None, output_path = None):
-        # If file name is None then make a file name
-        
-        # If output_path is none then the local directory is where we write to
-        
+    def export_metadata(self, document_id, file_name):
         # If caches aren't availabe, make them now
         if len(self._cached_sheet_list) == 0:
             self._cached_sheet_list = self.get_spreadsheet_list()
@@ -380,12 +379,16 @@ class GDataCopier:
         doc_details = self.get_entry_details(document_id)
         
         if doc_details:
-            md_file = open(file_name, "w")
+            md_file = open(file_name + ".txt", "w")
+            md_file.write("Title: " + doc_details['title'] + "\n")
+            md_file.write("Google id: " + doc_details['google_id'] + "\n")
+            md_file.write("Author: " + doc_details['author_name'] + "\n")
+            md_file.write("Email: " + doc_details['author_email'] + "\n")
+            md_file.write("Last updated: " + doc_details['updated'] + "\n")
             md_file.close()
-            
             return
 
-        raise FailedToWriteMetadata
+        raise NoSuchGoogleDocument
         
     # Exports a Google document to a local file
     def export_document(self, document_id, file_format ="default", output_path = None):
@@ -475,6 +478,25 @@ class GDataCopier:
             if document['google_id'] == document_id:
                 return True
         return False
+        
+    # Gets metadata information for an entry spreadsheet or document
+    def get_entry_details(self, document_id):
+        # Make an empty list so we dont have ifs and thens before
+        # the for loop
+        list_to_look = ()
+        # Check to see if this is a valid doc or sheet
+        if self.is_spreadsheet(document_id):
+            list_to_look = self._cached_sheet_list
+        if self.is_document(document_id):
+            list_to_look = self._cached_doc_list
+        
+        # If its a document or a sheet then send back the details
+        for entry in list_to_look:
+            if entry['google_id'] == document_id:
+                return entry
+
+        # Document wasn't found so return a None            
+        return None
     
     """
         Private functions to support various hacky Google POST requests, also 
@@ -527,7 +549,7 @@ class GDataCopier:
             if self._is_item_of_type(entry.category, item_type):
                 item_list.append({'title': entry.title.text.encode('UTF-8'), 
                                   'google_id': self._get_document_id(entry.GetAlternateLink().href), 
-                                  'updated': self._get_document_date(entry.updated.text),
+                                  'updated': entry.updated.text,
                                   'author_name': entry.author[0].name.text,
                                   'author_email': entry.author[0].email.text},)
         return item_list
@@ -539,10 +561,6 @@ class GDataCopier:
     	url_params = parsed_url[4]
     	document_id = url_params.split('=')[1]
         return document_id
-        
-    # Parses the date out of the string    
-    def _get_document_date(self, updated_date):
-    	return updated_date[0:10]
         
     # Checks to see if the item is of a particular type, document or spreadhseet
     # the Google atom library sends a tuple of categories    
