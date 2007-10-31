@@ -140,7 +140,7 @@ class ProxyHTTPConnection(httplib.HTTPConnection):
     
         # Modified by Devraj Mukherjee to add authentication support basic auth
         #send proxy CONNECT request
-        extra_string = "CONNECT %s:%d HTTP/1.0\r\n" % (self._real_host, self._real_port)
+        extra_string = "CONNECT %s:%s HTTP/1.0\r\n" % (self._real_host, self._real_port)
         extra_string += self._get_authentication_string() + "\r\n"
         self.send(extra_string)
 
