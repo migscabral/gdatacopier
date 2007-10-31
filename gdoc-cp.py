@@ -59,6 +59,8 @@ def usage():
     -l   --list-all      lists all documents and spreadsheets
     -s   --list-sheets   lists only spreadsheets
     -d   --list-docs     lists only documents
+    
+    -m   --metadata      Writes an additional text file with document metadata
    
     -e=  --export=       exports the Google document is the format
                          valid params default, ods, xls, rtf, txt, pdf, oo, csv
@@ -148,10 +150,11 @@ def handle_login(username, password):
     except NotEnoughCookiesFromGoogle:
         print "\nERROR: Google returned a shorter response than expected, there's something wrong"
         sys.exit(2)
+"""
     except:
         print "\nUnknown error while attempting to login to Google servers"
         sys.exit(2)
-
+"""
 # Make a file name sane so the OS doesn't bomb it out
 def sanatize_filename(document_title, file_format):
     bad_char_list = ['\\', '/', ':', '~', '!', '@', '#', '$', '%', '^', '&', '*', '?', ',', '.', '|', ]
@@ -202,7 +205,7 @@ def download_document(document_id, file_format, local_path):
     except InvalidExportFormat:
         print "Warning: Document id %s cannot be exported to %s" % (document_id, file_format)
     except:
-        print "Unknow error while trying to dowload the last document"
+        print "Unknown error while trying to dowload the last document"
         
 # Downloads all a set of documents or spreadsheets
 def download_set(doc_list, file_format, local_path):

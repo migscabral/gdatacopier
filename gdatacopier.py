@@ -504,8 +504,9 @@ class GDataCopier:
             if self._is_item_of_type(entry.category, item_type):
                 item_list.append({'title': entry.title.text.encode('UTF-8'), 
                                   'google_id': self._get_document_id(entry.GetAlternateLink().href), 
-                                  'updated': self._get_document_date(entry.updated.text)})
-
+                                  'updated': self._get_document_date(entry.updated.text),
+                                  'author_name': entry.author[0].name.text,
+                                  'author_email': entry.author[0].email.text},)
         return item_list
 
     # Parses the document id out of the alternate link url, the atom feed
