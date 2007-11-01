@@ -28,7 +28,7 @@ from gdatacopier import *
 # Global variables
 __author__  = "Devraj Mukherjee <devraj@etk.com.au>"
 
-__version__ = "1.0.1"  # Version of the user interface program
+__version__ = "1.0.2"  # Version of the user interface program
 _copier     = None     # Globally available object of GoogleDocCopier
 
 
@@ -73,7 +73,7 @@ def usage():
 
 # Signal handler for Ctrl+C etc
 def signal_handler(signal, frame):
-    print "\n[Interrupted] You seemed to have changed your mind, aborting last action"
+    print "\n[Interrupted] You seem to have changed your mind, aborting last action"
     sys.exit(0)
 
 # Validate email address function courtsey using regular expressions
@@ -156,9 +156,6 @@ def handle_login(username, password):
         sys.exit(2)
     except SimluatedBrowserLoginFailed:
         print "\nERROR: Authentication via the simulated browser failed, check username and password"
-        sys.exit(2)
-    except NotEnoughCookiesFromGoogle:
-        print "\nERROR: Google returned a shorter response than expected, there's something wrong"
         sys.exit(2)
     except:
         print "\nUnknown error while attempting to login to Google servers"

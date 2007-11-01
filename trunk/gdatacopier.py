@@ -66,8 +66,6 @@ class NotLoggedInSimulatedBrowser(exceptions.Exception):
     pass
 class SimluatedBrowserLoginFailed(exceptions.Exception):
     pass
-class NotEnoughCookiesFromGoogle(exceptions.Exception):
-    pass
 class DocumentDownloadURLError(exceptions.Exception):
     pass
 class FailedToDownloadFile(exceptions.Exception):
@@ -271,19 +269,18 @@ class GDataCopier:
     _user_agent           = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20061201 Firefox/2.0.0.6 (Ubuntu-feisty)"
     
     __author__            = "Devraj Mukherjee <devraj@gmail.com>"
-    __version__           = "1.0.1"
+    __version__           = "1.0.2"
     
     # Default constructors, basically sets up a few a things, much like logout
     def __init__(self):
+        # Basically init does exactly what logout does, this reads a little
+        # odd, but the functionality is much the same    
         self.logout()
-        return
-        
         
     # Login authenticates a user account using the gdata and urllib2 methods
-    def login(self, username, password):
+    # Addresses Issue 11, reported 2nd Nov 2007
     
-        # Lets establish if this is a hoted or a Google account by the email 
-        self._set_account_type(username)
+    def login(self, username, password):
     
         # Establish a connection for the Google document feeds
         self._gd_client          = gdata.docs.service.DocsService()
@@ -294,30 +291,18 @@ class GDataCopier:
         
         self._gd_client.ProgrammaticLogin()
         
-        prepared_auth_url = None
-        login_data = None
+        # Lets set is Logged in to false before we start this process
+        self._is_logged_in = False
         
-        if self._is_hosted_account:
-            app_username, domain = username.split('@')
-            followup_url      = self._url_hosted_followup % self._hosted_domain
-            login_data        = {'persistent': 'true', 'userName': app_username, 'password': password, 
-                                 'continue': followup_url, 'followup': followup_url}
-            prepared_auth_url = self._url_hosted_auth % (self._hosted_domain)
-        else:
-            login_data        = {'PersistentCookies': 'true', 'Email': username, 'Passwd': password, 
-                                 'continue': self._url_google_followup, 'followup': self._url_google_followup}
-            prepared_auth_url = self._url_google_auth
-                
-        if (not login_data == None) and (not prepared_auth_url == None):
-
-            response = self._open_https_url(prepared_auth_url, login_data)
-            
-            # Check to see if we have enough cookies
-            if len(self._cookie_jar) < 2:
-                raise NotEnoughCookiesFromGoogle
-            else:
-                self._is_logged_in = True
-            
+        # We will try both login mechanims and see which one works        
+        if self._perform_google_login(username, password):
+            self._is_logged_in = True
+            self._is_hosted_account = False
+            return
+        elif self._perform_hosted_login(username, password):
+            self._is_logged_in = True
+            self_is_hosted_account = True
+            return
         else:
             raise SimluatedBrowserLoginFailed
 
@@ -502,17 +487,32 @@ class GDataCopier:
         Private functions to support various hacky Google POST requests, also 
         helps handle hosted or Google account variations
     """
+ 
+    # Performs a Login Google style, also caters for private emails that
+    # are able to use Google docs, refer to Issue 11 on code.google.com 
+    # to see why these changes were made
+       
+    def _perform_google_login(self, username, password):
     
-    # Function to check if this is a hosted or Google account
-    def _set_account_type(self, username):
-        # By default lets assume this is not a hosted account
-        self._is_hosted_account = False
+        login_data        = {'PersistentCookies': 'true', 'Email': username, 'Passwd': password, 
+                             'continue': self._url_google_followup, 'followup': self._url_google_followup}
+        prepared_auth_url = self._url_google_auth
         
-        user, domain = username.split('@')
-        if not domain == "gmail.com":
-            self._is_hosted_account = True
-            self._hosted_domain = domain
-   
+        response = self._open_https_url(prepared_auth_url, login_data)
+        return (len(self._cookie_jar) > 1)
+
+    # Performs a login hosted account style        
+    def _perform_hosted_login(self, username, password):
+
+        app_username, self._hosted_domain = username.split('@')
+        followup_url      = self._url_hosted_followup % self._hosted_domain
+        login_data        = {'persistent': 'true', 'userName': app_username, 'password': password, 
+                             'continue': followup_url, 'followup': followup_url}
+        prepared_auth_url = self._url_hosted_auth % (self._hosted_domain)
+        
+        response = self._open_https_url(prepared_auth_url, login_data)
+        return (len(self._cookie_jar) > 1)
+    
     # Helper export function  
     def _export(self, download_url, file_name):
         if (not self._is_logged_in):
