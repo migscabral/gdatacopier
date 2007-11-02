@@ -1,4 +1,4 @@
-#summary Know issues that are not handled by GDataCopier.
+#summary Known issues that are not handled by GDataCopier.
 #labels Featured
 
 These are issues that have been reported and will not be handled by GDataCopier 
