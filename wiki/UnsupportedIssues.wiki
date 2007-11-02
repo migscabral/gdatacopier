@@ -9,9 +9,9 @@ _Reported by by colby.makowsky, on 2nd November 2007_
 
 *What steps will reproduce the problem?*
 
-  1. create a new account, AccountB.
-  2. from AccountA, share a spreadsheet to AccountB.
-  3. without ever accessing this shared spreadsheet via web browser with AccountB, use gdatacopier to export this file.
+  # create a new account, AccountB
+  # from AccountA, share a spreadsheet to AccountB
+  # without ever accessing this shared spreadsheet via web browser with AccountB, use gdatacopier to export this file
 
 *What is the expected output? What do you see instead?*
 
