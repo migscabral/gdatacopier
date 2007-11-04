@@ -55,7 +55,7 @@ def usage():
                          
     -t=  --title         Title for a document, used only while importing
 
-    -m=  --metadata=     Writes an additional text file with document metadata
+    -m   --metadata      Write the metadata for the document to a text file
     
     Valid actions:
    
@@ -214,10 +214,9 @@ def download_document(document_id, file_format, local_path, write_metadata = Fal
         print "Error: Failed to write to", local_path
     except InvalidExportFormat:
         print "Warning: Document id %s cannot be exported to %s" % (document_id, file_format)
-"""
     except:
         print "Unknown error while trying to dowload the last document"
-"""        
+
 # Downloads all a set of documents or spreadsheets
 def download_set(doc_list, file_format, local_path, write_metadata = False):
     global _copier
@@ -269,6 +268,17 @@ def copy_google_to_local(document_id, file_format, local_path, write_metadata = 
     else:
         print "ERROR: Couldn't find %s in your set of documents\n" % (document_id)
         sys.exit(2)
+        
+# Check for sane environment variables
+def check_sane_env_vars():
+    # Name value pairs for the environment var and the string expected
+    validation_list = {'https_proxy': 'https://', 'http_proxy': 'http://'}
+    # Check each var
+    for env_var in validation_list:
+        env_var_value = os.environ.get(env_var)
+        # If the var is set and we can't find the string we want then display warning
+        if env_var_value and not env_var_value.startswith(validation_list[env_var]):
+            print "[Warning] %s doesn't start with %s, this may cause problems" % (env_var, validation_list[env_var])
 
 # Parses various user input parameters and makes the script do hopefully
 # what the user intended to do    
@@ -371,8 +381,11 @@ def main():
     # Get a reference to the global var
     global _copier
     # Print a welcome message
-    print "gdoc-cp.py version %s, content copy & backup utility for Google documents & spreadsheets" % __version__
-    print "Distributed under the GNU/GPL v2, Copyright (c) De Bortoli Wines <http://debortoli.com.au>"
+    print "gdoc-cp.py version %s, bi-directional copy utility for Google documents & spreadsheets" % __version__
+    print "Distributed under the GNU/GPL v2, at <http://code.google.com/p/gdatacopier/>"
+    print "Written by Devraj Mukherjee, Copyright (c) De Bortoli Wines <http://www.debortoli.com.au/>\n"
+    # Validate sanity of the environment
+    check_sane_env_vars() 
     # Make a new GDataCopier object and start parsing options to see what the user wants
     _copier = GDataCopier()
     parse_user_options()

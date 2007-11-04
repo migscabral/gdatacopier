@@ -583,7 +583,7 @@ class GDataCopier:
         # Opener will be assigned to either a proxy enabled or disabled opener
         opener    = None
         proxy_url = os.environ.get('http_proxy')
-
+        
         if proxy_url:
             opener = urllib2.build_opener(ConnectHTTPHandler(proxy = proxy_url), ConnectHTTPSHandler(proxy = proxy_url), urllib2.HTTPCookieProcessor(self._cookie_jar))
         else:
