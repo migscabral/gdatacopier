@@ -5,18 +5,19 @@
 
 If you are behind a HTTP/HTTPS proxy then this document is for you, it outlines the environment variables you need to set to make gdoc-cp work with proxies.
 
-For consistency, all GDataCopier components use the sam proxy variables as the GData API.
+For consistency, all GDataCopier components use the same proxy variables as the GData API.
 
-== Proxy and problems with GData API ==
+If you are behind a proxy please use GDataCopier 1.0.2 
 
-urllib2 seems to do unexpected things if the environment variable https_proxy is exported.  The GData API is dependent on the https_proxy environment variable to identify which proxy to use for HTTPS connections.
+== Proxy and environment variables ==
 
-The solution is to use the http_proxy environment variable instead.
+The proxy handler implemented in GDataCopier excepts to an https:// address if you set the https_proxy environment variable.
 
-== Patching the GData API ==
+If you set it to a value starting with http:// it tries talk HTTP over an HTTPS connection which doesn't go so good.
 
-We have provided a patch to the GData API to fix the above issue. Please refer to the various posts on the forums reporting the issue to the related groups.
- 
+GDataCopier queries the environment for the http_proxy variable for its use but the GData API requires you to set the https_proxy variable.
+
+GDataCopier will warn you if one of the environment variables has a faulty value.
 
 == Howto ==
 
@@ -25,6 +26,7 @@ Simply export these variables using your shell before you run GDataCopier
   * _proxy-username_ with the proxy username
   * _proxy-password_ with the password for the proxy user
   * _http_proxy_ with the url of the proxy to be used for http connections
+  * _https_proxy_ with the url of an HTTPS proxy that should be used, note this should start with https://
 
 *_DO NOT export the environment variable called https_proxy, this will cease the script to work because of a issue in urllib2._*
 
@@ -38,3 +40,9 @@ surfboard:~/Work/gdatacopier devraj$ export proxy-username="username"
 }}}
 
 == Working around BASH ==
+
+You can use the env command to temporarily set the environment variables while you run GDataCopier.
+
+{{{
+env proxy-username="username" proxy-password="password" ./gdoc-cp.py -u someone@gmail.com -p password -l
+}}}
