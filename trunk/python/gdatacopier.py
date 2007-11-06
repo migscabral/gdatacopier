@@ -102,7 +102,7 @@ class GoogleSpreadsheetFormat:
 
     MSExcel   = "xls"
     CSV       = "csv"
-    txt       = "txt"
+    Text      = "txt"
     OOCalc    = "ods"
 
 """
