@@ -14,6 +14,8 @@
     
     This class library was written for PHP5 and tested under Linux systems.
     It also requires the HTTP_Client PEAR package which can be acquired from
+
+    GDataCopier.php doesn't depend on the Zend framework
     
     http://pear.php.net/package/HTTP_Client/
 
