@@ -1,5 +1,5 @@
 #labels Phase-Support
-#due a change in the cookie/authentication requirements for hosted Google accounts.
+#Due to a change in the cookie or authentication requirements for hosted Google accounts.
 
 == Introduction ==
 
