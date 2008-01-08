@@ -1,5 +1,5 @@
 #labels Phase-Support
-#Due a change in the cookie/authentication requirements for hosted Google accounts.
+#due a change in the cookie/authentication requirements for hosted Google accounts.
 
 == Introduction ==
 
@@ -22,13 +22,80 @@ COOKIE_FILE="cookies.txt"
 DOCUMENT_ID="GetThisFromGoogle"
 
 echo "Trying to login ..."
-wget --user-agent "$USER_AGENT" --save-cookies $COOKIE_FILE -c -O login_data.html --post-data "continue=https://docs.google.com/a/$DOMAIN&followup=https://docs.google.com/a/$DOMAIN&userName=$USERNAME&password=$PASSWORD&persistent=true" "https://www.google.com/a/$DOMAIN/LoginAction?service=writely"
+wget --user-agent "$USER_AGENT" --save-cookies $COOKIE_FILE -c 
+-O login_data.html --post-data "continue=https://docs.google.com/a/$DOMAIN&followup=https://docs.google.com/
+a/$DOMAIN&userName=$USERNAME&password=$PASSWORD&persistent=true" 
+"https://www.google.com/a/$DOMAIN/LoginAction?service=writely"
 
 echo "Downloading $DOCUMENT_ID ..."
-wget --user-agent "$USER_AGENT" --load-cookies $COOKIE_FILE --save-cookies anotherfile.txt -O exported_doc.odf -c "http://docs.google.com/a/$DOMAIN/MiscCommands?command=saveasdoc&exportFormat=oo&docID=$DOCUMENT_ID"
+wget --user-agent "$USER_AGENT" --load-cookies $COOKIE_FILE 
+--save-cookies anotherfile.txt -O exported_doc.odf -c "http://docs.google.com/a/$DOMAIN/MiscCommands?command=saveasdoc&exportFormat=oo
+&docID=$DOCUMENT_ID"
 }}}
 
 == Output and analysis of what's different ==
+
+{{{
+devraj@haddock:~/Temp/gdatatest$ ./attempt_download.sh 
+Trying to login ...
+--14:27:25--  https://www.google.com/a/debortoliwines.com/LoginAction?service=writely
+           => `login_data.html'
+Resolving www.google.com... 74.125.19.103, 74.125.19.104, 74.125.19.147, ...
+Connecting to www.google.com|74.125.19.103|:443... connected.
+HTTP request sent, awaiting response... 302 Moved Temporarily
+Location: https://docs.google.com/a/debortoliwines.com?auth=DQAAAIYAAADpnw7yRTwgug7xkSHeDr0dzqTPQour_PNxncwJ0LSdOJk2VBtZtqzoD2oO_KXjuu-_VEvabI1B26pfdmAs_LvcgVRNBgzW4HLAuOayH06bMcKauX3lAMsrTAVzjW6_i387lAOss5YtKiu-wtCiYv0pGPxEP31RWF8B-McFT1S8OtUe5p7F9BDvNiIVNnYnAOw&husr=backup-it%40debortoliwines.com [following]
+--14:27:28--  https://docs.google.com/a/debortoliwines.com?auth=DQAAAIYAAADpnw7yRTwgug7xkSHeDr0dzqTPQour_PNxncwJ0LSdOJk2VBtZtqzoD2oO_KXjuu-_VEvabI1B26pfdmAs_LvcgVRNBgzW4HLAuOayH06bMcKauX3lAMsrTAVzjW6_i387lAOss5YtKiu-wtCiYv0pGPxEP31RWF8B-McFT1S8OtUe5p7F9BDvNiIVNnYnAOw&husr=backup-it%40debortoliwines.com
+           => `login_data.html'
+Resolving docs.google.com... 209.85.141.101, 209.85.141.102, 209.85.141.100
+Connecting to docs.google.com|209.85.141.101|:443... connected.
+HTTP request sent, awaiting response... 302 Moved Temporarily
+Location: https://docs.google.com/a/debortoliwines.com/?auth=DQAAAIYAAADpnw7yRTwgug7xkSHeDr0dzqTPQour_PNxncwJ0LSdOJk2VBtZtqzoD2oO_KXjuu-_VEvabI1B26pfdmAs_LvcgVRNBgzW4HLAuOayH06bMcKauX3lAMsrTAVzjW6_i387lAOss5YtKiu-wtCiYv0pGPxEP31RWF8B-McFT1S8OtUe5p7F9BDvNiIVNnYnAOw&husr=backup-it%40debortoliwines.com [following]
+--14:27:29--  https://docs.google.com/a/debortoliwines.com/?auth=DQAAAIYAAADpnw7yRTwgug7xkSHeDr0dzqTPQour_PNxncwJ0LSdOJk2VBtZtqzoD2oO_KXjuu-_VEvabI1B26pfdmAs_LvcgVRNBgzW4HLAuOayH06bMcKauX3lAMsrTAVzjW6_i387lAOss5YtKiu-wtCiYv0pGPxEP31RWF8B-McFT1S8OtUe5p7F9BDvNiIVNnYnAOw&husr=backup-it%40debortoliwines.com
+           => `login_data.html'
+Reusing existing connection to docs.google.com:443.
+HTTP request sent, awaiting response... 302 Moved Temporarily
+Location: https://docs.google.com/a/debortoliwines.com/ [following]
+--14:27:29--  https://docs.google.com/a/debortoliwines.com/
+           => `login_data.html'
+Reusing existing connection to docs.google.com:443.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+
+    [          <=>                                                                                                     ] 91,219        39.50K/s             
+
+14:27:32 (39.42 KB/s) - `login_data.html' saved [91219]
+
+Downloading dgwzr2dz_10xq7t6z ...
+--14:27:32--  http://docs.google.com/a/debortoliwines.com/MiscCommands?command=saveasdoc&exportFormat=oo&docID=dgwzr2dz_10xq7t6z
+           => `exported_doc.odf'
+Resolving docs.google.com... 209.85.141.100, 209.85.141.101, 209.85.141.102
+Connecting to docs.google.com|209.85.141.100|:80... connected.
+HTTP request sent, awaiting response... 302 Moved Temporarily
+Location: https://www.google.com/a/debortoliwines.com/ServiceLogin?service=writely&passive=true&nui=1&continue=http%3A%2F%2Fdocs.google.com%2Fa%2Fdebortoliwines.com%2FMiscCommands%3Fcommand%3Dsaveasdoc%26exportFormat%3Doo%26docID%3Ddgwzr2dz_10xq7t6z [following]
+--14:27:33--  https://www.google.com/a/debortoliwines.com/ServiceLogin?service=writely&passive=true&nui=1&continue=http%3A%2F%2Fdocs.google.com%2Fa%2Fdebortoliwines.com%2FMiscCommands%3Fcommand%3Dsaveasdoc%26exportFormat%3Doo%26docID%3Ddgwzr2dz_10xq7t6z
+           => `exported_doc.odf'
+Resolving www.google.com... 74.125.19.104, 74.125.19.147, 74.125.19.99, ...
+Connecting to www.google.com|74.125.19.104|:443... connected.
+HTTP request sent, awaiting response... 302 Moved Temporarily
+Location: http://docs.google.com/a/debortoliwines.com/MiscCommands?command=saveasdoc&exportFormat=oo&docID=dgwzr2dz_10xq7t6z&auth=DQAAAIQAAADTG9f5Qs06lQVFYGXo4LBGfiNDRnD7HxlWP0STFwm35aVMU_53GGXy1B93Ed3Es71oI7aasj9Tmy3g1u8Izocf75SvvZNttbPbxLJP7mUJx-z7YAwceywWJewgV1dEW0b6QefhbbPrQHvRkXeIc4cKZN2mFjkTNC7x3P5QJzya6NV5PdYQHBFIigTASO1Iwew&husr=backup-it%40debortoliwines.com [following]
+--14:27:34--  http://docs.google.com/a/debortoliwines.com/MiscCommands?command=saveasdoc&exportFormat=oo&docID=dgwzr2dz_10xq7t6z&auth=DQAAAIQAAADTG9f5Qs06lQVFYGXo4LBGfiNDRnD7HxlWP0STFwm35aVMU_53GGXy1B93Ed3Es71oI7aasj9Tmy3g1u8Izocf75SvvZNttbPbxLJP7mUJx-z7YAwceywWJewgV1dEW0b6QefhbbPrQHvRkXeIc4cKZN2mFjkTNC7x3P5QJzya6NV5PdYQHBFIigTASO1Iwew&husr=backup-it%40debortoliwines.com
+           => `exported_doc.odf'
+Connecting to docs.google.com|209.85.141.100|:80... connected.
+HTTP request sent, awaiting response... 302 Moved Temporarily
+Location: http://docs.google.com/a/debortoliwines.com/MiscCommands?command=saveasdoc&exportFormat=oo&docID=dgwzr2dz_10xq7t6z [following]
+--14:27:35--  http://docs.google.com/a/debortoliwines.com/MiscCommands?command=saveasdoc&exportFormat=oo&docID=dgwzr2dz_10xq7t6z
+           => `exported_doc.odf'
+Reusing existing connection to docs.google.com:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 19,196 (19K) [application/vnd.oasis.opendocument.text]
+
+100%[=================================================================================================================>] 19,196        39.83K/s             
+
+14:27:39 (39.72 KB/s) - `exported_doc.odf' saved [19196/19196]
+
+
+
+}}}
 
 == Can we get around this? ==
 
