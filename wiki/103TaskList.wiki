@@ -1,0 +1,20 @@
+#summary Feature list for the upcoming 1.0.3 release.
+#labels Phase-Design
+
+= Introduction =
+
+What you are going to see in the Version 1.0.3 relesae of GDataCopier. If you wish to contribute an idea please add to the Issues List.
+
+= Details =
+
+New features
+
+  * Support Google presentations
+  * Upgrade GDataCopier to work with GData 1.1
+  * Support folder specific downloads based on tags (refer to Atom feeds)
+  * Distutils based installer
+
+Bug fixes
+
+  * Add supported for Hosted accounts
+  * 
