@@ -288,9 +288,7 @@ def check_sane_env_vars():
 # Parses various user input parameters and makes the script do hopefully
 # what the user intended to do	  
 def parse_user_options():
-	
 	global _copier
-
 	short_opts = "u:p:g:f:e:lmsdiht:jo:"
 	long_opts  = ["username=", "password=", "google-id=", 
 				  "output=", "folder=", "export=", "list-all", "list-sheets", "list-slides", 
@@ -328,14 +326,13 @@ def parse_user_options():
 	else:
 		 _password = getpass.getpass("Password: ")
 	
-	
 	# Have to login for all the above functions
 	handle_login(_username, _password)
 	
 	# Apply filter information for folders to the GDataCopier object
 	if has_required_parameters(options, ['-f', '--folder']):
 		folder_name = value_for_parameter(options, ['-f', '--folder'])
-		print "[Warning] All results will be restricted to %s" % folder_name
+		print "[Info] Only displaying results for Google doc folder - %s\n" % folder_name
 		_copier.set_foldername(folder_name)
 		
 	# List all documents and spreadsheets
