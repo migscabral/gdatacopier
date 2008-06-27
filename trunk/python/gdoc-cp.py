@@ -157,9 +157,6 @@ def handle_login(username, password):
     except SimluatedBrowserLoginFailed:
         print "\nERROR: Authentication via the simulated browser failed, check username and password"
         sys.exit(2)
-    except:
-        print "\nUnknown error while attempting to login to Google servers"
-        sys.exit(2)
 
 # Make a file name sane so the OS doesn't bomb it out
 def sanatize_filename(document_title, file_format):
