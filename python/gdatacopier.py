@@ -42,21 +42,30 @@
     Imports Google and python libs
 """
 
-import sys
-import tempfile
-import urllib
-import exceptions
-import urllib2
-import time
-import base64
-import os
+try:
+	
+	import sys
+	import tempfile
+	import urllib
+	import exceptions
+	import urllib2
+	import time
+	import base64
+	import os
 
-import cookielib
-from urllib2  import *
-from urlparse import *
+	import cookielib
+	from urllib2  import *
+	from urlparse import *
 
-import gdata.docs
-import gdata.docs.service
+except:
+	print "Failed to import some very basic Python libs, are you running Python 2.4+"
+	sys.exit(1)
+
+try:
+	import gdata.docs.service
+except:
+	print "GDataCopier failed to import Google Data libraries, quitting"
+	sys.exit(1)
 
 """
     Exceptions, quite self explainatory
@@ -245,7 +254,7 @@ class GDataCopier:
     # If you are using Google hosted applications the URLs are somewhat different
     # these variables hold the pattern, and the API switches accordingly
     
-    _url_hosted_auth      = "https://www.google.com/a/%s/LoginAction"
+    _url_hosted_auth      = "https://base.google.com/a/%s/LoginAction2?service=writely"
     _url_hosted_followup  = "https://docs.google.com/a/%s/"
     _url_hosted_get_doc   = "https://docs.google.com/a/%s/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
     _url_hosted_get_sheet = "https://spreadsheets.google.com/a/%s/pub?output=%s&key=%s"
@@ -269,10 +278,11 @@ class GDataCopier:
     _user_agent           = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20061201 Firefox/2.0.0.6 (Ubuntu-feisty)"
     
     __author__            = "Devraj Mukherjee <devraj@gmail.com>"
-    __version__           = "1.0.2"
+    __version__           = "1.0.3"
     
     # Default constructors, basically sets up a few a things, much like logout
     def __init__(self):
+    	self._gd_client = None
         # Basically init does exactly what logout does, this reads a little
         # odd, but the functionality is much the same    
         self.logout()
@@ -281,15 +291,9 @@ class GDataCopier:
     # Addresses Issue 11, reported 2nd Nov 2007
     
     def login(self, username, password):
-    
         # Establish a connection for the Google document feeds
-        self._gd_client          = gdata.docs.service.DocsService()
-        
-        self._gd_client.email    = username
-        self._gd_client.password = password
-        self._gd_client.service  = "writely"
-        
-        self._gd_client.ProgrammaticLogin()
+        self._gd_client = gdata.docs.service.DocsService()
+        self._gd_client.ClientLogin("backup-it@debortoliwines.com", "debortit")
         
         # Lets set is Logged in to false before we start this process
         self._is_logged_in = False
@@ -506,8 +510,9 @@ class GDataCopier:
 
         app_username, self._hosted_domain = username.split('@')
         followup_url      = self._url_hosted_followup % self._hosted_domain
-        login_data        = {'persistent': 'true', 'userName': app_username, 'password': password, 
-                             'continue': followup_url, 'followup': followup_url}
+        login_data        = {'PersistentCookies': 'true', 'Email': username, 'Passwd': password, 
+                             'continue': followup_url, 'followup': followup_url, 'service': 'writely',
+                             'scope': '' }
         prepared_auth_url = self._url_hosted_auth % (self._hosted_domain)
         
         response = self._open_https_url(prepared_auth_url, login_data)
