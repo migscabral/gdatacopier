@@ -567,7 +567,7 @@ class GDataCopier:
 		# GData 1.1 type query which generates a URL
 		_query = gdata.docs.service.DocumentQuery(categories=[item_type])
 		# See if this needs any filters
-		if self._filter_foldername is not None:
+		if not self._filter_foldername == None:
 			_query.AddNamedFolder(self._username, self._filter_foldername)
 
 		# Generate the feed call URL
