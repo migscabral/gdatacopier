@@ -28,7 +28,7 @@ import signal
 from gdatacopier import *
 
 # Global variables
-__author__	= "Devraj Mukherjee <devraj@etk.com.au>"
+__author__	= "Devraj Mukherjee <devraj@gmail.com>"
 
 __version__ = "1.0.3"  # Version of the user interface program
 _copier		= None	   # Globally available object of GoogleDocCopier
@@ -50,8 +50,8 @@ def usage():
     -g=  --google-id=    A valid Google document id, or document type
                          spreadsheets, documents, presentations, all
                          
-    -f=  --local=        Local file name, or directory if exporting many
-    -b=  --label=        Only get documents that match the list of labels
+    -o=  --output=       Local file name, or directory if exporting many
+    -f=  --folder=       Only get documents that match the list of labels
     -t=  --title         Title for a document, used only while importing
     -m   --metadata      Write the metadata for the document to a text file
     
@@ -288,10 +288,12 @@ def check_sane_env_vars():
 # Parses various user input parameters and makes the script do hopefully
 # what the user intended to do	  
 def parse_user_options():
+	
+	global _copier
 
-	short_opts = "u:p:g:f:e:lmsdiht:j"
+	short_opts = "u:p:g:f:e:lmsdiht:jo:"
 	long_opts  = ["username=", "password=", "google-id=", 
-				  "local=", "export=", "list-all", "list-sheets", "list-slides", 
+				  "output=", "folder=", "export=", "list-all", "list-sheets", "list-slides", 
 				  "list-docs", "import", "help", "title=", "metadata"]
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], short_opts, long_opts)
@@ -329,6 +331,12 @@ def parse_user_options():
 	
 	# Have to login for all the above functions
 	handle_login(_username, _password)
+	
+	# Apply filter information for folders to the GDataCopier object
+	if has_required_parameters(options, ['-f', '--folder']):
+		folder_name = value_for_parameter(options, ['-f', '--folder'])
+		print "[Warning] All results will be restricted to %s" % folder_name
+		_copier.set_foldername(folder_name)
 		
 	# List all documents and spreadsheets
 	if has_required_parameters(options, ['-l', '--list-all']):
@@ -351,9 +359,9 @@ def parse_user_options():
 		sys.exit(0)
 
 	# Import a local file to a Google document
-	if has_required_parameters(options, ['-i', '--import']) and has_required_parameters(options, ['-f', '--local']):
+	if has_required_parameters(options, ['-i', '--import']) and has_required_parameters(options, ['-o', '--output']):
 		document_title = value_for_parameter(options, ['-t', '--title'])
-		local_file	= value_for_parameter(options, ['-f', '--local'])
+		local_file	= value_for_parameter(options, ['-o', '--output'])
 			
 		copy_local_to_google(local_file, document_title)
 		sys.exit(0)
@@ -366,7 +374,7 @@ def parse_user_options():
 			export_format = "default"
 			   
 		document_id		  = value_for_parameter(options, ['-g', '--google-id'])
-		local_file		  = value_for_parameter(options, ['-f', '--local'])
+		local_file		  = value_for_parameter(options, ['-o', '--output'])
 		write_metadata	  = has_required_parameters(options, ['-m', '--metadata'])
 		
 		if write_metadata:

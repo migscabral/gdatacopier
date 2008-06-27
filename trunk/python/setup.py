@@ -3,7 +3,7 @@
 """
     setup.py, Copyright (c) 2008 Eternity Technologies Pty Limited
     http://code.google.com/p/gdatacopier/
-    Released under the terms and conditions of the GNU/GPL
+    Distributed under the terms and conditions of the GNU/GPL v3
 
 	Version 1.0.3
 	
@@ -15,6 +15,8 @@
 """
 
 from distutils.core import setup
+
+__author__ = "Devraj Mukherjee <devraj@gmail.com>"
 
 setup(name='GDataCopier',
       version='1.0.3',

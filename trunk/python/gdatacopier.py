@@ -236,6 +236,7 @@ class GDataCopier:
 	_cookie_jar			  = None	 # Cookie jar object to handle cookies
 	_is_logged_in		  = False	 # State of login for this session
 	_is_hosted_account	  = False	 # True or False
+	_username			  = None	 # Username now required for filters etc
 	_hosted_domain		  = None	 # We need the hosted domain to construct urls
 	
 	_cached_doc_list	  = []		 # Cached document list
@@ -243,6 +244,7 @@ class GDataCopier:
 	_cached_presen_list	  = []		 # Cached presentation list
 	
 	_proxy_strings		  = {}		 # Proxy strings, if blank ignored
+	_filter_foldername    = None	 # Filters results on Google doc servers by folder name
 	
 	# Some pre-set strings and urls that are required to perform the magic
 	# http://googlesystem.blogspot.com/2007/07/download-published-documents-and.html
@@ -272,8 +274,9 @@ class GDataCopier:
 							  'txt': 'text/plain' }
 							   
 	# Default formats the files are exported in
-	_default_sheet_format = "ods"
-	_default_doc_format	  = "oo"
+	_default_sheet_format  = "ods"
+	_default_doc_format	   = "oo"
+	_default_presen_format = "ppt"
 
 	# User agent sent to Google's servers
 	_user_agent			  = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20061201 Firefox/2.0.0.6 (Ubuntu-feisty)"
@@ -294,7 +297,7 @@ class GDataCopier:
 	def login(self, username, password):
 		# Establish a connection for the Google document feeds
 		self._gd_client = gdata.docs.service.DocsService()
-		self._gd_client.ClientLogin("backup-it@debortoliwines.com", "debortit")
+		self._gd_client.ClientLogin(username, password)
 		
 		# Lets set is Logged in to false before we start this process
 		self._is_logged_in = False
@@ -303,10 +306,12 @@ class GDataCopier:
 		if self._perform_google_login(username, password):
 			self._is_logged_in = True
 			self._is_hosted_account = False
+			self._username = username
 			return
 		elif self._perform_hosted_login(username, password):
 			self._is_logged_in = True
-			self_is_hosted_account = True
+			self._is_hosted_account = True
+			self._username = username
 			return
 		else:
 			raise SimluatedBrowserLoginFailed
@@ -317,6 +322,8 @@ class GDataCopier:
 		self._is_logged_in		= False
 		self._cached_doc_list	= []
 		self._cached_sheet_list = []
+		self._username			= None
+		self._filter_foldername	= None
 
 	# Imports a local file to a Google document
 	def import_document(self, document_path, document_title = None):
@@ -455,7 +462,11 @@ class GDataCopier:
 	# Checks to see if a document or spreadsheet exists
 	def has_item(self, document_id):
 		return self.is_spreadsheet(document_id) or self.is_document(document_id)
-		
+
+	# Sets the filter folder name, if set is used for all queries
+	def set_foldername(self, folder_name):
+		self._filter_foldername = folder_name
+
 	# Given a document id checks to see if its a spreadsheet
 	def is_spreadsheet(self, document_id):
 		# If the spreadsheet cache is empty the fill it up
@@ -513,7 +524,7 @@ class GDataCopier:
 		prepared_auth_url = self._url_google_auth
 		
 		response = self._open_https_url(prepared_auth_url, login_data)
-		return (len(self._cookie_jar) > 1)
+		return len(self._cookie_jar) > 1
 
 	# Performs a login hosted account style		   
 	def _perform_hosted_login(self, username, password):
@@ -526,7 +537,7 @@ class GDataCopier:
 		prepared_auth_url = self._url_hosted_auth % (self._hosted_domain)
 		
 		response = self._open_https_url(prepared_auth_url, login_data)
-		return (len(self._cookie_jar) > 1)
+		return len(self._cookie_jar) > 1
 	
 	# Helper export function  
 	def _export(self, download_url, file_name):
@@ -555,8 +566,12 @@ class GDataCopier:
 		item_list = []
 		# GData 1.1 type query which generates a URL
 		_query = gdata.docs.service.DocumentQuery(categories=[item_type])
-		feed = self._gd_client.Query(_query.ToUri())
+		# See if this needs any filters
+		if self._filter_foldername is not None:
+			_query.AddNamedFolder(self._username, self._filter_foldername)
 
+		# Generate the feed call URL
+		feed = self._gd_client.Query(_query.ToUri())
 		# Get the feed we need, this should only be items we really want
 		feed_entries = feed.entry
 		
