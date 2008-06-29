@@ -1,5 +1,5 @@
 #summary Feature list for the upcoming 1.0.3 release.
-#labels Phase-Design
+#labels Phase-Design,Featured
 
 *_Note_:* This release will be labeled 1.1 since a number of features that will be made available are quite major
 
@@ -15,8 +15,9 @@ New features
   * Upgrade GDataCopier to work with GData 1.1
   * Support folder specific downloads based on tags (refer to Atom feeds)
   * Distutils based installer
+  * Option to move documents, this deletes the document from the Google servers
+
 
 Bug fixes
 
-  * Add supported for Hosted accounts
-  * 
+  * Restore supported for Hosted accounts
