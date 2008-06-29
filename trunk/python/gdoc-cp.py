@@ -2,7 +2,7 @@
 
 """
 	gdoc-cp.py, Copyright (c) 2007 De Bortoli Wines Pty Ltd
-	http://code.google.com/p/gdatacopier/
+	http://gdatacopier.googlecode.com/
 	Distributed under the terms and conditions of the GNU/GPL v3
 	
 	Version 1.0.3
@@ -63,7 +63,7 @@ def usage():
     -j   --list-slides   lists only presentations
     
     -e=  --export=       exports the Google document is the format
-                         valid params default, ods, xls, rtf, txt, pdf, oo, csv
+                         default, ppt, ods, xls, rtf, txt, pdf, oo, csv
 
     -i   --import        imports a local document to Google servers
 
@@ -319,8 +319,15 @@ def parse_user_options():
 	# We must have a proper email address for this to work
 	while(not validate_email(_username)):
 		_username = raw_input("Google email: ")
+
+	# Apply filter information for folders to the GDataCopier object
+	# This must be done before the login process is executed
+	if has_required_parameters(options, ['-f', '--folder']):
+		folder_name = value_for_parameter(options, ['-f', '--folder'])
+		print "[Info] Only displaying results for Google doc folder - %s\n" % folder_name
+		_copier.set_foldername(folder_name)
 	
-	# Get password from getopt or ask user to enter it in	 
+	# Get password from getopt or ask user to enter it in
 	if has_required_parameters(options, ['-p', '--password']):
 		_password = value_for_parameter(options, ['-p', '--password'])
 	else:
@@ -328,12 +335,6 @@ def parse_user_options():
 	
 	# Have to login for all the above functions
 	handle_login(_username, _password)
-	
-	# Apply filter information for folders to the GDataCopier object
-	if has_required_parameters(options, ['-f', '--folder']):
-		folder_name = value_for_parameter(options, ['-f', '--folder'])
-		print "[Info] Only displaying results for Google doc folder - %s\n" % folder_name
-		_copier.set_foldername(folder_name)
 		
 	# List all documents and spreadsheets
 	if has_required_parameters(options, ['-l', '--list-all']):
@@ -397,7 +398,7 @@ def main():
 	global _copier
 	# Print a welcome message
 	print "gdoc-cp.py version %s, bi-directional copy utility for Google docs, sheets & slides" % __version__
-	print "Distributed under the GNU/GPL v3, at <http://code.google.com/p/gdatacopier/>"
+	print "Distributed under the GNU/GPL v3, at <http://gdatacopier.googlecode.com/>"
 	print "This is free software and comes with ABSOLUTELY NO WARRANTY, use it at your OWN RISK.\n"
 	# Validate sanity of the environment
 	check_sane_env_vars() 

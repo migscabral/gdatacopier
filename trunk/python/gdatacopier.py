@@ -2,7 +2,7 @@
 
 """
 	gdatacopier.py, Copyright (c) 2007 De Bortoli Wines Pty Ltd
-	http://code.google.com/p/gdatacopier/
+	http://gdatacopier.googlecode.com/
 	Distributed under the terms and conditions of the GNU/GPL v3
 	
 	Version 1.0.3
@@ -10,8 +10,8 @@
 	Developed by Eternity Technologies Pty Ltd.
 		   
 	Relies on:
-	 - Python version 2.4 or greater
-	 - Google Data Python libraries
+	 - Python version 2.4.3 or greater
+	 - Google Data 1.1 Python libraries
 	   http://code.google.com/apis/gdata/clientlibs.html
 
 	Summary:
@@ -103,8 +103,8 @@ class GoogleDocFormat:
 	OOWriter  = "oo"
 	MSWord	  = "doc"
 	RichText  = "rtf"
-	Text	  = "txt"
 	PDF		  = "pdf"
+	Text	  = "txt"
 	
 	
 class GoogleSpreadsheetFormat:
@@ -113,6 +113,11 @@ class GoogleSpreadsheetFormat:
 	CSV		  = "csv"
 	Text	  = "txt"
 	OOCalc	  = "ods"
+	
+class GooglePresentationFormat:
+	
+	Text      = "txt"
+	PPT       = "ppt"
 
 """
 	HTTPS proxy handling classes, adaption of original source availabe at
@@ -237,6 +242,7 @@ class GDataCopier:
 	_is_logged_in		  = False	 # State of login for this session
 	_is_hosted_account	  = False	 # True or False
 	_username			  = None	 # Username now required for filters etc
+	_doc_folder_name      = None	 # Filters results on Google doc servers by folder name
 	_hosted_domain		  = None	 # We need the hosted domain to construct urls
 	
 	_cached_doc_list	  = []		 # Cached document list
@@ -244,7 +250,6 @@ class GDataCopier:
 	_cached_presen_list	  = []		 # Cached presentation list
 	
 	_proxy_strings		  = {}		 # Proxy strings, if blank ignored
-	_filter_foldername    = None	 # Filters results on Google doc servers by folder name
 	
 	# Some pre-set strings and urls that are required to perform the magic
 	# http://googlesystem.blogspot.com/2007/07/download-published-documents-and.html
@@ -253,6 +258,7 @@ class GDataCopier:
 	_url_google_followup  = "https://docs.google.com"
 	_url_google_get_doc	  = "https://docs.google.com/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
 	_url_google_get_sheet = "https://spreadsheets.google.com/ccc?output=%s&key=%s"
+	_url_google_get_slide = ""
 	
 	# If you are using Google hosted applications the URLs are somewhat different
 	# these variables hold the pattern, and the API switches accordingly
@@ -261,12 +267,14 @@ class GDataCopier:
 	_url_hosted_followup  = "https://docs.google.com/a/%s/"
 	_url_hosted_get_doc	  = "https://docs.google.com/a/%s/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
 	_url_hosted_get_sheet = "https://spreadsheets.google.com/a/%s/pub?output=%s&key=%s"
+	_url_hosted_get_slide = ""
 	
 	# Set the user agent to whatever you please, but make sure its accepted by Google
 	# also, please leave the authors name in there, I put in a lot of hard work
 	
 	_valid_doc_formats	  = ['doc', 'oo', 'txt', 'pdf', 'rtf']
 	_valid_sheet_formats  = ['xls', 'ods', 'csv', 'pdf', 'txt']
+	_valid_slide_formats  = ['ppt', 'pdf', 'txt']
 	_sheet_content_types  = { 'ods': 'application/vnd.oasis.opendocument.spreadsheet', 'csv': 'text/comma-separated-values',
 							  'xls': 'application/vnd.ms-excel' }
 	_doc_content_types	  = { 'doc': 'application/msword', 'odt': 'application/vnd.oasis.opendocument.text',
@@ -323,7 +331,7 @@ class GDataCopier:
 		self._cached_doc_list	= []
 		self._cached_sheet_list = []
 		self._username			= None
-		self._filter_foldername	= None
+		self._doc_folder_name	= None
 
 	# Imports a local file to a Google document
 	def import_document(self, document_path, document_title = None):
@@ -464,8 +472,12 @@ class GDataCopier:
 		return self.is_spreadsheet(document_id) or self.is_document(document_id)
 
 	# Sets the filter folder name, if set is used for all queries
-	def set_foldername(self, folder_name):
-		self._filter_foldername = folder_name
+	def set_foldername(self, some_folder_name):
+		self._doc_folder_name = some_folder_name
+		return
+		
+	def get_foldername(self):
+		return self._doc_folder_name
 
 	# Given a document id checks to see if its a spreadsheet
 	def is_spreadsheet(self, document_id):
@@ -560,6 +572,7 @@ class GDataCopier:
 	
 	# Gets a list of items from Google docs and filters its based on type		 
 	def _get_item_list(self, item_type = None):
+		
 		if (not self._is_logged_in):
 			raise NotLoggedInSimulatedBrowser
 
@@ -567,8 +580,8 @@ class GDataCopier:
 		# GData 1.1 type query which generates a URL
 		_query = gdata.docs.service.DocumentQuery(categories=[item_type])
 		# See if this needs any filters
-		if not self._filter_foldername == None:
-			_query.AddNamedFolder(self._username, self._filter_foldername)
+		if not self._doc_folder_name == None:
+			_query.AddNamedFolder(self._username, self._doc_folder_name)
 
 		# Generate the feed call URL
 		feed = self._gd_client.Query(_query.ToUri())
