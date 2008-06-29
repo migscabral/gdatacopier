@@ -1,6 +1,8 @@
 #summary Feature list for the upcoming 1.0.3 release.
 #labels Phase-Design
 
+*_Note_:* This release will be labeled 1.1 since a number of features that will be made available are quite major
+
 = Introduction =
 
 What you are going to see in the Version 1.0.3 relesae of GDataCopier. If you wish to contribute an idea please add to the Issues List.
