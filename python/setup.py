@@ -2,7 +2,7 @@
 
 """
     setup.py, Copyright (c) 2008 Eternity Technologies Pty Limited
-    http://code.google.com/p/gdatacopier/
+	http://gdatacopier.googlecode.com/
     Distributed under the terms and conditions of the GNU/GPL v3
 
 	Version 1.0.3
