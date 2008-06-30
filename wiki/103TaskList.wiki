@@ -13,7 +13,7 @@ New features
 
   * Support Google presentations
   * Upgrade GDataCopier to work with GData 1.1
-  * Support folder specific downloads based on tags (refer to Atom feeds)
+  * Support folder specific downloads based on tags (refer to Atom feeds) - Implemented
   * Distutils based installer
   * Option to move documents, this deletes the document from the Google servers
 
