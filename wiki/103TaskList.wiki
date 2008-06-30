@@ -3,11 +3,11 @@
 
 *_Note_:* This release will be labeled 1.1 since a number of features that will be made available are quite major
 
-= Introduction =
+== Introduction ==
 
 What you are going to see in the Version 1.0.3 relesae of GDataCopier. If you wish to contribute an idea please add to the Issues List.
 
-= Details =
+== Details ==
 
 New features
 
@@ -21,3 +21,22 @@ New features
 Bug fixes
 
   * Restore supported for Hosted accounts
+
+
+== Usage manual ==
+
+The following will be merged in with Usage manual when Version 1.1 is released
+
+=== Folder support ===
+
+List all documents, spreadsheets and presentations that are in the folder "DBW Documentation"
+
+{{{
+powerhouse:python devraj$ ./gdoc-cp.py -l -f "DBW Documentation" -u devraj@gmail.com
+}}}
+
+Download all documents that are in the "DBW Documentation" folder
+
+{{{
+powerhouse:python devraj$ ./gdoc-cp.py -e pdf -g all -o /tmp  -u devraj@gmail.com -f "DBW Documentation"
+}}}
