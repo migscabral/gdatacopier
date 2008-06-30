@@ -3,6 +3,8 @@
 
 *_Note_:* This release will be labeled 1.1 since a number of features that will be made available are quite major
 
+GDataCopier 1.1 is expected to be released at the end of July 2008
+
 == Introduction ==
 
 What you are going to see in the Version 1.0.3 relesae of GDataCopier. If you wish to contribute an idea please add to the Issues List.
