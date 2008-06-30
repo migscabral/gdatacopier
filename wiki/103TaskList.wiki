@@ -25,7 +25,9 @@ Bug fixes
 
 == Usage manual ==
 
-The following will be merged in with Usage manual when Version 1.1 is released
+The following will be merged in with Usage manual when Version 1.1 is released. If you are interested in trying out these options please checkout the code from the SVN repository.
+
+*Warning* the command line options differ from the previous releases of GDataCopier. They make more sense (atleast to me LOL). They had to be modified to add support for presentations.
 
 === Folder support ===
 
