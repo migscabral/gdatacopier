@@ -5,7 +5,7 @@
 	http://gdatacopier.googlecode.com/
 	Distributed under the terms and conditions of the GNU/GPL v3
 	
-	Version 1.0.3
+	Version 1.1.0
 
 	Developed by Eternity Technologies Pty Ltd.
 		   
@@ -290,7 +290,7 @@ class GDataCopier:
 	_user_agent			  = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20061201 Firefox/2.0.0.6 (Ubuntu-feisty)"
 	
 	__author__			  = "Devraj Mukherjee <devraj@gmail.com>"
-	__version__			  = "1.0.3"
+	__version__			  = "1.1.0"
 	
 	# Default constructors, basically sets up a few a things, much like logout
 	def __init__(self):

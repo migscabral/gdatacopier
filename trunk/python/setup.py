@@ -24,5 +24,12 @@ setup(name='GDataCopier',
       author='Devraj Mukherjee',
       author_email='devraj@gmail.com',
       url='http://code.google.com/p/gdatacopier/',
-      packages=['distutils', 'distutils.command'],
+      package_dir=['': 'src'],
+      packages=['gdatacopier'],
      )
+
+
+# Post Install operations are done here
+
+# Install gdoc-cp.py in a location accessible by all users /usr/bin
+
