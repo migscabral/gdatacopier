@@ -5,7 +5,7 @@
 	http://gdatacopier.googlecode.com/
 	Distributed under the terms and conditions of the GNU/GPL v3
 	
-	Version 1.0.3
+	Version 1.1.0
 
 	Developed by Eternity Technologies Pty Ltd.
 	
@@ -30,7 +30,7 @@ from gdatacopier import *
 # Global variables
 __author__	= "Devraj Mukherjee <devraj@gmail.com>"
 
-__version__ = "1.0.3"  # Version of the user interface program
+__version__ = "1.1.0"  # Version of the user interface program
 _copier		= None	   # Globally available object of GoogleDocCopier
 
 
@@ -153,9 +153,11 @@ def handle_login(username, password):
 	global _copier
 	try:
 		sys.stdout.write("Logging into Google authentication server as %s ..." % (username))
+		sys.stdout.flush()	
 		_copier.login(username, password)
 		print " done"
 		sys.stdout.write("Caching a list of documents and spreadsheets ... ")
+		sys.stdout.flush()
 		_copier.cache_document_lists()
 		print "done\n"
 	except gdata.service.BadAuthentication:
@@ -321,7 +323,9 @@ def parse_user_options():
 		_username = raw_input("Google email: ")
 
 	# Apply filter information for folders to the GDataCopier object
-	# This must be done before the login process is executed
+	# This must be done before the login process is executed, this is because
+	# the document lists are cached in the handle_login function
+	# TODO: May require to re-assess the duties of handle_login
 	if has_required_parameters(options, ['-f', '--folder']):
 		folder_name = value_for_parameter(options, ['-f', '--folder'])
 		print "[Info] Only displaying results for Google doc folder - %s\n" % folder_name
