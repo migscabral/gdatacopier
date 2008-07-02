@@ -14,10 +14,13 @@
            
 """
 
+# Imports etc
 from distutils.core import setup
 
+# Vars for this Python source file
 __author__ = "Devraj Mukherjee <devraj@gmail.com>"
 
+# Definition of the setup process, please refer to distutils documentation
 setup(name='GDataCopier',
       version='1.0.3',
       description='Bi-directional copy utility for Google Documents and Spreadsheets',
