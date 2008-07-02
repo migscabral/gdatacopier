@@ -1,0 +1,20 @@
+GDataCopier, Copyright (c) 2008 Eternity Technologies Pty Limited
+Distributed under the terms and conditions of the GNU/GPL v3, at http://gdatacopier.googlecode.com/
+
+README
+======
+
+To run GDataCopier you will require the following 
+
+  - Python 2.4.3 or above
+  - Google Data API for Python available from
+
+Installation is quite simple, open a command prompt and type in 
+
+sudo python setup.py install
+
+This will put things where they belong, in short it compiles and adds the GDataCopier Python
+library to your system and then copies gdoc-cp.py to /usr/bin
+
+You should be ready, type in gdoc-cp.py at the command prompt for the help screen
+
