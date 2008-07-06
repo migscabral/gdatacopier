@@ -9,6 +9,8 @@ This release depends on GData API Version 1.1.
 
 GDataCopier 1.1 is expected to be released at the end of July 2008.
 
+GData 1.1 doesn't support specifying what folder documents go into when uploading files. GDAtaCopier will not support this feature as part of the 1.1 release.
+
 == Introduction ==
 
 What you are going to see in the Version 1.0.3 relesae of GDataCopier. If you wish to contribute an idea please add to the Issues List.
@@ -18,10 +20,10 @@ What you are going to see in the Version 1.0.3 relesae of GDataCopier. If you wi
 New features
 
   * Support Google presentations
-  * Upgrade GDataCopier to work with GData 1.1
+  * Upgrade GDataCopier to work with GData 1.1 - Implemented
   * Support folder specific downloads based on tags (refer to Atom feeds) - Implemented
-  * Distutils based installer
-  * Option to move documents, this deletes the document from the Google servers
+  * Distutils based installer - Implemented
+  * Option to move documents, this deletes the document from the Google servers - May not implement this incase GDataCopier fails to download documents (refer to issues in the past)
 
 
 Bug fixes
