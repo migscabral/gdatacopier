@@ -5,6 +5,8 @@
 
 If you are itching to get your hands dirty and test the upcoming release, please beware that the command line options for GDataCopier have changed for this release. You might want to check your cron scripts.
 
+This release depends on GData API Version 1.1.
+
 GDataCopier 1.1 is expected to be released at the end of July 2008.
 
 == Introduction ==
