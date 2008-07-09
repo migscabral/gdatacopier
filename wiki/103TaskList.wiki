@@ -9,7 +9,7 @@ This release depends on GData API Version 1.1.
 
 GDataCopier 1.1 is expected to be released at the end of July 2008.
 
-GData 1.1 doesn't support specifying what folder documents go into when uploading files. GDAtaCopier will not support this feature as part of the 1.1 release.
+GData 1.1 doesn't support specifying what folder documents go into when uploading files. GDataCopier will not support this feature as part of the 1.1 release.
 
 == Introduction ==
 
