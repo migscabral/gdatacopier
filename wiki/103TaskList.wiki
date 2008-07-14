@@ -29,6 +29,7 @@ New features
 Bug fixes
 
   * Restore supported for Hosted accounts
+  * Gracefully fail if Google docs delivers a login page instead of the exported document
 
 
 == Usage manual ==
