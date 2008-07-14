@@ -274,7 +274,8 @@ class GDataCopier:
 	
 	_valid_doc_formats	  = ['doc', 'oo', 'txt', 'pdf', 'rtf']
 	_valid_sheet_formats  = ['xls', 'ods', 'csv', 'pdf', 'txt']
-	_valid_slide_formats  = ['ppt', 'pdf', 'txt']
+	_valid_presen_formats = ['ppt', 'pdf', 'txt']
+
 	_sheet_content_types  = { 'ods': 'application/vnd.oasis.opendocument.spreadsheet', 'csv': 'text/comma-separated-values',
 							  'xls': 'application/vnd.ms-excel' }
 	_doc_content_types	  = { 'doc': 'application/msword', 'odt': 'application/vnd.oasis.opendocument.text',
@@ -436,6 +437,28 @@ class GDataCopier:
 			self._export(prepared_download_url, output_path)
 		else:
 			raise DocumentDownloadURLError
+
+	# Exports a Google presentation to a local file
+	def export_presentation(self, document_id, file_format = "default", output_path = None):
+		
+		if file_format == "default":
+			file_format = self._default_presen_format
+			
+		if not file_format in self._valid_presen_formats:
+			raise InvalidExportFormat
+			
+		prepared_download_url = None
+		
+		if self._is_hosted_account:
+			prepared_download_url = self._url_hosted_get_slide % (self._hosted_domain, file_format, document_id)
+		else:
+			prepared_download_url = self._url_google_get_slide % (file_format, document_id)
+
+		if not prepared_download_url == None:
+			self._export(prepared_download_url, output_path)
+		else:
+			raise DocumentDownloadURLError
+		
 		
 	# Caches the documents lists
 	def cache_document_lists(self):
@@ -490,7 +513,7 @@ class GDataCopier:
 				return True
 		return False
 		
-	# Given a document id checks to see if its a spreadsheet
+	# Given a document id checks to see if its a document
 	def is_document(self, document_id):
 		# If the cache is empty then try and cache again
 		if len(self._cached_doc_list) == 0:
@@ -498,6 +521,17 @@ class GDataCopier:
 			
 		for document in self._cached_doc_list:
 			if document['google_id'] == document_id:
+				return True
+		return False
+
+	# Given a document id checks to see if its a presentation
+	def is_presentation(self, document_id):
+		# If the cache is empty then try and cache again
+		if len(self._cached_presen_list) == 0:
+			self._cached_presen_list = self.get_presen_list()
+
+		for presentation in self._cached_presen_list:
+			if presentation['google_id'] == document_id:
 				return True
 		return False
 		
