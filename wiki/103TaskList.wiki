@@ -23,6 +23,7 @@ New features
   * Upgrade GDataCopier to work with GData 1.1 - Implemented
   * Support folder specific downloads based on tags (refer to Atom feeds) - Implemented
   * Distutils based installer - Implemented
+  * Unix man page
   * Option to move documents, this deletes the document from the Google servers - May not implement this incase GDataCopier fails to download documents (refer to issues in the past)
 
 
