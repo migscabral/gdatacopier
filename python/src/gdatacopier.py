@@ -258,7 +258,7 @@ class GDataCopier:
 	_url_google_followup  = "https://docs.google.com"
 	_url_google_get_doc	  = "https://docs.google.com/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
 	_url_google_get_sheet = "https://spreadsheets.google.com/ccc?output=%s&key=%s"
-	_url_google_get_slide = ""
+	_url_google_get_slide = "https://docs.google.com/MiscCommands?command=saveasdoc&exportFormat=%s&docID=%s"
 	
 	# If you are using Google hosted applications the URLs are somewhat different
 	# these variables hold the pattern, and the API switches accordingly
