@@ -156,7 +156,7 @@ def handle_login(username, password):
 		sys.stdout.flush()	
 		_copier.login(username, password)
 		print " done"
-		sys.stdout.write("Caching a list of documents and spreadsheets ... ")
+		sys.stdout.write("Caching a list of items on server for logged in user ... ")
 		sys.stdout.flush()
 		_copier.cache_document_lists()
 		print "done\n"
@@ -200,7 +200,7 @@ def copy_local_to_google(source_file, document_title):
 
 
 # Downloads a single Google document to disk
-def download_document(document_id, file_format, local_path, write_metadata = False):
+def download_item(document_id, file_format, local_path, write_metadata = False):
 	global _copier
 	try:
 		if _copier.is_document(document_id):
@@ -213,6 +213,11 @@ def download_document(document_id, file_format, local_path, write_metadata = Fal
 			_copier.export_spreadsheet(document_id, file_format, local_path)
 			if write_metadata:
 				_copier.export_metadata(document_id, local_path)
+		elif _copier.is_presentation(document_id):
+			print "%-25s -p-> %s" % (document_id, local_path)
+			_copier.export_presentation(document_id, file_format, local_path)
+			if write_metadata:
+				_copier.export_metadata(document_id, local_path)		
 		else:
 			print "WARNING: Failed to find Google doc with id", document_id
 	except FailedToDownloadFile:
@@ -229,7 +234,7 @@ def download_set(doc_list, file_format, local_path, write_metadata = False):
 	global _copier
 	for document in doc_list:
 		file_name = local_path + "/" + sanatize_filename(document['title'] + " - " + document['google_id'], file_format)
-		download_document(document['google_id'], file_format, file_name, write_metadata)
+		download_item(document['google_id'], file_format, file_name, write_metadata)
 	return
 	
 
@@ -247,6 +252,12 @@ def download_sheets(file_format, local_path, write_metadata = False):
 	doc_list = _copier.get_cached_document_list()
 	download_set(doc_list, file_format, local_path, write_metadata)
 
+# Downloads a set of sheets, handles default formats etc
+def download_slides(file_format, local_path, write_metadata = False):
+	if file_format == "default":
+		file_format = "ppt"
+	doc_list = _copier.get_cached_presentation_list()
+	download_set(doc_list, file_format, local_path, write_metadata)
 	
 # Copies a Google document to a local file, handles multiple downloads as well
 def copy_google_to_local(document_id, file_format, local_path, write_metadata = False):
@@ -264,10 +275,15 @@ def copy_google_to_local(document_id, file_format, local_path, write_metadata = 
 		is_sane_dir(local_path)
 		download_sheets(file_format, local_path, write_metadata)
 		sys.exit(0)
+	elif document_id == "presentations":
+		is_sane_dir(local_path)
+		download_slides(file_format, local_path, write_metadata)
+		sys.exit(0)
 	elif document_id == "all":
 		is_sane_dir(local_path)
 		download_docs(file_format, local_path, write_metadata)
 		download_sheets(file_format, local_path, write_metadata)
+		download_slides(file_format, local_path, write_metadata)
 		sys.exit(0)
 	elif _copier.has_item(document_id):
 		download_document(document_id, file_format, local_path, write_metadata)
@@ -382,7 +398,7 @@ def parse_user_options():
 		if write_metadata:
 			print "[Info] Metadata export enabled for this export\n"
 		
-		if not export_format in ['default', 'oo', 'rtf', 'doc', 'pdf', 'txt', 'csv', 'xls', 'ods']:
+		if not export_format in ['default', 'oo', 'ppt', 'rtf', 'doc', 'pdf', 'txt', 'csv', 'xls', 'ods']:
 			print "ERROR: The specified export format is invalid, please check usage (-h)"
 			sys.exit(2)
 			
