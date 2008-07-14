@@ -82,6 +82,8 @@ wget --user-agent "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/200
 ==  Hosted versus Normal Google accounts ==
 
 URLs for Hosted accounts differ from the URLs for normal Google accounts for all the above examples. GoogleDocCopier will use the appropriate URLs based on the nature of the user account.
+
+Presentation export works similar to document downloads
     
 Hosted accounts URLs look like, where yoursdomain.com is the hosted domain
 
