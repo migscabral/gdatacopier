@@ -44,13 +44,13 @@ The following will be merged in with Usage manual when Version 1.1 is released. 
 List all documents, spreadsheets and presentations that are in the folder "DBW Documentation"
 
 {{{
-powerhouse:python devraj$ ./gdoc-cp.py -l -f "DBW Documentation" -u devraj@gmail.com
+./gdoc-cp.py -l -f "DBW Documentation" -u devraj@gmail.com
 }}}
 
 Download all documents that are in the "DBW Documentation" folder
 
 {{{
-powerhouse:python devraj$ ./gdoc-cp.py -e pdf -g all -o /tmp  -u devraj@gmail.com -f "DBW Documentation"
+./gdoc-cp.py -e pdf -g all -o /tmp  -u devraj@gmail.com -f "DBW Documentation"
 }}}
 
 === Export and import presentations ===
@@ -58,5 +58,5 @@ powerhouse:python devraj$ ./gdoc-cp.py -e pdf -g all -o /tmp  -u devraj@gmail.co
 Export all presentations in the PowerPoint format
 
 {{{
-alfred:src devraj$ ./gdoc-cp.py -e ppt -g presentations -o /tmp -u devraj@gmail.com
+./gdoc-cp.py -e ppt -g presentations -o /tmp -u devraj@gmail.com
 }}}
