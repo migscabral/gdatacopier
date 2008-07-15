@@ -19,7 +19,7 @@ What you are going to see in the Version 1.0.3 relesae of GDataCopier. If you wi
 
 New features
 
-  * Support Google presentations
+  * Support Google presentations - Implemented (svn r100)
   * Upgrade GDataCopier to work with GData 1.1 - Implemented
   * Support folder specific downloads based on tags (refer to Atom feeds) - Implemented
   * Distutils based installer - Implemented
