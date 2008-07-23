@@ -1,0 +1,21 @@
+.TH "<gdoc-cp>" 1
+.SH NAME
+<gdoc-cp> \- <bi-directional copy utility for Google docs, sheets & slides>
+.SH SYNOPSIS
+.B <gdoc-cp>
+<grammar for command line>
+.SH DESCRIPTION
+<detailed description of what the program does>
+.SH OPTIONS
+.TP
+.B \-<a command line switch>
+<description of what that switch does>
+.TP
+.B \-<a command line switch>
+<description of what that switch does>
+.TP
+.B <etc . . .>
+.SH "SEE ALSO"
+<a list of related man pages>
+.SH BUGS
+<known bugs if any>

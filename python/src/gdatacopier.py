@@ -264,10 +264,11 @@ class GDataCopier:
 	# these variables hold the pattern, and the API switches accordingly
 	
 	_url_hosted_auth	  = "https://base.google.com/a/%s/LoginAction2?service=writely"
-	_url_hosted_followup  = "https://docs.google.com/a/%s/"
+	#_url_hosted_followup  = "https://docs.google.com/a/%s/"
+	_url_hosted_followup  = "https://www.google.com/a/cpanel/%s/UserHub"
 	_url_hosted_get_doc	  = "https://docs.google.com/a/%s/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
 	_url_hosted_get_sheet = "https://spreadsheets.google.com/a/%s/pub?output=%s&key=%s"
-	_url_hosted_get_slide = ""
+	_url_hosted_get_slide = "https://docs.google.com/a/%s/MiscCommands?command=saveasdoc&exportformat=%s&docID=%s"
 	
 	# Set the user agent to whatever you please, but make sure its accepted by Google
 	# also, please leave the authors name in there, I put in a lot of hard work
@@ -279,9 +280,9 @@ class GDataCopier:
 	_sheet_content_types  = { 'ods': 'application/vnd.oasis.opendocument.spreadsheet', 'csv': 'text/comma-separated-values',
 							  'xls': 'application/vnd.ms-excel' }
 	_doc_content_types	  = { 'doc': 'application/msword', 'odt': 'application/vnd.oasis.opendocument.text',
-							  'rtf': 'application/rtf', 'sxw': 'application/vnd.sun.xml.writer',
+						 	  'rtf': 'application/rtf', 'sxw': 'application/vnd.sun.xml.writer',
 							  'txt': 'text/plain' }
-							   
+	_presen_content_types = { 'ppt': 'application/vnd.ms-powerpoint' }						   
 	# Default formats the files are exported in
 	_default_sheet_format  = "ods"
 	_default_doc_format	   = "oo"
@@ -362,6 +363,10 @@ class GDataCopier:
 			entry = self._gd_client.UploadSpreadsheet(media_source, document_title)
 		elif self._doc_content_types.has_key(file_extension):
 			content_type = self._doc_content_types[file_extension]
+			media_source = gdata.MediaSource(file_path = document_path, content_type = content_type)
+			entry = self._gd_client.UploadDocument(media_source, document_title)
+		elif self._presen_content_types.has_key(file_extension):
+			content_type = self._presen_content_types[file_extension]
 			media_source = gdata.MediaSource(file_path = document_path, content_type = content_type)
 			entry = self._gd_client.UploadDocument(media_source, document_title)
 		else:
@@ -574,15 +579,16 @@ class GDataCopier:
 
 	# Performs a login hosted account style		   
 	def _perform_hosted_login(self, username, password):
-
+		
 		app_username, self._hosted_domain = username.split('@')
 		followup_url	  = self._url_hosted_followup % self._hosted_domain
-		login_data		  = {'PersistentCookies': 'true', 'Email': username, 'Passwd': password, 
+		login_data		  = {'PersistentCookie': 'yes', 'Email': username, 'Passwd': password, 
 							 'continue': followup_url, 'followup': followup_url, 'service': 'writely',
-							 'scope': '' }
+							 'scope': '', 'nui': '1' }
 		prepared_auth_url = self._url_hosted_auth % (self._hosted_domain)
 		
 		response = self._open_https_url(prepared_auth_url, login_data)
+		print(self._cookie_jar)
 		return len(self._cookie_jar) > 1
 	
 	# Helper export function  
