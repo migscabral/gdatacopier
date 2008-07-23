@@ -72,7 +72,7 @@ def usage():
 # Signal handler for Ctrl+C etc
 def signal_handler(signal, frame):
 	print "\n[Interrupted] You seem to have changed your mind, aborting last action"
-	sys.exit(0)
+	sys.exit()
 
 # Validate email address function courtsey using regular expressions
 # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/65215
