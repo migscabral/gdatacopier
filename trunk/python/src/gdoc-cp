@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
 """
-	gdoc-cp.py, Copyright (c) 2007 De Bortoli Wines Pty Ltd
+	gdoc-cp.py
 	http://gdatacopier.googlecode.com/
+	
+	Copyright (c) 2008 - 2009 De Bortoli Wines & Eternity Technologies
 	Distributed under the terms and conditions of the GNU/GPL v3
 	
 	Version 1.1.0
 
-	Developed by Eternity Technologies Pty Ltd.
-	
 	This is free software, and comes with ABSOLUTELY NO WARRANTY use of 
 	this software is completely at your OWN RISK.
 
@@ -418,6 +418,7 @@ def main():
 	global _copier
 	# Print a welcome message
 	print "gdoc-cp.py version %s, bi-directional copy utility for Google docs, sheets & slides" % __version__
+	print "Copyright (c) 2008 - 2009 De Bortoli Wines & Eternity Technologies"
 	print "Distributed under the GNU/GPL v3, at <http://gdatacopier.googlecode.com/>"
 	print "This is free software and comes with ABSOLUTELY NO WARRANTY, use it at your OWN RISK.\n"
 	# Validate sanity of the environment
