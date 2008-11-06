@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 
 """
-	gdatacopier.py, Copyright (c) 2007 De Bortoli Wines Pty Ltd
+
+	gdoc-cp.py
 	http://gdatacopier.googlecode.com/
+
+	Copyright (c) 2008 - 2009 De Bortoli Wines & Eternity Technologies
 	Distributed under the terms and conditions of the GNU/GPL v3
 	
 	Version 1.1.0
 
-	Developed by Eternity Technologies Pty Ltd.
-		   
 	Relies on:
 	 - Python version 2.4.3 or greater
 	 - Google Data 1.1 Python libraries
