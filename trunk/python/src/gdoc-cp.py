@@ -57,7 +57,7 @@ def usage():
     
     Valid actions:
    
-    -l   --list-all      lists all documents and spreadsheets
+    -l   --list-all      lists all docs, sheets and presentations
     -s   --list-sheets   lists only spreadsheets
     -d   --list-docs     lists only documents
     -j   --list-slides   lists only presentations
