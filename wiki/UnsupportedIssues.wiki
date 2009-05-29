@@ -1,6 +1,8 @@
 #summary Known issues that are not handled by GDataCopier.
 #labels Featured
 
+*The following document has been superseded by RoadMap20.*
+
 These are issues that have been reported and will not be handled by GDataCopier 
 
 === Exporting using a new (never before used) Google Account ===
