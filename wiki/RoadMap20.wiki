@@ -1,13 +1,13 @@
 #summary GDataCopier 2.0 Roadmap.
 #labels Phase-Requirements
 
-= Introduction =
+== Introduction ==
 
 GDataCopier was originally written to work around GData API's inability to download documents stored on the Google documents system. Since March 2009 Google (Version 1.3+) allows you to download and upload documents via the API. In light of this change being made available our hacked solution becomes redundant and an inefficient way compared to the official API.
 
 Our project will now drop producing the API that allowed downloading documents via the hack method (If you are interested in how it worked, please read HowItWorks), instead we will focus the project to build a command line interface to ease system administrator's lives backing up Google documents.
 
-= Product list =
+== Product list ==
 
 GDataCopier 2.0 will aim to provide the following two utilities, we believe that the combination of these two utilities should allow you to build the perfect backup schedule for your corporate:
 
@@ -19,12 +19,12 @@ Sample usage pattern
 
 {{{
 gcp --[options] username@domain.com:/[doctype]/foldername/* /home/devraj
-}]}
+}}}
 
 == gls ==
 
 A ls like command that will allow you to list documents hosted on the Google servers. It will feature options to filter your listings by date, title (partial matching), type, etc.
 
-= Feature list =
+== Feature list ==
 
 The following are accepted feature requests from various users.
