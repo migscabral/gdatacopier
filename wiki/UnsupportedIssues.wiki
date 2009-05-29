@@ -1,5 +1,4 @@
 #summary Known issues that are not handled by GDataCopier.
-#labels Featured
 
 *The following document has been superseded by RoadMap20.*
 
