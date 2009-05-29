@@ -1,5 +1,5 @@
 #summary GDataCopier 2.0 Roadmap.
-#labels Phase-Requirements
+#labels Phase-Requirements,Featured
 
 == Introduction ==
 
