@@ -1,8 +1,8 @@
-#!/bin/env python
+#!/usr/bin/env python
 
 """
 
-	gdoc-cp
+	gcp
 	GDataCopier, http://gdatacopier.googlecode.com/
 	
 	Copyright 2009 Eternity Technologies.
@@ -25,8 +25,24 @@
 	Since GData 1.3 Google has incorporated downloading documents into the API.
 	As of Version 2.0 GDataCopier provides a cp like command line utility to ease
 	backup of Google Documents simpler for System Administrators.
-	
 
+	Usage:
+	
+	gcp --[options] username@domain.com:/[doctype]/* /home/devraj
+	
+	doctype:
+	
+	docs			for documents
+	sheets			for spreadsheets
+	slides			for presentations
+	
+	Options:
+	
+	--metadata		Exports a meta information for each download
+	--password=		Option to provide password on the command line
+	--log=			Asks gcp to write to syslog	
+	--format=		pdf, doc, oo (default), txt, xls
+	
 """
 
 
