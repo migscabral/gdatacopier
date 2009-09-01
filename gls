@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.5
 
 """
 
@@ -55,8 +55,24 @@ except:
 	exit(1)
 
 
+def write_list(list_feed):
+	return
+
 def list_documents(server_string):
-	gd_client = gdata.docs.service.DocsService()
+
+	# Get a handle to the document list service
+	gd_client = gdata.docs.service.DocsService(source="etk-gdatacopier-v2")
+	
+	# Authenticate to the document service
+	
+	
+	# Get the proper feed based on what options were provided
+	
+	
+	# Write the list to the the standard output
+	feed = gd_client.GetDocumentListFeed()
+	for entry in feed.entry:
+		print '%s %s %s' % (entry.title.text.encode('UTF-8'), entry.GetDocumentType(), entry.resourceId.text)
 
 """
 	Is able to match a remote server directive
@@ -65,14 +81,15 @@ def is_remote_server_string(remote_address):
 	re_remote_address = re.compile(r'[\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4}:/')
 	matched_strings = re_remote_address.findall(remote_address)
 	return len(matched_strings) > 0
+
 	
 def parse_user_input():
 	
 	usage = "usage: %prog [options] username@domain.com:/[doctype]/[foldername]"
 	parser = OptionParser(usage)
 	
-	parser.add_option('-p', '--password', dest = 'password', 
-						help = 'password to login to Google document servers, handy if you are croning these scripts')
+	parser.add_option('-p', '--password', dest = 'password',
+						help = 'password for the user account, use with extreme caution. Could be stored in logs/history')
 						
 	(options, args) = parser.parse_args()
 	
