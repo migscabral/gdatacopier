@@ -10,6 +10,6 @@ Both parts of this project are written using the Python programming language and
 
 == Credits ==
 
-  * *Bill Robertson*, De Bortoli Wines - for coming with the idea and pointing out that the GET requests could be accessed via HTTPS, which saved me implementing cookie handling for HTTP proxies.
+  * *Bill Robertson*, De Bortoli Wines - form coming up with the idea and sponsoring the development.
   * *Jeff Fisher*, Google - for sparing time to answer various questions regarding the HTTPS implementation
   * *Alessandro Budai*, ASPN article on gracefully handling HTTPS proxying in Python
