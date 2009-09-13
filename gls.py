@@ -42,6 +42,7 @@ try:
 	import os
 	import re
 	import signal
+	import getpass
 except:
 	print "gls failed to find some basic python modules, please validate the environment"
 	exit(1)
@@ -54,17 +55,26 @@ except:
 	print "<http://code.google.com/p/gdata-python-client/>"
 	exit(1)
 
-
+"""
+	Prints out a document list to standard output in a pretty format
+"""
 def write_list(list_feed):
 	return
 
-def list_documents(server_string):
+"""
+	Handles downloading of the document feed from Google and then
+	asking the display function to spit it out
+"""
+def list_documents(server_string, options):
 
+	print server_string
 	# Get a handle to the document list service
 	gd_client = gdata.docs.service.DocsService(source="etk-gdatacopier-v2")
+	gd_client.ClientLogin('devraj@gmail.com', options.password)
 	
-	# Authenticate to the document service
-	
+	# Authenticate to the document service'
+
+	# If the user provided password as a command line argument
 	
 	# Get the proper feed based on what options were provided
 	
@@ -94,15 +104,22 @@ def parse_user_input():
 	(options, args) = parser.parse_args()
 	
 	"""
-		If arg1 is remote server then we are exporting documents, otherwise we are
-		importing documents into the Google document system
+		If password not provided as part of the command line arguments, prompt the user
+		to enter the password on the command line
+	"""
+
+	if options.password == None: 
+		options.password = getpass.getpass()
+	
+	"""
+		arg1 must be a remote server string to fetch document lists
 	"""
 	
 	if not len(args) == 1 or (not is_remote_server_string(args[0])):
 		print "you must provide a remote server address to fetch a list of documents"
 		exit(1)
 
-	list_documents(args[0])
+	list_documents(args[0], options)
 
 """
 	Prints Greeting
