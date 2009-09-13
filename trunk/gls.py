@@ -66,11 +66,12 @@ def write_list(list_feed):
 	asking the display function to spit it out
 """
 def list_documents(server_string, options):
+	
+	username, separator, document_path = server_string.partition(':')
 
-	print server_string
 	# Get a handle to the document list service
 	gd_client = gdata.docs.service.DocsService(source="etk-gdatacopier-v2")
-	gd_client.ClientLogin('devraj@gmail.com', options.password)
+	gd_client.ClientLogin(username, options.password)
 	
 	# Authenticate to the document service'
 
