@@ -85,15 +85,19 @@ def list_documents(server_string, options):
 
 	docs_type = None
 	folder_name = None
+	name_filter = None
 	
 	doc_param_parts = document_path.split('/')
 	
-	if doc_param_parts.count > 1 and not doc_param_parts[1] == '':
+	if len(doc_param_parts) > 1 and not doc_param_parts[1] == '':
 		docs_type = doc_param_parts[1]
 		
-	if doc_param_parts.count > 3 and not doc_param_parts[2] == '':
+	if len(doc_param_parts) > 2 and not doc_param_parts[2] == '':
 		folder_name = doc_param_parts[2]
 
+	if len(doc_param_parts) > 3 and not doc_param_parts[3] == '':
+			name_filter = doc_param_parts[3]
+			
 	# Get a handle to the document list service
 	sys.stdout.write("Logging into Google server as %s ... " % (username))
 	gd_client = gdata.docs.service.DocsService(source="etk-gdatacopier-v2")
@@ -107,12 +111,23 @@ def list_documents(server_string, options):
 		document_query.categories.append('spreadsheet')
 	elif docs_type == "slides" or docs_type == "presentation":
 		document_query.categories.append('presentation')
+	elif docs_type == "folders":
+		document_query.categories.append('folder')
 	elif docs_type == "pdf":
 		document_query.categories.append('pdf')
 		
 	# If the user provided a folder type then add this here
 	if not folder_name == None:
 		document_query.AddNamedFolder(username, folder_name)
+		
+	# Add title match
+	if not name_filter == None:
+		if name_filter[len(name_filter) - 1: len(name_filter)] == "*":
+			document_query['title-exact'] = 'false'
+			document_query['title'] = name_filter[:len(name_filter) - 1]
+		else:
+			document_query['title-exact'] = 'true'
+			document_query['title'] = name_filter
 	
 	try:
 		# Authenticate to the document service'
@@ -144,11 +159,15 @@ def is_remote_server_string(remote_address):
 	
 def parse_user_input():
 	
-	usage = "usage: %prog [options] username@domain.com:/[doctype]/[foldername]"
+	usage  = "usage: %prog [options] username@domain.com:/[doctype]/[foldername]\n"
+	usage += "              where [doctype] is docs, sheets, slides, pdf, folders"
 	parser = OptionParser(usage)
 	
 	parser.add_option('-p', '--password', dest = 'password',
 						help = 'password for the user account, use with extreme caution. Could be stored in logs/history')
+						
+	parser.add_option('-d', '--debug', dest = 'debug', 
+						help = 'Increases verbosity and prints out Python error messages')
 						
 	(options, args) = parser.parse_args()
 	
