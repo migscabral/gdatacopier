@@ -38,6 +38,12 @@ List all documents, sheets, slides for username@gmail.com
 ./gls.py username@gmail.com:/
 }}}
 
+List all folders for username@gmail.com
+
+{{{
+./gls.py username@gmail.com:/folders
+}}}
+
 List all sheets for username@gmail.com
 
 {{{
