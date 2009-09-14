@@ -29,8 +29,8 @@
 	
 """
 
-_GLS_VERSION = 2.0
-_GLS_SOURCE_STRING = "GDataCopier Listing Utility"
+__version__ = 2.0
+__author__  = "Devraj Mukherjee"
 
 """
 	Imports the required modules 
@@ -52,7 +52,7 @@ try:
 	import gdata.docs
 	import gdata.docs.service
 except:
-	print "gls %s requires gdata-python-client v2.0+, fetch from Google at" % _GCP_VERSION
+	print "gls %s requires gdata-python-client v2.0+, fetch from Google at" % __version__
 	print "<http://code.google.com/p/gdata-python-client/>"
 	exit(1)
 
@@ -117,7 +117,7 @@ def list_documents(server_string, options):
 		document_query.categories.append('pdf')
 		
 	# If the user provided a folder type then add this here
-	if not folder_name == None:
+	if not folder_name == None and not folder_name == "all":
 		document_query.AddNamedFolder(username, folder_name)
 		
 	# Add title match
@@ -193,7 +193,7 @@ def parse_user_input():
 	Prints Greeting
 """
 def greet():
-	print "gls %s, document list utility. Copyright 2009 Eternity Technologies" % _GLS_VERSION
+	print "gls %s, document list utility. Copyright 2009 Eternity Technologies" % __version__
 	print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
 
 """
