@@ -1,0 +1,11 @@
+#summary Manual for gls.
+
+=== Introduction ===
+
+Since 2.0 we have split our utility in two, the first gls which provides ways of listing various documents and the second gcp, which allows you to copy files to-and-from your computer to the Google servers.
+
+gls does more than listing documents, it can filter the document list feed based on parameters that you provide, it's behaviour is quite close to that of ls apart from its sytax.
+
+{{{
+./gls.py username@gmail.com:/docs/Documentation
+}}}
