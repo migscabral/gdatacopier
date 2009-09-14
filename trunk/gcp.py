@@ -80,8 +80,8 @@ def signal_handler(signal, frame):
 	    print "\n[Interrupted] Bye Bye!"
 	    sys.exit(0)
 
-
 def export_documents(source_path, target_path, options):
+		
 	return
 	
 	
@@ -158,14 +158,16 @@ def parse_user_input():
 """
 	Prints Greeting
 """
+
 def greet():
-	print "gcp %s, import/export utility for the Google document system" % _GCP_VERSION
-	print "Copyright Devraj Mukherjee, et al. Released under the GNU/GPL v3\n"
+	print "gcp %s, document list utility. Copyright 2009 Eternity Technologies" % _GLS_VERSION
+	print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
 
 """
 	main() is where things come together, this joins all the messages defined above
 	these messages must be executed in the defined order
 """
+
 def main():
 	signal.signal(signal.SIGINT, signal_handler)
 	greet()						# Greet the user with a standard welcome message
