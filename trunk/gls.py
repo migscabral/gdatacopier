@@ -71,6 +71,36 @@ def is_email(email):
             return True
     return False
 
+
+"""
+	Helpers
+"""
+
+def add_category_filter(document_query, docs_type):
+	
+	# If the user provided a doctype then add a filter
+	if docs_type == "docs" or docs_type == "documents":
+		document_query.categories.append('document')
+	elif docs_type == "sheets" or docs_type == "spreadsheets":
+		document_query.categories.append('spreadsheet')
+	elif docs_type == "slides" or docs_type == "presentation":
+		document_query.categories.append('presentation')
+	elif docs_type == "folders":
+		document_query.categories.append('folder')
+	elif docs_type == "pdf":
+		document_query.categories.append('pdf')
+
+def add_title_match_filter(document_query, name_filter):
+	
+	# Add title match
+	if not name_filter == None:
+		if name_filter[len(name_filter) - 1: len(name_filter)] == "*":
+			document_query['title-exact'] = 'false'
+			document_query['title'] = name_filter[:len(name_filter) - 1]
+		else:
+			document_query['title-exact'] = 'true'
+			document_query['title'] = name_filter	
+
 """
 	Handles downloading of the document feed from Google and then
 	asking the display function to spit it out
@@ -103,31 +133,14 @@ def list_documents(server_string, options):
 	gd_client = gdata.docs.service.DocsService(source="etk-gdatacopier-v2")
 	
 	document_query = gdata.docs.service.DocumentQuery()
+	
+	add_category_filter(document_query, docs_type)
 
-	# If the user provided a doctype then add a filter
-	if docs_type == "docs" or docs_type == "documents":
-		document_query.categories.append('document')
-	elif docs_type == "sheets" or docs_type == "spreadsheets":
-		document_query.categories.append('spreadsheet')
-	elif docs_type == "slides" or docs_type == "presentation":
-		document_query.categories.append('presentation')
-	elif docs_type == "folders":
-		document_query.categories.append('folder')
-	elif docs_type == "pdf":
-		document_query.categories.append('pdf')
-		
 	# If the user provided a folder type then add this here
 	if not folder_name == None and not folder_name == "all":
 		document_query.AddNamedFolder(username, folder_name)
-		
-	# Add title match
-	if not name_filter == None:
-		if name_filter[len(name_filter) - 1: len(name_filter)] == "*":
-			document_query['title-exact'] = 'false'
-			document_query['title'] = name_filter[:len(name_filter) - 1]
-		else:
-			document_query['title-exact'] = 'true'
-			document_query['title'] = name_filter
+
+	add_title_match_filter(document_query, name_filter)
 	
 	try:
 		# Authenticate to the document service'
