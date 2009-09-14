@@ -32,3 +32,9 @@ List all documents for username@gmail.com where the title contains the string GT
 {{{
 ./gls.py devraj@etk.com.au:/docs/Documentation/GTE*
 }}}
+
+List all objects in the folder Documentation for username@gmail.com
+
+{{{
+./gls.py username@gmail.com:/all/Documentation
+}}}
