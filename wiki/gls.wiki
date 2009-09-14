@@ -6,6 +6,29 @@ Since 2.0 we have split our utility in two, the first gls which provides ways of
 
 gls does more than listing documents, it can filter the document list feed based on parameters that you provide, it's behaviour is quite close to that of ls apart from its sytax.
 
+The server string closely resembles scp, please read the documentation to 
+
+=== Requirements ===
+
+ * Python 2.5 
+ * GData Python API 2.0.2+
+
+Tested under Mac OSX and Linux. Windows testing pending.
+
+=== Usage ===
+
+gls.py [options] username@gmail.com:/[doctype]/foldername/Patter*
+
+Both doctype and foldername are optional parameters, doctype may have the value of all, docs, sheets, slides, pdf
+
+If you provide a Pattern string the title of the document will be matched, an asterisk at the end of the Pattern string will make the title search non-exact.
+
+=== Parameters ===
+
+-p or --password to provide passwords in the command line
+-d or --debug to increase verbosity, prints Python error messages as well
+-h or --help to print out help screen
+
 
 === Usage examples ===
 
