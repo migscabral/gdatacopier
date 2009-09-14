@@ -1,5 +1,5 @@
 #summary Quick tour of the GoogleDocCopier class
-#labels Phase-Implementation
+#labels Phase-Implementation,Deprecated
 
 Please note that the development of the GDataCopier API will be discontinued as of the 2.0 RoadMap. Google now officially provides a mechanism to export documents as part of the 1.3 GData API.
 
