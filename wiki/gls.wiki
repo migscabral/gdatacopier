@@ -17,7 +17,7 @@ Tested under Mac OSX and Linux. Windows testing pending.
 
 === Usage ===
 
-gls.py [options] username@gmail.com:/[doctype]/foldername/Patter*
+gls.py [options] username@gmail.com:/[doctype]/foldername/Pattern*
 
 Both doctype and foldername are optional parameters, doctype may have the value of all, docs, sheets, slides, pdf
 
