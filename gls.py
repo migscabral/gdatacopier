@@ -38,6 +38,7 @@ _GLS_SOURCE_STRING = "GDataCopier Listing Utility"
 
 try:
 	from optparse import OptionParser
+	import time
 	import sys
 	import os
 	import re
@@ -51,15 +52,24 @@ try:
 	import gdata.docs
 	import gdata.docs.service
 except:
-	print "gls %s required gdata-python-client v2.0+, downloadable from Google at" % _GCP_VERSION
+	print "gls %s requires gdata-python-client v2.0+, fetch from Google at" % _GCP_VERSION
 	print "<http://code.google.com/p/gdata-python-client/>"
 	exit(1)
 
+
+def signal_handler(signal, frame):
+    print "\n[Interrupted] Bye Bye!"
+    sys.exit(0)
+
 """
-	Prints out a document list to standard output in a pretty format
+	Validate email address function courtsey using regular expressions
+	http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/65215
 """
-def write_list(list_feed):
-	return
+def is_email(email):
+    if len(email) > 7:
+        if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
+            return True
+    return False
 
 """
 	Handles downloading of the document feed from Google and then
@@ -68,22 +78,44 @@ def write_list(list_feed):
 def list_documents(server_string, options):
 	
 	username, separator, document_path = server_string.partition(':')
+	
+	if not is_email(username):
+		print "Usernames most be provided as your full Gmail address, hosted domains included."
+		sys.exit(2)
+
+	doc_type = None
+	folder_name = None
+	
+	doc_param_parts = document_path.split('/')
+	
+	if doc_param_parts.count > 1 and not doc_param_parts[1] == '':
+		doc_type = doc_param_parts[1]
+		
+	if doc_param_parts.count > 2 and not doc_param_parts[2] == '':
+		folder_name = doc_param_parts[2]
 
 	# Get a handle to the document list service
+	sys.stdout.write("Logging into Google server as %s ... " % (username))
 	gd_client = gdata.docs.service.DocsService(source="etk-gdatacopier-v2")
-	gd_client.ClientLogin(username, options.password)
 	
-	# Authenticate to the document service'
+	try:
+		# Authenticate to the document service'
+		gd_client.ClientLogin(username, options.password)
+		print "done."
+		
+		sys.stdout.write("Fetching document list feeds from Google servers for %s ... " % (username))
+		feed = gd_client.GetDocumentListFeed()
+		print "done.\n"
+		
+		for entry in feed.entry:
+			#updated_time = time.asctime(entry.updated.text)
+			print '%-15s%-17s%-50s' % (entry.GetDocumentType(), entry.author[0].name.text.encode('UTF-8'), entry.title.text.encode('UTF-8'))
 
-	# If the user provided password as a command line argument
-	
-	# Get the proper feed based on what options were provided
-	
-	
-	# Write the list to the the standard output
-	feed = gd_client.GetDocumentListFeed()
-	for entry in feed.entry:
-		print '%s %s %s' % (entry.title.text.encode('UTF-8'), entry.GetDocumentType(), entry.resourceId.text)
+	except gdata.service.BadAuthentication:
+		print "Failed, Bad Password!"
+	except gdata.service.Error:
+		print "Failed!"
+
 
 """
 	Is able to match a remote server directive
@@ -105,20 +137,20 @@ def parse_user_input():
 	(options, args) = parser.parse_args()
 	
 	"""
+		arg1 must be a remote server string to fetch document lists
+	"""
+	
+	if not len(args) == 1 or (not is_remote_server_string(args[0])):
+		print "you most provide a remote server address as username@gmail.com:/[doctype]/[folder]"
+		exit(1)
+
+	"""
 		If password not provided as part of the command line arguments, prompt the user
 		to enter the password on the command line
 	"""
 
 	if options.password == None: 
 		options.password = getpass.getpass()
-	
-	"""
-		arg1 must be a remote server string to fetch document lists
-	"""
-	
-	if not len(args) == 1 or (not is_remote_server_string(args[0])):
-		print "you must provide a remote server address to fetch a list of documents"
-		exit(1)
 
 	list_documents(args[0], options)
 
@@ -126,14 +158,15 @@ def parse_user_input():
 	Prints Greeting
 """
 def greet():
-	print "gls %s, import/export utility for the Google document system" % _GLS_VERSION
-	print "Copyright Devraj Mukherjee, et al. Released under the GNU/GPL v3\n"
+	print "gls %s, document list utility. Copyright 2009 Eternity Technologies" % _GLS_VERSION
+	print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
 
 """
 	main() is where things come together, this joins all the messages defined above
 	these messages must be executed in the defined order
 """
 def main():
+	signal.signal(signal.SIGINT, signal_handler)
 	greet()						# Greet the user with a standard welcome message
 	parse_user_input()			# Check to see we have the right options or exit
 
