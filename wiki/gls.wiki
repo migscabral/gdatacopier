@@ -67,3 +67,9 @@ List all objects in the folder Documentation for username@gmail.com
 {{{
 ./gls.py username@gmail.com:/all/Documentation
 }}}
+
+List all documents for username@gmail.com in all where the title contains the words Over
+
+{{{
+./gls.py username@gmail.com:/docs/all/Over*
+}}}
