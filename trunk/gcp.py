@@ -62,6 +62,7 @@ try:
 	import os
 	import re
 	import signal
+	import getpass
 except:
 	print "gcp failed to find some basic python modules, please validate the environment"
 	exit(1)
@@ -73,6 +74,11 @@ except:
 	print "gcp %s required gdata-python-client v2.0+, downloadable from Google at" % _GCP_VERSION
 	print "<http://code.google.com/p/gdata-python-client/>"
 	exit(1)
+
+
+def signal_handler(signal, frame):
+	    print "\n[Interrupted] Bye Bye!"
+	    sys.exit(0)
 
 
 def export_documents(source_path, target_path, options):
@@ -122,6 +128,14 @@ def parse_user_input():
 	document_target = args[1]
 	
 	"""
+		If password not provided as part of the command line arguments, prompt the user
+		to enter the password on the command line
+	"""
+	
+	if options.password == None: 
+		options.password = getpass.getpass()
+	
+	"""
 		If the first parameter is a remote address we are backing up documents
 		otherwise we are exporting documents to the Google servers. At this stage
 		gcp does not support server to server or local to local copy of documents
@@ -153,6 +167,7 @@ def greet():
 	these messages must be executed in the defined order
 """
 def main():
+	signal.signal(signal.SIGINT, signal_handler)
 	greet()						# Greet the user with a standard welcome message
 	parse_user_input()			# Check to see we have the right options or exit
 
