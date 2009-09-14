@@ -83,20 +83,36 @@ def list_documents(server_string, options):
 		print "Usernames most be provided as your full Gmail address, hosted domains included."
 		sys.exit(2)
 
-	doc_type = None
+	docs_type = None
 	folder_name = None
 	
 	doc_param_parts = document_path.split('/')
 	
 	if doc_param_parts.count > 1 and not doc_param_parts[1] == '':
-		doc_type = doc_param_parts[1]
+		docs_type = doc_param_parts[1]
 		
-	if doc_param_parts.count > 2 and not doc_param_parts[2] == '':
+	if doc_param_parts.count > 3 and not doc_param_parts[2] == '':
 		folder_name = doc_param_parts[2]
 
 	# Get a handle to the document list service
 	sys.stdout.write("Logging into Google server as %s ... " % (username))
 	gd_client = gdata.docs.service.DocsService(source="etk-gdatacopier-v2")
+	
+	document_query = gdata.docs.service.DocumentQuery()
+
+	# If the user provided a doctype then add a filter
+	if docs_type == "docs" or docs_type == "documents":
+		document_query.categories.append('document')
+	elif docs_type == "sheets" or docs_type == "spreadsheets":
+		document_query.categories.append('spreadsheet')
+	elif docs_type == "slides" or docs_type == "presentation":
+		document_query.categories.append('presentation')
+	elif docs_type == "pdf":
+		document_query.categories.append('pdf')
+		
+	# If the user provided a folder type then add this here
+	if not folder_name == None:
+		document_query.AddNamedFolder(username, folder_name)
 	
 	try:
 		# Authenticate to the document service'
@@ -104,12 +120,12 @@ def list_documents(server_string, options):
 		print "done."
 		
 		sys.stdout.write("Fetching document list feeds from Google servers for %s ... " % (username))
-		feed = gd_client.GetDocumentListFeed()
+		feed = gd_client.Query(document_query.ToUri())
 		print "done.\n"
 		
 		for entry in feed.entry:
-			#updated_time = time.asctime(entry.updated.text)
-			print '%-15s%-17s%-50s' % (entry.GetDocumentType(), entry.author[0].name.text.encode('UTF-8'), entry.title.text.encode('UTF-8'))
+			updated_time = time.strftime(entry.updated.text)
+			print '%-15s%-17s%-60s' % (entry.GetDocumentType(), entry.author[0].name.text.encode('UTF-8'), entry.title.text.encode('UTF-8'))
 
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
