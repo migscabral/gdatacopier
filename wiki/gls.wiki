@@ -35,7 +35,7 @@ If you provide a Pattern string the title of the document will be matched, an as
 List all documents, sheets, slides for username@gmail.com
 
 {{{
-./gls.py devraj@etk.com.au:/
+./gls.py username@gmail.com:/
 }}}
 
 List all sheets for username@gmail.com
@@ -53,7 +53,7 @@ List all documents for username@gmail.com in the Documentation folder
 List all documents for username@gmail.com where the title contains the string GTE
 
 {{{
-./gls.py devraj@etk.com.au:/docs/Documentation/GTE*
+./gls.py  username@gmail.com:/docs/Documentation/GTE*
 }}}
 
 List all objects in the folder Documentation for username@gmail.com
