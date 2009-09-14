@@ -91,3 +91,7 @@ Hosted accounts URLs look like, where yoursdomain.com is the hosted domain
     * Portal page for documents, http://docs.google.com/a/yourdomain.com/
     * Documents download URL, http://docs.google.com/a/yourdomain.com/MiscCommands?command=saveasdoc&exportformat=oo&docID=docid
     * Spreadsheet download URL, http://spreadsheets.google.com/a/yourdomain.com/pub?output=odf&key=docid
+
+== Related resources ==
+ * [http://googlesystem.blogspot.com/2007/07/download-published-documents-and.html Downloading Google documents]
+ * [http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/456195 Python HTTPS Proxy]
