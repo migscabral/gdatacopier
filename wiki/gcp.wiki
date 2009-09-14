@@ -1,0 +1,14 @@
+#summary Manual page for gcp.
+
+=== Introduction ===
+
+
+
+=== Usage samples ===
+
+
+Export all documents for username@gmail.com to /tmp
+
+{{{
+./gcp.py username@gmail.com:/docs/all/Over* /tmp/
+}}}
