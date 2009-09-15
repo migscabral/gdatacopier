@@ -184,35 +184,27 @@ def parse_user_input():
 						
 	(options, args) = parser.parse_args()
 	
-	"""
-		arg1 must be a remote server string to fetch document lists
-	"""
+	# arg1 must be a remote server string to fetch document lists
 	
 	if not len(args) == 1 or (not is_remote_server_string(args[0])):
 		print "you most provide a remote server address as username@gmail.com:/[doctype]/[folder]"
 		exit(1)
 
-	"""
-		If password not provided as part of the command line arguments, prompt the user
-		to enter the password on the command line
-	"""
+	# If password not provided as part of the command line arguments, prompt the user
+	# to enter the password on the command line
 
 	if options.password == None: 
 		options.password = getpass.getpass()
 
 	list_documents(args[0], options)
 
-"""
-	Prints Greeting
-"""
+# Prints Greeting
 def greet():
 	print "gls %s, document list utility. Copyright 2009 Eternity Technologies" % __version__
 	print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
 
-"""
-	main() is where things come together, this joins all the messages defined above
-	these messages must be executed in the defined order
-"""
+# main() is where things come together, this joins all the messages defined above
+# these messages must be executed in the defined order
 def main():
 	signal.signal(signal.SIGINT, signal_handler)
 	greet()						# Greet the user with a standard welcome message
