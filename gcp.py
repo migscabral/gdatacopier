@@ -50,6 +50,7 @@
 """
 
 __version__ = 2.0
+__author__  = "Devraj Mukherjee"
 
 """
 	Imports the required modules 
@@ -71,17 +72,23 @@ try:
 	import gdata.docs
 	import gdata.docs.service
 except:
-	print "gcp %s required gdata-python-client v2.0+, downloadable from Google at" % _GCP_VERSION
+	print "gcp %s requires gdata-python-client v2.0+, downloadable from Google at" % __version__
 	print "<http://code.google.com/p/gdata-python-client/>"
 	exit(1)
 
+# Accepted formats for exporting files, these have to be used as file extensions
+__accepted_doc_formats__ = ['doc', 'html', 'zip', 'odt', 'pdf', 'png', 'rtf', 'txt']
+__accepted_slides_formats__ = ['pdf', 'png', 'ppt', 'swf', 'txt', 'zip', 'html', 'odt']
+__accepted_sheets_formats__ = ['xls', 'ods', 'txt', 'html', 'pdf', 'tsv', 'csv']
+__bad_chars__ = ['\\', '/', '&']
+
+# Raised if the document format is invalid
+class GDataCopierInvalidRequestedFormat(Exception):
+	pass
 
 def signal_handler(signal, frame):
 	    print "\n[Interrupted] Bye Bye!"
 	    sys.exit(0)
-
-
-
 
 
 """
@@ -111,7 +118,36 @@ def add_title_match_filter(document_query, name_filter):
 			document_query['title'] = name_filter[:len(name_filter) - 1]
 		else:
 			document_query['title-exact'] = 'true'
-			document_query['title'] = name_filter	
+			document_query['title'] = name_filter
+			
+def get_appropriate_extension(entry, docs_type, desired_format):
+	
+	entry_document_type = entry.GetDocumentType()
+	
+	# If no docs_type it means there are a mixture of things being exported
+	if desired_format == "oo" or docs_type == None:
+		if entry_document_type == "document" or entry_document_type == "presentation":
+			return "odt"
+		elif entry_document_type == "spreadsheet":
+			return "xls"
+	
+	# If docs_type is of specific type check for output format
+	if docs_type == "docs" or docs_type == "documents":
+		if __accepted_doc_formats__.count(desired_format) > 0: return desired_format
+	elif docs_type == "sheets" or docs_type == "spreadsheets":
+		if __accepted_sheets_formats__.count(desired_format) > 0: return desired_format
+	elif docs_type == "slides" or docs_type == "presentation":
+		if __accepted_slides_formats__.count(desired_format) > 0: return desired_format
+	
+	return None
+
+
+def sanatize_filename(filename):
+	
+	for bad_char in __bad_chars__:
+		filename = filename.replace(bad_char, '-')	
+		
+	return filename
 
 def export_documents(source_path, target_path, options):
 	
@@ -160,8 +196,13 @@ def export_documents(source_path, target_path, options):
 		print "done.\n"
 		
 		for entry in feed.entry:
-			export_filename = target_path + "/" + entry.author[0].name.text.encode('UTF-8') + "-" + entry.title.text.encode('UTF-8') + ".doc"
+			export_extension = get_appropriate_extension(entry, docs_type, options.format)
+			
+			export_filename = target_path + "/" + entry.author[0].name.text.encode('UTF-8') + "-" + \
+			 sanatize_filename(entry.title.text.encode('UTF-8')) + "." + export_extension
+
 			updated_time = time.strftime(entry.updated.text)
+
 			print "%-30s -d-> %-40s" % (entry.resourceId.text, export_filename)
 			gd_client.Export(entry, export_filename)
 
