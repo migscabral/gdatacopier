@@ -130,7 +130,7 @@ def get_appropriate_extension(entry, docs_type, desired_format):
 		if entry_document_type == "document" or entry_document_type == "presentation":
 			return "odt"
 		elif entry_document_type == "spreadsheet":
-			return "xls"
+			return "ods"
 	
 	# If docs_type is of specific type check for output format
 	if docs_type == "docs" or docs_type == "documents":
@@ -191,7 +191,15 @@ def export_documents(source_path, target_path, options):
 		
 		# Authenticate to the document service'
 		gd_client.ClientLogin(username, options.password)
+		# Spreadsheet export requires separate authentication token
+		spreadsheets_client = gdata.spreadsheet.service.SpreadsheetsService()
+		spreadsheets_client.ClientLogin(username, options.password)
+		
 		print "done."
+		
+		# We must keep track of the docs token
+		docs_auth_token = gd_client.GetClientLoginToken()
+		sheets_auth_token = spreadsheets_client.GetClientLoginToken()
 		
 		sys.stdout.write("Fetching document list feeds from Google servers for %s ... " % (username))
 		feed = gd_client.Query(document_query.ToUri())
@@ -201,8 +209,13 @@ def export_documents(source_path, target_path, options):
 
 			export_extension = get_appropriate_extension(entry, docs_type, options.format)
 
+			# Ignore export if the user hasn't provided a proper format
 			if export_extension == None:
 				continue
+				
+			# Change authentication token if we are exporting spreadheets
+			if entry.GetDocumentType() == "spreadsheet":
+				gd_client.SetClientLoginToken(sheets_auth_token)
 			
 			# Construct a file name for the export
 			export_filename = target_path + "/" + entry.author[0].name.text.encode('UTF-8') + "-" + \
@@ -218,6 +231,9 @@ def export_documents(source_path, target_path, options):
 				print " - OK"
 			except gdata.service.Error:
 				print " - FAILED"
+				
+				
+			gd_client.SetClientLoginToken(docs_auth_token)
 				
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
