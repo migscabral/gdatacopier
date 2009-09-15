@@ -229,14 +229,10 @@ def parse_user_input():
 	usage = "usage: %prog [options] username@domain.com:/docs/* /home/username/directory"
 	parser = OptionParser(usage)
 
-	parser.add_option('-v', '--verbose', action = 'store_true', dest = 'verbose', default = False, 
-						help = 'sends output to standard output, can be used in conjunction with log option')
 	parser.add_option('-m', '--metadata', action = 'store_true', dest = 'metadata', default = False, 
 						help = 'exports metadata for exported documents')
 	parser.add_option('-p', '--password', dest = 'password', 
 						help = 'password to login to Google document servers, use with extreme caution, may be logged')
-	parser.add_option('-l', '--log', action = 'store_true', dest = 'log', default = True, 
-						help = 'writes actions to system logger, adjust log levels to increase/decrease verbosity')
 	parser.add_option('-f', '--format', default = 'oo',
 						help = 'file format to export documents to, ensure to use default if exporting mixed types')
 						
