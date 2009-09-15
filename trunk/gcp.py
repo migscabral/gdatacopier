@@ -33,20 +33,6 @@
 	
 	gcp [options] username@domain.com:/[doctype]/* /home/devraj
 	
-	doctype:
-	
-	docs			for documents
-	sheets			for spreadsheets
-	slides			for presentations
-	
-	Options:
-	
-	--verbose		Sends output to standard out
-	--metadata		Exports meta information for each download
-	--password=		Option to provide password on the command line
-	--log=			Asks gcp to write to syslog	
-	--format=		pdf, doc, oo (default), txt, xls
-	
 """
 
 __version__ = 2.0
@@ -191,6 +177,7 @@ def export_documents(source_path, target_path, options):
 		
 		# Authenticate to the document service'
 		gd_client.ClientLogin(username, options.password)
+		
 		# Spreadsheet export requires separate authentication token
 		spreadsheets_client = gdata.spreadsheet.service.SpreadsheetsService()
 		spreadsheets_client.ClientLogin(username, options.password)
@@ -305,19 +292,13 @@ def parse_user_input():
 		exit(1)
 
 
-"""
-	Prints Greeting
-"""
-
+# Prints Greeting
 def greet():
-	print "gcp %s, document list utility. Copyright 2009 Eternity Technologies" % __version__
+	print "gcp %s, document copy utility. Copyright 2009 Eternity Technologies" % __version__
 	print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
 
-"""
-	main() is where things come together, this joins all the messages defined above
-	these messages must be executed in the defined order
-"""
-
+# main() is where things come together, this joins all the messages defined above
+# these messages must be executed in the defined order
 def main():
 	signal.signal(signal.SIGINT, signal_handler)
 	greet()						# Greet the user with a standard welcome message
