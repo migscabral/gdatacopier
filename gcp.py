@@ -71,6 +71,7 @@ except:
 try:
 	import gdata.docs
 	import gdata.docs.service
+	import gdata.spreadsheet.service
 except:
 	print "gcp %s requires gdata-python-client v2.0+, downloadable from Google at" % __version__
 	print "<http://code.google.com/p/gdata-python-client/>"
@@ -187,6 +188,7 @@ def export_documents(source_path, target_path, options):
 	add_title_match_filter(document_query, name_filter)
 	
 	try:
+		
 		# Authenticate to the document service'
 		gd_client.ClientLogin(username, options.password)
 		print "done."
@@ -196,20 +198,29 @@ def export_documents(source_path, target_path, options):
 		print "done.\n"
 		
 		for entry in feed.entry:
+
 			export_extension = get_appropriate_extension(entry, docs_type, options.format)
+
+			if export_extension == None:
+				continue
 			
+			# Construct a file name for the export
 			export_filename = target_path + "/" + entry.author[0].name.text.encode('UTF-8') + "-" + \
 			 sanatize_filename(entry.title.text.encode('UTF-8')) + "." + export_extension
 
+			# Might use a timestamp if we implement a sync function
 			updated_time = time.strftime(entry.updated.text)
 
-			print "%-30s -d-> %-40s" % (entry.resourceId.text, export_filename)
-			gd_client.Export(entry, export_filename)
-
+			# Tell the user something about what we are doing
+			sys.stdout.write("%-30s -d-> %-40s" % (entry.resourceId.text, export_filename))
+			try:
+				gd_client.Export(entry, export_filename)
+				print " - OK"
+			except gdata.service.Error:
+				print " - FAILED"
+				
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
-	except gdata.service.Error:
-		print "Failed!"
 	
 	
 def import_documents(source_path, target_path, options):
