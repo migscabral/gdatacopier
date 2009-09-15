@@ -47,6 +47,7 @@ try:
 	import sys
 	import os
 	import re
+	import string
 	import signal
 	import time
 	import getpass
@@ -96,6 +97,7 @@ def add_category_filter(document_query, docs_type):
 	elif docs_type == "pdf":
 		document_query.categories.append('pdf')
 
+# If there's a filter for a title then this adds it on
 def add_title_match_filter(document_query, name_filter):
 
 	# Add title match
@@ -107,6 +109,7 @@ def add_title_match_filter(document_query, name_filter):
 			document_query['title-exact'] = 'true'
 			document_query['title'] = name_filter
 			
+# Gets an extension that works with a file format
 def get_appropriate_extension(entry, docs_type, desired_format):
 	
 	entry_document_type = entry.GetDocumentType()
@@ -128,7 +131,7 @@ def get_appropriate_extension(entry, docs_type, desired_format):
 	
 	return None
 
-
+# Strips characters that are not acceptable as file names
 def sanatize_filename(filename):
 	
 	for bad_char in __bad_chars__:
@@ -227,6 +230,28 @@ def export_documents(source_path, target_path, options):
 	
 	
 def import_documents(source_path, target_path, options):
+	
+	upload_filenames = []
+	username, separator, document_path = target_path.partition(':')
+	
+	if os.path.isdir(source_path):
+		dir_list = os.listdir(source_path)
+		for file_name in dir_list:
+			if not file_name[:1] == ".": upload_filenames.append(source_path + "/" + file_name)
+	elif os.path.isfile(source_path):
+		upload_filenames.append(source_path)
+
+
+	# Get a handle to the document list service
+	sys.stdout.write("Logging into Google server as %s ... " % (username))
+	gd_client = gdata.docs.service.DocsService(source="etk-gdatacopier-v2")
+	print "done.\n"
+		
+	for file_name in upload_filenames:
+		extension = (file_name[len(file_name) - 4:]).upper()
+		extension = extension.replace(".", "")
+		print extension
+	
 	return
 	
 
