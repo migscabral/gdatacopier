@@ -264,7 +264,7 @@ def import_documents(source_path, target_path, options):
 		
 		# Authenticate to the document service'
 		gd_client.ClientLogin(username, options.password)
-		print "done.\n"
+		print "done."
 
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
@@ -278,7 +278,11 @@ def import_documents(source_path, target_path, options):
 		remote_folder = get_folder_entry(doc_param_parts[1], gd_client)
 		if remote_folder == None:
 			print "\nfolder name %s doesn't exists on your Google docs account" % doc_param_parts[1]
+			sys.exit(2)
 
+	# New line to make things look good
+	print "\n"
+	
 	# Upload allowed documents to the Google system
 	for file_name in upload_filenames:
 		
