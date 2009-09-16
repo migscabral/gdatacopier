@@ -296,10 +296,14 @@ def import_documents(source_path, target_path, options):
 		media_source = gdata.MediaSource(file_path=file_name, content_type=mime_type)
 		
 		entry = None
-		if remote_folder == None:
-			entry = gd_client.Upload(media_source, os.path.basename(file_name))
-		else:
-			entry = gd_client.Upload(media_source, os.path.basename(file_name), folder_or_uri=remote_folder)
+		try:
+			if remote_folder == None:
+				entry = gd_client.Upload(media_source, os.path.basename(file_name))
+			else:
+				entry = gd_client.Upload(media_source, os.path.basename(file_name), folder_or_uri=remote_folder)
+		except:
+			print "FAILED"
+			continue
 
 		print entry.resourceId.text
 	
