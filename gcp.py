@@ -70,14 +70,9 @@ __accepted_slides_formats__ = ['pdf', 'png', 'ppt', 'swf', 'txt', 'zip', 'html',
 __accepted_sheets_formats__ = ['xls', 'ods', 'txt', 'html', 'pdf', 'tsv', 'csv']
 __bad_chars__ = ['\\', '/', '&']
 
-# Raised if the document format is invalid
-class GDataCopierInvalidRequestedFormat(Exception):
-	pass
-
 def signal_handler(signal, frame):
 	    print "\n[Interrupted] Bye Bye!"
 	    sys.exit(0)
-
 
 """
 	Helpers
@@ -203,32 +198,49 @@ def export_documents(source_path, target_path, options):
 
 		export_extension = get_appropriate_extension(entry, docs_type, options.format)
 
+		# Construct a file name for the export
+		export_filename = target_path + "/" + entry.author[0].name.text.encode('UTF-8') + "-" + \
+		 sanatize_filename(entry.title.text.encode('UTF-8')) + "." + export_extension
+
+		# Tell the user something about what we are doing
+		sys.stdout.write("%-30s -d-> %-40s - " % (entry.resourceId.text[0:30], export_filename[:40]))
+
 		# Ignore export if the user hasn't provided a proper format
 		if export_extension == None:
+			print "WRONG FORMAT"
 			continue
 				
 		# Change authentication token if we are exporting spreadheets
 		if entry.GetDocumentType() == "spreadsheet":
 			gd_client.SetClientLoginToken(sheets_auth_token)
 			
-		# Construct a file name for the export
-		export_filename = target_path + "/" + entry.author[0].name.text.encode('UTF-8') + "-" + \
-		 sanatize_filename(entry.title.text.encode('UTF-8')) + "." + export_extension
-
 		# Might use a timestamp if we implement a sync function
 		updated_time = time.strftime(entry.updated.text)
 
-		# Tell the user something about what we are doing
-		sys.stdout.write("%-30s -d-> %-40s" % (entry.resourceId.text, export_filename))
 		try:
 			gd_client.Export(entry, export_filename)
-			print " - OK"
+			print "OK"
 		except gdata.service.Error:
-			print " - FAILED"
+			print "FAILED"
 				
 				
 		gd_client.SetClientLoginToken(docs_auth_token)
 	
+	
+def get_folder_entry(folder_name, gd_client):
+	
+	sys.stdout.write("Checking folder names on Google docs server ... ")
+	document_query = gdata.docs.service.DocumentQuery()
+	document_query.categories.append('folder')
+	feed = gd_client.Query(document_query.ToUri())
+	
+	print "done."
+	
+	for entry in feed.entry:
+		if entry.title.text.encode('UTF-8') == folder_name:
+			return entry
+			
+	return None
 	
 def import_documents(source_path, target_path, options):
 	
@@ -252,11 +264,20 @@ def import_documents(source_path, target_path, options):
 		
 		# Authenticate to the document service'
 		gd_client.ClientLogin(username, options.password)
-		print "done."
+		print "done.\n"
 
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
 		sys.exit(2)
+
+	# Upload folder name
+	remote_folder = None
+	doc_param_parts = document_path.split('/')
+
+	if len(doc_param_parts) > 1 and not doc_param_parts[1] == '':
+		remote_folder = get_folder_entry(doc_param_parts[1], gd_client)
+		if remote_folder == None:
+			print "\nfolder name %s doesn't exists on your Google docs account" % doc_param_parts[1]
 
 	# Upload allowed documents to the Google system
 	for file_name in upload_filenames:
@@ -264,7 +285,7 @@ def import_documents(source_path, target_path, options):
 		extension = (file_name[len(file_name) - 4:]).upper()
 		extension = extension.replace(".", "")
 
-		sys.stdout.write("%-50s -g-> " % os.path.basename(file_name))
+		sys.stdout.write("%-50s -g-> " % os.path.basename(file_name)[0:50])
 		
 		# Check to see that we are allowed to upload this document
 		if not extension in gdata.docs.service.SUPPORTED_FILETYPES:
@@ -273,8 +294,13 @@ def import_documents(source_path, target_path, options):
 
 		mime_type = gdata.docs.service.SUPPORTED_FILETYPES[extension]
 		media_source = gdata.MediaSource(file_path=file_name, content_type=mime_type)
-		entry = gd_client.Upload(media_source, os.path.basename(file_name))
 		
+		entry = None
+		if remote_folder == None:
+			entry = gd_client.Upload(media_source, os.path.basename(file_name))
+		else:
+			entry = gd_client.Upload(media_source, os.path.basename(file_name), folder_or_uri=remote_folder)
+
 		print entry.resourceId.text
 	
 
