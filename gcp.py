@@ -186,47 +186,48 @@ def export_documents(source_path, target_path, options):
 		spreadsheets_client.ClientLogin(username, options.password)
 		
 		print "done."
-		
-		# We must keep track of the docs token
-		docs_auth_token = gd_client.GetClientLoginToken()
-		sheets_auth_token = spreadsheets_client.GetClientLoginToken()
-		
-		sys.stdout.write("Fetching document list feeds from Google servers for %s ... " % (username))
-		feed = gd_client.Query(document_query.ToUri())
-		print "done.\n"
-		
-		for entry in feed.entry:
 
-			export_extension = get_appropriate_extension(entry, docs_type, options.format)
-
-			# Ignore export if the user hasn't provided a proper format
-			if export_extension == None:
-				continue
-				
-			# Change authentication token if we are exporting spreadheets
-			if entry.GetDocumentType() == "spreadsheet":
-				gd_client.SetClientLoginToken(sheets_auth_token)
-			
-			# Construct a file name for the export
-			export_filename = target_path + "/" + entry.author[0].name.text.encode('UTF-8') + "-" + \
-			 sanatize_filename(entry.title.text.encode('UTF-8')) + "." + export_extension
-
-			# Might use a timestamp if we implement a sync function
-			updated_time = time.strftime(entry.updated.text)
-
-			# Tell the user something about what we are doing
-			sys.stdout.write("%-30s -d-> %-40s" % (entry.resourceId.text, export_filename))
-			try:
-				gd_client.Export(entry, export_filename)
-				print " - OK"
-			except gdata.service.Error:
-				print " - FAILED"
-				
-				
-			gd_client.SetClientLoginToken(docs_auth_token)
-				
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
+		sys.exit(2)
+		
+	# We must keep track of the docs token
+	docs_auth_token = gd_client.GetClientLoginToken()
+	sheets_auth_token = spreadsheets_client.GetClientLoginToken()
+		
+	sys.stdout.write("Fetching document list feeds from Google servers for %s ... " % (username))
+	feed = gd_client.Query(document_query.ToUri())
+	print "done.\n"
+		
+	for entry in feed.entry:
+
+		export_extension = get_appropriate_extension(entry, docs_type, options.format)
+
+		# Ignore export if the user hasn't provided a proper format
+		if export_extension == None:
+			continue
+				
+		# Change authentication token if we are exporting spreadheets
+		if entry.GetDocumentType() == "spreadsheet":
+			gd_client.SetClientLoginToken(sheets_auth_token)
+			
+		# Construct a file name for the export
+		export_filename = target_path + "/" + entry.author[0].name.text.encode('UTF-8') + "-" + \
+		 sanatize_filename(entry.title.text.encode('UTF-8')) + "." + export_extension
+
+		# Might use a timestamp if we implement a sync function
+		updated_time = time.strftime(entry.updated.text)
+
+		# Tell the user something about what we are doing
+		sys.stdout.write("%-30s -d-> %-40s" % (entry.resourceId.text, export_filename))
+		try:
+			gd_client.Export(entry, export_filename)
+			print " - OK"
+		except gdata.service.Error:
+			print " - FAILED"
+				
+				
+		gd_client.SetClientLoginToken(docs_auth_token)
 	
 	
 def import_documents(source_path, target_path, options):
@@ -234,6 +235,7 @@ def import_documents(source_path, target_path, options):
 	upload_filenames = []
 	username, separator, document_path = target_path.partition(':')
 	
+	# File or Directory add the names of the uploads to a list 
 	if os.path.isdir(source_path):
 		dir_list = os.listdir(source_path)
 		for file_name in dir_list:
@@ -245,14 +247,35 @@ def import_documents(source_path, target_path, options):
 	# Get a handle to the document list service
 	sys.stdout.write("Logging into Google server as %s ... " % (username))
 	gd_client = gdata.docs.service.DocsService(source="etk-gdatacopier-v2")
-	print "done.\n"
+
+	try:
 		
+		# Authenticate to the document service'
+		gd_client.ClientLogin(username, options.password)
+		print "done."
+
+	except gdata.service.BadAuthentication:
+		print "Failed, Bad Password!"
+		sys.exit(2)
+
+	# Upload allowed documents to the Google system
 	for file_name in upload_filenames:
+		
 		extension = (file_name[len(file_name) - 4:]).upper()
 		extension = extension.replace(".", "")
-		print extension
-	
-	return
+
+		sys.stdout.write("%-50s -g-> " % os.path.basename(file_name))
+		
+		# Check to see that we are allowed to upload this document
+		if not extension in gdata.docs.service.SUPPORTED_FILETYPES:
+			print "NOT ALLOWED"
+			continue
+
+		mime_type = gdata.docs.service.SUPPORTED_FILETYPES[extension]
+		media_source = gdata.MediaSource(file_path=file_name, content_type=mime_type)
+		entry = gd_client.Upload(media_source, os.path.basename(file_name))
+		
+		print entry.resourceId.text
 	
 
 """
