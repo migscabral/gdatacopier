@@ -1,4 +1,5 @@
 #summary Manual page for gcp.
+#labels Featured
 
 === Introduction ===
 
