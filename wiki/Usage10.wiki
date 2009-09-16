@@ -1,4 +1,5 @@
 #summary Usage examples of gdoc-cp.py
+#labels Deprecated
 
 All usage examples are written using the short options, gdoc-cp supports a set of long options (if you prefer that).
 
