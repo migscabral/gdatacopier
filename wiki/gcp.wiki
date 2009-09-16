@@ -9,7 +9,7 @@
 
 === Usage samples ===
 
-Exports all accepted files from /home/devraj to username@gmail.com. All unsupported formats will be ignored. gcp doesn't support recursively reading directories.
+Imports all accepted files from /home/devraj to username@gmail.com. All unsupported formats will be ignored. gcp doesn't support recursively reading directories.
 
 {{{
 ./gcp.py /home/devraj/ username@gmail.com:/
