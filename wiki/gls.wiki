@@ -1,4 +1,5 @@
 #summary Manual for gls.
+#labels Featured
 
 === Introduction ===
 
