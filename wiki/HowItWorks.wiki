@@ -1,5 +1,5 @@
 #summary The secrets behind how the document downloader works
-#labels Phase-Design
+#labels Phase-Design,Deprecated
 
 == Dependencies ==
 
