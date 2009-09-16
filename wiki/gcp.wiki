@@ -16,6 +16,12 @@ Imports all accepted files from /home/devraj to username@gmail.com. All unsuppor
 ./gcp.py /home/devraj/ username@gmail.com:/
 }}}
 
+Imports Manual.doc to the Documentation folder for username@gmail.com, ensure that the folder exists on the Google document system.
+
+{{{
+./gcp.py /home/devraj/Manual.doc username@gmail.com:/Documentation
+}}}
+
 Export all documents for username@gmail.com to /tmp
 
 {{{
