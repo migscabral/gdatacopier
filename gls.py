@@ -38,7 +38,7 @@ __author__  = "Devraj Mukherjee"
 
 try:
 	from optparse import OptionParser
-	import time
+	import datetime
 	import sys
 	import os
 	import re
@@ -152,9 +152,13 @@ def list_documents(server_string, options):
 		print "done.\n"
 		
 		for entry in feed.entry:
-			updated_time = time.strftime(entry.updated.text)
-			print '%-15s%-17s%-60s' % (entry.GetDocumentType(), entry.author[0].name.text.encode('UTF-8'), entry.title.text.encode('UTF-8'))
-
+			# Thanks to http://stackoverflow.com/questions/127803/how-to-parse-iso-formatted-date-in-python
+			# we are use regular expression to parse RFC3389
+			updated_time = datetime.datetime(*map(int, re.split('[^\d]', entry.updated.text)[:-1]))
+			date_string = updated_time.strftime('%b %d %Y %H:%M')
+			print '%-15s%-17s%-18s%-45s' % (entry.GetDocumentType(), entry.author[0].name.text.encode('UTF-8')[0:16], \
+				date_string, entry.title.text.encode('UTF-8')[0:45])
+		
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
 	except gdata.service.Error:

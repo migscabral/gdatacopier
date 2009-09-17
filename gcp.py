@@ -44,6 +44,7 @@ __author__  = "Devraj Mukherjee"
 
 try:
 	from optparse import OptionParser
+	from email.utils import parsedate_tz
 	import sys
 	import os
 	import re
@@ -215,7 +216,7 @@ def export_documents(source_path, target_path, options):
 			gd_client.SetClientLoginToken(sheets_auth_token)
 			
 		# Might use a timestamp if we implement a sync function
-		updated_time = time.strftime(entry.updated.text)
+		updated_time = parsedate_tz(entry.updated.text)
 
 		try:
 			gd_client.Export(entry, export_filename)
