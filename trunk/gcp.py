@@ -245,7 +245,8 @@ def export_documents(source_path, target_path, options):
 			print "OK"
 		except gdata.service.Error:
 			print "FAILED"
-				
+		except:
+			print "FAILED"
 				
 		gd_client.SetClientLoginToken(docs_auth_token)
 	
@@ -328,6 +329,9 @@ def import_documents(source_path, target_path, options):
 				entry = gd_client.Upload(media_source, os.path.basename(file_name))
 			else:
 				entry = gd_client.Upload(media_source, os.path.basename(file_name), folder_or_uri=remote_folder)
+		except:
+			print "FAILED"
+			continue
 		except:
 			print "FAILED"
 			continue
