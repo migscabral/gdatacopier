@@ -219,12 +219,29 @@ def export_documents(source_path, target_path, options):
 		# Thanks to http://stackoverflow.com/questions/127803/how-to-parse-iso-formatted-date-in-python
 		# we are use regular expression to parse RFC3389
 		updated_time = datetime.datetime(*map(int, re.split('[^\d]', entry.updated.text)[:-1]))
-		atime = time.mktime(updated_time.timetuple())
-		mtime = atime
+		remote_access_time = time.mktime(updated_time.timetuple())
 
 		try:
+			
+			# If not force overwrite check if file exists and ask if we should overwrite
+			if not options.overwrite and os.path.isfile(export_filename):
+				user_answer = ""
+				while not user_answer == "NO" and not user_answer.upper() == "YES":
+					user_answer = raw_input("overwrite (yes/NO): ")
+					if user_answer == "": user_answer = "NO"
+				if user_answer == "NO": continue
+			
+			# If update then check to see if the datestamp has changed or ignore
+			if options.update and os.path.isfile(export_filename):
+				file_modified_time = os.stat(export_filename).st_mtime
+				# If local file is older than remote file then download
+				if file_modified_time <= remote_access_time:
+					print "UNCHANGED"
+					continue
+				
+
 			gd_client.Export(entry, export_filename)
-			os.utime(export_filename, (atime,mtime))
+			os.utime(export_filename, (remote_access_time, remote_access_time))
 			print "OK"
 		except gdata.service.Error:
 			print "FAILED"
@@ -331,12 +348,14 @@ def parse_user_input():
 	usage = "usage: %prog [options] username@domain.com:/docs/* /home/username/directory"
 	parser = OptionParser(usage)
 
-	parser.add_option('-m', '--metadata', action = 'store_true', dest = 'metadata', default = False, 
-						help = 'exports metadata for exported documents')
+	parser.add_option('-u', '--update', action = 'store_true', dest = 'update', default = False,
+						help = 'download files that have changed on Google servers (download only option)')
+	parser.add_option('-o', '--overwrite', action = 'store_true', dest = 'overwrite', default = False,
+						help = 'overwrite files if they already exists on the local disk (download only option)')
 	parser.add_option('-p', '--password', dest = 'password', 
 						help = 'password to login to Google document servers, use with extreme caution, may be logged')
 	parser.add_option('-f', '--format', default = 'oo',
-						help = 'file format to export documents to, ensure to use default if exporting mixed types')
+						help = 'file format to export documents to, ensure to use default if exporting mixed types (download only option)')
 						
 	(options, args) = parser.parse_args()
 	
