@@ -3,10 +3,30 @@
 
 === Introduction ===
 
+gcp allows you to export or import documents to and from the Google document system. It's usage largely resembles scp. gcp syncs the local time stamp with that of the remote server time stamp. Combined with the "update" option it allows you to download documents that have changed on the Google servers since you last run your backup.
+
 {{{
 ./gcp.py username@gmail.com:/[doctype]/[foldername]/Over* /local/path
 }}}
 
+=== Options ===
+
+-u or --update downloads documents that have been updated on the remote server, ensure that you are syncing back to the same directory
+
+-o or --overwrite forcefully overwrites any documents on the local folders, ensure you use this with the above option
+
+-p or --password provides password in the command line
+
+-f or --format export the files in a specific format, if not provided gcp chooses the open document formats. Please ensure you use a common format when exporting a combination of document types. Or refer to the section below for details on export formats.
+
+
+=== Formats ===
+
+documents
+
+spreadsheets
+
+presentations
 
 === Usage samples ===
 
@@ -20,6 +40,12 @@ Imports Manual.doc to the Documentation folder for username@gmail.com, ensure th
 
 {{{
 ./gcp.py /home/devraj/Manual.doc username@gmail.com:/Documentation
+}}}
+
+Export all documents for username@gmail that have changed since the last sync, and overwrite them if they already exists on the local system
+
+{{{
+./gcp.py -o -u username@gmail.com:/sheets /tmp
 }}}
 
 Export all documents for username@gmail.com to /tmp
