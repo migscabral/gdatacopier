@@ -44,13 +44,14 @@ __author__  = "Devraj Mukherjee"
 
 try:
 	from optparse import OptionParser
-	from email.utils import parsedate_tz
+	import datetime
 	import sys
 	import os
 	import re
 	import string
 	import signal
 	import time
+	import stat
 	import getpass
 except:
 	print "gcp failed to find some basic python modules, please validate the environment"
@@ -215,11 +216,15 @@ def export_documents(source_path, target_path, options):
 		if entry.GetDocumentType() == "spreadsheet":
 			gd_client.SetClientLoginToken(sheets_auth_token)
 			
-		# Might use a timestamp if we implement a sync function
-		updated_time = parsedate_tz(entry.updated.text)
+		# Thanks to http://stackoverflow.com/questions/127803/how-to-parse-iso-formatted-date-in-python
+		# we are use regular expression to parse RFC3389
+		updated_time = datetime.datetime(*map(int, re.split('[^\d]', entry.updated.text)[:-1]))
+		atime = time.mktime(updated_time.timetuple())
+		mtime = atime
 
 		try:
 			gd_client.Export(entry, export_filename)
+			os.utime(export_filename, (atime,mtime))
 			print "OK"
 		except gdata.service.Error:
 			print "FAILED"
