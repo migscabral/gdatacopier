@@ -22,11 +22,13 @@ gcp allows you to export or import documents to and from the Google document sys
 
 === Formats ===
 
-documents
+Google defines a list of formats that you can import / export documents in, they are centric to the type of document you are exporting or importing. The following are the accepted list of formats:
 
-spreadsheets
+documents = ['doc', 'html', 'zip', 'odt', 'pdf', 'png', 'rtf', 'txt']
+presentations = ['pdf', 'png', 'ppt', 'swf', 'txt', 'zip', 'html', 'odt']
+spreadsheets = ['xls', 'ods', 'txt', 'html', 'pdf', 'tsv', 'csv']
 
-presentations
+zip export the HTML file with all the require images.
 
 === Usage samples ===
 
