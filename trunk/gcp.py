@@ -70,15 +70,26 @@ except:
 __accepted_doc_formats__ = ['doc', 'html', 'zip', 'odt', 'pdf', 'png', 'rtf', 'txt']
 __accepted_slides_formats__ = ['pdf', 'png', 'ppt', 'swf', 'txt', 'zip', 'html', 'odt']
 __accepted_sheets_formats__ = ['xls', 'ods', 'txt', 'html', 'pdf', 'tsv', 'csv']
-__bad_chars__ = ['\\', '/', '&']
+__bad_chars__ = ['\\', '/', '&', '.', ' ', ':']
 
 def signal_handler(signal, frame):
 	    print "\n[Interrupted] Bye Bye!"
-	    sys.exit(0)
+	    sys.exit(2)
 
 """
 	Helpers
 """
+
+# Strips characters that are not acceptable as file names
+def sanatize_filename(filename):
+	
+	filename = filename.encode('UTF-8')
+	for bad_char in __bad_chars__:
+		filename = filename.replace(bad_char, '')
+		
+	filename = filename.lstrip().rstrip()
+	return filename.encode(sys.getfilesystemencoding())
+
 
 def add_category_filter(document_query, docs_type):
 
@@ -127,14 +138,6 @@ def get_appropriate_extension(entry, docs_type, desired_format):
 		if __accepted_slides_formats__.count(desired_format) > 0: return desired_format
 	
 	return None
-
-# Strips characters that are not acceptable as file names
-def sanatize_filename(filename):
-	
-	for bad_char in __bad_chars__:
-		filename = filename.replace(bad_char, '-')	
-		
-	return filename
 
 def export_documents(source_path, target_path, options):
 	
@@ -195,23 +198,21 @@ def export_documents(source_path, target_path, options):
 	sys.stdout.write("Fetching document list feeds from Google servers for %s ... " % (username))
 	feed = gd_client.Query(document_query.ToUri())
 	print "done.\n"
-		
+	
 	for entry in feed.entry:
 
 		export_extension = get_appropriate_extension(entry, docs_type, options.format)
-		encoded_filename = entry.author[0].name.text.encode(sys.getfilesystemencoding())
-
-		# Construct a file name for the export
-		export_filename = target_path + "/" + encoded_filename + "-" + \
-		 sanatize_filename(entry.title.text.encode('UTF-8')) + "." + export_extension
-
-		# Tell the user something about what we are doing
-		sys.stdout.write("%-30s -d-> %-40s - " % (entry.resourceId.text[0:30], export_filename[:40]))
 
 		# Ignore export if the user hasn't provided a proper format
 		if export_extension == None:
 			print "WRONG FORMAT"
 			continue
+
+		# Construct a file name for the export
+		export_filename = target_path + "/" + sanatize_filename(entry.title.text) + "." + export_extension
+		
+		# Tell the user something about what we are doing
+		sys.stdout.write("%-30s -d-> %-40s - " % (entry.resourceId.text[0:30], export_filename[:40]))
 				
 		# Change authentication token if we are exporting spreadheets
 		if entry.GetDocumentType() == "spreadsheet":
@@ -221,31 +222,31 @@ def export_documents(source_path, target_path, options):
 		# we are use regular expression to parse RFC3389
 		updated_time = datetime.datetime(*map(int, re.split('[^\d]', entry.updated.text)[:-1]))
 		remote_access_time = time.mktime(updated_time.timetuple())
+			
+		# If not force overwrite check if file exists and ask if we should overwrite
+		if not options.overwrite and os.path.isfile(export_filename):
+			user_answer = ""
+			while not user_answer == "NO" and not user_answer.upper() == "YES":
+				user_answer = raw_input("overwrite (yes/NO): ")
+				if user_answer == "": user_answer = "NO"
+			if user_answer == "NO": continue
+			
+		# If update then check to see if the datestamp has changed or ignore
+		if options.update and os.path.isfile(export_filename):
+			file_modified_time = os.stat(export_filename).st_mtime
+			# If local file is older than remote file then download
+			if file_modified_time <= remote_access_time:
+				print "UNCHANGED"
+				continue
 
 		try:
-			
-			# If not force overwrite check if file exists and ask if we should overwrite
-			if not options.overwrite and os.path.isfile(export_filename):
-				user_answer = ""
-				while not user_answer == "NO" and not user_answer.upper() == "YES":
-					user_answer = raw_input("overwrite (yes/NO): ")
-					if user_answer == "": user_answer = "NO"
-				if user_answer == "NO": continue
-			
-			# If update then check to see if the datestamp has changed or ignore
-			if options.update and os.path.isfile(export_filename):
-				file_modified_time = os.stat(export_filename).st_mtime
-				# If local file is older than remote file then download
-				if file_modified_time <= remote_access_time:
-					print "UNCHANGED"
-					continue
-				
-
 			gd_client.Export(entry, export_filename)
 			os.utime(export_filename, (remote_access_time, remote_access_time))
 			print "OK"
+			time.sleep(3)
 		except gdata.service.Error:
-			print "FAILED"
+			print "SERVICE ERROR"
+			print export_filename
 		except:
 			print "FAILED"
 				
