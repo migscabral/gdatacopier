@@ -9,6 +9,8 @@ gcp allows you to export or import documents to and from the Google document sys
 ./gcp.py username@gmail.com:/[doctype]/[foldername]/Over* /local/path
 }}}
 
+doctype and foldername can be set to to the reserved word "all" where appropriate.
+
 === Options ===
 
 -u or --update downloads documents that have been updated on the remote server, ensure that you are syncing back to the same directory
