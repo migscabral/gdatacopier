@@ -26,9 +26,36 @@ doctype and foldername can be set to to the reserved word "all" where appropriat
 
 Google defines a list of formats that you can import / export documents in, they are centric to the type of document you are exporting or importing. The following are the accepted list of formats:
 
-documents = 'doc', 'html', 'zip', 'odt', 'pdf', 'png', 'rtf', 'txt'
-presentations = 'pdf', 'png', 'ppt', 'swf', 'txt', 'zip', 'html', 'odt
-spreadsheets = 'xls', 'ods', 'txt', 'html', 'pdf', 'tsv', 'csv'
+Documents:
+
+  * doc
+  * html
+  * zip
+  * odt
+  * pdf
+  * png
+  * rtf
+  * txt
+
+Presentations: 
+  * pdf
+  * png
+  * ppt
+  * swf 
+  * txt
+  * zip
+  * html
+  * odt
+
+Spreadsheets:
+
+  * xls
+  * ods
+  * txt
+  * html
+  * pdf
+  * tsv
+  * csv
 
 zip export the HTML file with all the require images.
 
