@@ -199,9 +199,10 @@ def export_documents(source_path, target_path, options):
 	for entry in feed.entry:
 
 		export_extension = get_appropriate_extension(entry, docs_type, options.format)
+		encoded_filename = entry.author[0].name.text.encode(sys.getfilesystemencoding())
 
 		# Construct a file name for the export
-		export_filename = target_path + "/" + entry.author[0].name.text.encode('UTF-8') + "-" + \
+		export_filename = target_path + "/" + encoded_filename + "-" + \
 		 sanatize_filename(entry.title.text.encode('UTF-8')) + "." + export_extension
 
 		# Tell the user something about what we are doing
@@ -331,10 +332,6 @@ def import_documents(source_path, target_path, options):
 				entry = gd_client.Upload(media_source, os.path.basename(file_name), folder_or_uri=remote_folder)
 		except:
 			print "FAILED"
-			continue
-		except:
-			print "FAILED"
-			continue
 
 		print entry.resourceId.text
 	
