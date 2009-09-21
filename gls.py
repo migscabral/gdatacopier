@@ -119,13 +119,13 @@ def list_documents(server_string, options):
 	
 	doc_param_parts = document_path.split('/')
 	
-	if len(doc_param_parts) > 1 and not doc_param_parts[1] == '':
+	if len(doc_param_parts) > 1 and not (doc_param_parts[1] == '' or doc_param_parts[1] == '*'):
 		docs_type = doc_param_parts[1]
 		
-	if len(doc_param_parts) > 2 and not doc_param_parts[2] == '':
+	if len(doc_param_parts) > 2 and not (doc_param_parts[2] == '' or doc_param_parts[2] == '*'):
 		folder_name = doc_param_parts[2]
 
-	if len(doc_param_parts) > 3 and not doc_param_parts[3] == '':
+	if len(doc_param_parts) > 3 and not (doc_param_parts[3] == '' or doc_param_parts[3] == '*'):
 			name_filter = doc_param_parts[3]
 			
 	# Get a handle to the document list service

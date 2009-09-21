@@ -70,7 +70,7 @@ except:
 __accepted_doc_formats__ = ['doc', 'html', 'zip', 'odt', 'pdf', 'png', 'rtf', 'txt']
 __accepted_slides_formats__ = ['pdf', 'png', 'ppt', 'swf', 'txt', 'zip', 'html', 'odt']
 __accepted_sheets_formats__ = ['xls', 'ods', 'txt', 'html', 'pdf', 'tsv', 'csv']
-__bad_chars__ = ['\\', '/', '&', '.', ' ', ':']
+__bad_chars__ = ['\\', '/', '&', ':']
 
 def signal_handler(signal, frame):
 	    print "\n[Interrupted] Bye Bye!"
@@ -122,20 +122,20 @@ def get_appropriate_extension(entry, docs_type, desired_format):
 	
 	entry_document_type = entry.GetDocumentType()
 	
+	# If docs_type is of specific type check for output format
+	if docs_type == "docs" or docs_type == "documents" or entry.GetDocumentType() == "document":
+		if __accepted_doc_formats__.count(desired_format) > 0: return desired_format
+	elif docs_type == "sheets" or docs_type == "spreadsheets" or entry.GetDocumentType() == "spreadsheet":
+		if __accepted_sheets_formats__.count(desired_format) > 0: return desired_format
+	elif docs_type == "slides" or docs_type == "presentation" or entry.GetDocumentType() == "presentation":
+		if __accepted_slides_formats__.count(desired_format) > 0: return desired_format
+
 	# If no docs_type it means there are a mixture of things being exported
 	if desired_format == "oo" or docs_type == None:
 		if entry_document_type == "document" or entry_document_type == "presentation":
 			return "odt"
 		elif entry_document_type == "spreadsheet":
 			return "ods"
-	
-	# If docs_type is of specific type check for output format
-	if docs_type == "docs" or docs_type == "documents":
-		if __accepted_doc_formats__.count(desired_format) > 0: return desired_format
-	elif docs_type == "sheets" or docs_type == "spreadsheets":
-		if __accepted_sheets_formats__.count(desired_format) > 0: return desired_format
-	elif docs_type == "slides" or docs_type == "presentation":
-		if __accepted_slides_formats__.count(desired_format) > 0: return desired_format
 	
 	return None
 
@@ -153,13 +153,13 @@ def export_documents(source_path, target_path, options):
 	
 	doc_param_parts = document_path.split('/')
 	
-	if len(doc_param_parts) > 1 and not doc_param_parts[1] == '':
+	if len(doc_param_parts) > 1 and not (doc_param_parts[1] == '' or doc_param_parts[1] == '*'):
 		docs_type = doc_param_parts[1]
 		
-	if len(doc_param_parts) > 2 and not doc_param_parts[2] == '':
+	if len(doc_param_parts) > 2 and not (doc_param_parts[2] == '' or doc_param_parts[2] == '*'):
 		folder_name = doc_param_parts[2]
 
-	if len(doc_param_parts) > 3 and not doc_param_parts[3] == '':
+	if len(doc_param_parts) > 3 and not (doc_param_parts[3] == '' or doc_param_parts[3] == '*'):
 			name_filter = doc_param_parts[3]
 			
 	# Get a handle to the document list service
@@ -205,7 +205,7 @@ def export_documents(source_path, target_path, options):
 
 		# Ignore export if the user hasn't provided a proper format
 		if export_extension == None:
-			print "WRONG FORMAT"
+			print "%-30s -d-> WRONG FORMAT" % entry.resourceId.text[0:30]
 			continue
 
 		# Construct a file name for the export
@@ -243,10 +243,8 @@ def export_documents(source_path, target_path, options):
 			gd_client.Export(entry, export_filename)
 			os.utime(export_filename, (remote_access_time, remote_access_time))
 			print "OK"
-			time.sleep(3)
 		except gdata.service.Error:
 			print "SERVICE ERROR"
-			print export_filename
 		except:
 			print "FAILED"
 				
@@ -315,7 +313,7 @@ def import_documents(source_path, target_path, options):
 		extension = (file_name[len(file_name) - 4:]).upper()
 		extension = extension.replace(".", "")
 
-		sys.stdout.write("%-50s -g-> " % os.path.basename(file_name)[0:50])
+		sys.stdout.write("%-50s -u-> " % os.path.basename(file_name)[0:50])
 		
 		# Check to see that we are allowed to upload this document
 		if not extension in gdata.docs.service.SUPPORTED_FILETYPES:
