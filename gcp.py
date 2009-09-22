@@ -83,7 +83,7 @@ def signal_handler(signal, frame):
 # Strips characters that are not acceptable as file names
 def sanatize_filename(filename):
 	
-	filename = filename.encode('UTF-8')
+	filename = filename.decode('UTF-8')
 	for bad_char in __bad_chars__:
 		filename = filename.replace(bad_char, '')
 		
@@ -212,7 +212,7 @@ def export_documents(source_path, target_path, options):
 		export_filename = target_path + "/" + sanatize_filename(entry.title.text) + "." + export_extension
 		
 		# Tell the user something about what we are doing
-		sys.stdout.write("%-30s -d-> %-40s - " % (entry.resourceId.text[0:30], export_filename[:40]))
+		sys.stdout.write("%-30s -d-> %-50s - " % (entry.resourceId.text[0:30], export_filename[-50:]))
 				
 		# Change authentication token if we are exporting spreadheets
 		if entry.GetDocumentType() == "spreadsheet":
@@ -313,7 +313,7 @@ def import_documents(source_path, target_path, options):
 		extension = (file_name[len(file_name) - 4:]).upper()
 		extension = extension.replace(".", "")
 
-		sys.stdout.write("%-50s -u-> " % os.path.basename(file_name)[0:50])
+		sys.stdout.write("%-50s -u-> " % os.path.basename(file_name)[-50:])
 		
 		# Check to see that we are allowed to upload this document
 		if not extension in gdata.docs.service.SUPPORTED_FILETYPES:
