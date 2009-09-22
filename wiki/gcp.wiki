@@ -21,6 +21,31 @@ doctype and foldername can be set to to the reserved word "all" where appropriat
 
 -f or --format export the files in a specific format, if not provided gcp chooses the open document formats. Please ensure you use a common format when exporting a combination of document types. Or refer to the section below for details on export formats.
 
+=== Usage samples ===
+
+Imports all accepted files from /home/devraj to username@gmail.com. All unsupported formats will be ignored. gcp doesn't support recursively reading directories.
+
+{{{
+./gcp.py /home/devraj/ username@gmail.com:/
+}}}
+
+Imports Manual.doc to the Documentation folder for username@gmail.com, ensure that the folder exists on the Google document system.
+
+{{{
+./gcp.py /home/devraj/Manual.doc username@gmail.com:/Documentation
+}}}
+
+Export all documents for username@gmail that have changed since the last sync, and overwrite them if they already exists on the local system
+
+{{{
+./gcp.py -o -u username@gmail.com:/sheets /tmp
+}}}
+
+Export all documents for username@gmail.com to /tmp
+
+{{{
+./gcp.py username@gmail.com:/docs/all/Over* /tmp/
+}}}
 
 === Formats ===
 
@@ -58,29 +83,3 @@ Spreadsheets:
   * csv
 
 zip export the HTML file with all the require images.
-
-=== Usage samples ===
-
-Imports all accepted files from /home/devraj to username@gmail.com. All unsupported formats will be ignored. gcp doesn't support recursively reading directories.
-
-{{{
-./gcp.py /home/devraj/ username@gmail.com:/
-}}}
-
-Imports Manual.doc to the Documentation folder for username@gmail.com, ensure that the folder exists on the Google document system.
-
-{{{
-./gcp.py /home/devraj/Manual.doc username@gmail.com:/Documentation
-}}}
-
-Export all documents for username@gmail that have changed since the last sync, and overwrite them if they already exists on the local system
-
-{{{
-./gcp.py -o -u username@gmail.com:/sheets /tmp
-}}}
-
-Export all documents for username@gmail.com to /tmp
-
-{{{
-./gcp.py username@gmail.com:/docs/all/Over* /tmp/
-}}}
