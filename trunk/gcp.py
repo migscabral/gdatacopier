@@ -129,6 +129,8 @@ def get_appropriate_extension(entry, docs_type, desired_format):
 		if __accepted_sheets_formats__.count(desired_format) > 0: return desired_format
 	elif docs_type == "slides" or docs_type == "presentation" or entry.GetDocumentType() == "presentation":
 		if __accepted_slides_formats__.count(desired_format) > 0: return desired_format
+	elif docs_type == "pdf" and desired_format == "pdf":
+		return "pdf"
 
 	# If no docs_type it means there are a mixture of things being exported
 	if desired_format == "oo" or docs_type == None:
@@ -136,6 +138,8 @@ def get_appropriate_extension(entry, docs_type, desired_format):
 			return "odt"
 		elif entry_document_type == "spreadsheet":
 			return "ods"
+		elif entry_document_type == "pdf":
+			return "pdf"
 	
 	return None
 
@@ -205,7 +209,7 @@ def export_documents(source_path, target_path, options):
 
 		# Ignore export if the user hasn't provided a proper format
 		if export_extension == None:
-			print "%-30s -d-> WRONG FORMAT" % entry.resourceId.text[0:30]
+			print "%-30s -d-> WRONG FORMAT (%-30s)" % (entry.resourceId.text[0:30], entry.title.text[0:30])
 			continue
 
 		# Construct a file name for the export
