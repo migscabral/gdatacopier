@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.5
+#!/usr/bin/env python
 
 """
 
@@ -107,7 +107,7 @@ def add_title_match_filter(document_query, name_filter):
 """
 def list_documents(server_string, options):
 	
-	username, separator, document_path = server_string.partition(':')
+	username, document_path = server_string.split(':', 1)
 	
 	if not is_email(username):
 		print "Usernames most be provided as your full Gmail address, hosted domains included."

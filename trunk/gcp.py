@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.5
+#!/usr/bin/env python
 
 """
 
@@ -149,7 +149,7 @@ def export_documents(source_path, target_path, options):
 		print "%s does not exists or you don't have write privelleges" % target_path
 		sys.exit(2)
 
-	username, separator, document_path = source_path.partition(':')
+	username, document_path = source_path.split(':')
 	
 	docs_type = None
 	folder_name = None
@@ -273,7 +273,7 @@ def get_folder_entry(folder_name, gd_client):
 def import_documents(source_path, target_path, options):
 	
 	upload_filenames = []
-	username, separator, document_path = target_path.partition(':')
+	username, document_path = target_path.split(':')
 	
 	# File or Directory add the names of the uploads to a list 
 	if os.path.isdir(source_path):
