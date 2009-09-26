@@ -109,6 +109,12 @@ def list_documents(server_string, options):
 	
 	username, document_path = server_string.split(':', 1)
 	
+	# Counters for the uploads
+	docs_counter = 0
+	sheets_counter = 0
+	slides_counter = 0
+	pdf_counter = 0
+	
 	if not is_email(username):
 		print "Usernames most be provided as your full Gmail address, hosted domains included."
 		sys.exit(2)
@@ -152,17 +158,33 @@ def list_documents(server_string, options):
 		print "done.\n"
 		
 		for entry in feed.entry:
+			
+			document_type = entry.GetDocumentType()
+			
 			# Thanks to http://stackoverflow.com/questions/127803/how-to-parse-iso-formatted-date-in-python
 			# we are use regular expression to parse RFC3389
 			updated_time = datetime.datetime(*map(int, re.split('[^\d]', entry.updated.text)[:-1]))
 			date_string = updated_time.strftime('%b %d %Y %H:%M')
-			print '%-15s%-17s%-18s%-45s' % (entry.GetDocumentType(), entry.author[0].name.text.encode('UTF-8')[0:16], \
+			
+			print '%-15s%-17s%-18s%-45s' % (document_type, entry.author[0].name.text.encode('UTF-8')[0:16], \
 				date_string, entry.title.text.encode('UTF-8')[0:45])
+				
+			# Icrease counters
+			if document_type == "document": 
+				docs_counter = docs_counter + 1
+			elif document_type == "spreadsheet": 
+				sheets_counter = sheets_counter + 1
+			elif document_type == "presentation":
+				slides_counter = slides_counter + 1
+			elif document_type == "pdf":
+				pdf_counter = pdf_counter + 1
 		
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
 	except gdata.service.Error:
 		print "Failed!"
+		
+	print "\n%i document(s), %i spreadsheet(s), %i presentation(s), %i pdf(s)" % (docs_counter, sheets_counter, slides_counter, pdf_counter)
 
 
 """
