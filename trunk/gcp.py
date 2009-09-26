@@ -203,6 +203,12 @@ def export_documents(source_path, target_path, options):
 	feed = gd_client.Query(document_query.ToUri())
 	print "done.\n"
 	
+	# Counters
+	success_counter = 0
+	failed_counter = 0
+	unchanged_counter = 0
+	service_error_counter = 0
+		
 	for entry in feed.entry:
 
 		export_extension = get_appropriate_extension(entry, docs_type, options.format)
@@ -241,18 +247,24 @@ def export_documents(source_path, target_path, options):
 			# If local file is older than remote file then download
 			if file_modified_time <= remote_access_time:
 				print "UNCHANGED"
+				unchanged_counter = unchanged_counter + 1
 				continue
 
 		try:
 			gd_client.Export(entry, export_filename)
 			os.utime(export_filename, (remote_access_time, remote_access_time))
+			success_counter = success_counter + 1
 			print "OK"
 		except gdata.service.Error:
 			print "SERVICE ERROR"
+			service_error_counter = service_error_counter + 1
 		except:
 			print "FAILED"
+			failed_counter = failed_counter + 1
 				
 		gd_client.SetClientLoginToken(docs_auth_token)
+		
+	print "\n%i successful, %i unchanged, %i service error, %i failed" % (success_counter, unchanged_counter, service_error_counter, failed_counter)
 	
 	
 def get_folder_entry(folder_name, gd_client):
@@ -311,6 +323,11 @@ def import_documents(source_path, target_path, options):
 	# New line to make things look good
 	print "\n"
 	
+	# Counters
+	notallowed_counter = 0
+	failed_counter = 0
+	success_counter = 0
+	
 	# Upload allowed documents to the Google system
 	for file_name in upload_filenames:
 		
@@ -322,6 +339,7 @@ def import_documents(source_path, target_path, options):
 		# Check to see that we are allowed to upload this document
 		if not extension in gdata.docs.service.SUPPORTED_FILETYPES:
 			print "NOT ALLOWED"
+			notallowed_counter = notallowed_counter + 1
 			continue
 
 		mime_type = gdata.docs.service.SUPPORTED_FILETYPES[extension]
@@ -333,10 +351,14 @@ def import_documents(source_path, target_path, options):
 				entry = gd_client.Upload(media_source, os.path.basename(file_name))
 			else:
 				entry = gd_client.Upload(media_source, os.path.basename(file_name), folder_or_uri=remote_folder)
+			success_counter = success_counter + 1
 		except:
 			print "FAILED"
+			failed_counter = failed_counter + 1
 
 		print entry.resourceId.text
+		
+	print "\n%i successful, %i not allowed, %i failed" % (success_counter, notallowed_counter, failed_counter)
 	
 
 """
