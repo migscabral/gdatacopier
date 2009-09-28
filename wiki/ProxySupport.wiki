@@ -1,5 +1,5 @@
 #summary Using proxies with gdatacopier, also outlines the use proxies in gdata-api.
-#labels Phase-Implementation,Deprecated
+#labels Phase-Implementation
 
 == Introduction ==
 
