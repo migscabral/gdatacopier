@@ -3,11 +3,11 @@
 
 == Introduction ==
 
-If you are behind a HTTP/HTTPS proxy then this document is for you, it outlines the environment variables you need to set to make gdoc-cp work with proxies.
+If you are behind a HTTP/HTTPS proxy then this document is for you, it outlines the environment variables you need to set to make GDataCopier work with proxies.
 
-For consistency, all GDataCopier components use the same proxy variables as the GData API.
+GDataCopier 2.0 does not use the Proxy directly, it depends on the GData API to handle the proxy and calls out to the Google servers.
 
-If you are behind a proxy please use GDataCopier 1.0.2 
+The following is wisdom we have collected surfing the web, talking to the GData API developers and deployment experiences.
 
 == Proxy and environment variables ==
 
@@ -44,5 +44,5 @@ surfboard:~/Work/gdatacopier devraj$ export proxy-username="username"
 You can use the env command to temporarily set the environment variables while you run GDataCopier.
 
 {{{
-env proxy-username="username" proxy-password="password" ./gdoc-cp.py -u someone@gmail.com -p password -l
+env proxy-username="username" proxy-password="password" ./gls.py username@gmail.com:/sheets
 }}}
