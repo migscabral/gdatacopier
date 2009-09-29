@@ -28,8 +28,6 @@ Simply export these variables using your shell before you run GDataCopier
   * _http_proxy_ with the url of the proxy to be used for http connections
   * _https_proxy_ with the url of an HTTPS proxy that should be used, note this should start with https://
 
-*_DO NOT export the environment variable called https_proxy, this will cease the script to work because of a issue in urllib2._*
-
 == BASH hyphen issues ==
 
 If you are a BASH user then you will notice if you try and export a variable you will get the following error
