@@ -19,4 +19,4 @@ GDataCopier was developed and tested using UNIX style operating systems with the
   * chmod +x (to make the scripts executable)
   * Follow manual pages published on the Wiki to get information about Usage
 
-If your environment uses a proxy please read the ProxySupport documentat
+If your environment uses a proxy please read ProxySupport
