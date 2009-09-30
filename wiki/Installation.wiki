@@ -11,6 +11,12 @@ GDataCopier was developed and tested using UNIX style operating systems with the
 
   * GData API version 2.0.2+ (http://code.google.com/p/gdata-python-client/)
 
+== Installing GData Python libraries ==
+
+  * Download and untar GData API 
+  * Change directories into the untarred directory
+  * run python setup.py install
+
 == Quick installation steps ==
 
   * Use 'python --version' to reveal the installed version of Python
