@@ -153,7 +153,7 @@ def list_documents(server_string, options):
 			date_string = updated_time.strftime('%b %d %Y %H:%M')
 			
 			print '%-15s%-17s%-18s%-45s' % (document_type, entry.author[0].name.text[0:16], \
-				date_string, entry.title.text.encode('UTF-8')[0:45])
+				date_string, entry.title.text[0:45])
 				
 			# Icrease counters
 			if document_type == "document": 
