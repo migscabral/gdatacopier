@@ -255,7 +255,7 @@ def get_folder_entry(folder_name, gd_client):
 	print "done."
 	
 	for entry in feed.entry:
-		if entry.title.text.encode('UTF-8') == folder_name:
+		if entry.title.text == folder_name:
 			return entry
 			
 	return None
