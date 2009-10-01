@@ -12,21 +12,7 @@
 	of this software is completely at YOUR OWN RISK.
 	
 	Version 2.0
-	
-	Requires:
 		
-		- Python 2.5
-		- Python GData API 2.0+
-		
-	Summary:
-	
-	Lists documents on the Google document servers, user must provide a username
-	password combination, document type and or folder names
-	
-	Options:
-	
-	--password=		Option to provide password on the command line
-	
 """
 
 __version__ = 2.0
@@ -166,7 +152,7 @@ def list_documents(server_string, options):
 			updated_time = datetime.datetime(*map(int, re.split('[^\d]', entry.updated.text)[:-1]))
 			date_string = updated_time.strftime('%b %d %Y %H:%M')
 			
-			print '%-15s%-17s%-18s%-45s' % (document_type, entry.author[0].name.text.encode('UTF-8')[0:16], \
+			print '%-15s%-17s%-18s%-45s' % (document_type, entry.author[0].name.text[0:16], \
 				date_string, entry.title.text.encode('UTF-8')[0:45])
 				
 			# Icrease counters

@@ -11,28 +11,6 @@
 	GDataCopier is free software and comes with absolutely NO WARRANTY. Use 
 	of this software is completely at YOUR OWN RISK.
 	
-	Version 2.0
-	
-	Requires:
-		
-		- Python 2.5
-		- Python GData API 2.0+
-		
-	Summary:
-		
-	GDataCopier originally started as a backup utility for Google Documents.
-	When first published GData API didn't allow downloading documents, GDataCopier
-	pretended to Firefox and perform the interactions required to download the
-	documents.
-	
-	Since GData 2.0 Google has incorporated downloading documents into the API.
-	As of Version 2.0 GDataCopier provides a cp like command line utility to ease
-	backup of Google Documents simpler for System Administrators.
-
-	Usage:
-	
-	gcp [options] username@domain.com:/[doctype]/* /home/devraj
-	
 """
 
 __version__ = 2.0
