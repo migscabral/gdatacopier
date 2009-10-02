@@ -11,11 +11,11 @@
 	GDataCopier is free software and comes with absolutely NO WARRANTY. Use 
 	of this software is completely at YOUR OWN RISK.
 	
-	Version 2.0
+	Version 2.0.1
 		
 """
 
-__version__ = 2.0
+__version__ = "2.0.1"
 __author__  = "Devraj Mukherjee"
 
 """
