@@ -184,7 +184,7 @@ def is_remote_server_string(remote_address):
 	
 def parse_user_input():
 	
-	usage  = "usage: %prog [options] username@domain.com:/[doctype]/[foldername]\n"
+	usage  = "usage: %prog [options] username@domain.com:/[doctype]/[foldername]/Title*\n"
 	usage += "              where [doctype] is docs, sheets, slides, pdf, folders"
 	parser = OptionParser(usage)
 	
