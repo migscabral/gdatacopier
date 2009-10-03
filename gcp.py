@@ -351,7 +351,7 @@ def is_remote_server_string(remote_address):
 	
 def parse_user_input():
 	
-	usage = "usage: %prog [options] username@domain.com:/docs/* /home/username/directory"
+	usage = "usage: %prog [options] username@domain.com:/[doctype]/[folder]/Title* /home/directory"
 	parser = OptionParser(usage)
 
 	parser.add_option('-u', '--update', action = 'store_true', dest = 'update', default = False,
