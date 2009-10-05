@@ -47,6 +47,20 @@ Export all documents for username@gmail.com to /tmp
 ./gcp.py username@gmail.com:/docs/all/Over* /tmp/
 }}}
 
+And now for my favourite, using gcp as a PDF convertor (if you haven't figured this out yet), upload a text or document using the following command
+
+{{{
+./gcp.py TextFileToConvertToPDF.txt devraj@etk.com.au:/
+}}}
+
+The above command would create a document with the file name as the document title. 
+
+Ask gcp to export all documents that have the name TextFileToConvertToPDF* back as a PDF. Obviously this is not deleted from the Google document system.
+
+{{{
+.gcp.py -f pdf devraj@etk.com.au:/all/all/TextFileToConvertToPDF* .
+}}}
+
 === Formats ===
 
 Google defines a list of formats that you can import / export documents in, they are centric to the type of document you are exporting or importing. The following are the accepted list of formats:
