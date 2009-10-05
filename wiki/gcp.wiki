@@ -47,18 +47,20 @@ Export all documents for username@gmail.com to /tmp
 ./gcp.py username@gmail.com:/docs/all/Over* /tmp/
 }}}
 
+=== Cool examples === 
+
 And now for my favourite, using gcp as a PDF convertor (if you haven't figured this out yet), upload a text or document using the following command
 
 {{{
-./gcp.py TextFileToConvertToPDF.txt devraj@etk.com.au:/
+./gcp.py TextFileToConvertToPDF.txt username@gmail.com:/
 }}}
 
 The above command would create a document with the file name as the document title. 
 
-Ask gcp to export all documents that have the name TextFileToConvertToPDF* back as a PDF. Obviously this is not deleted from the Google document system.
+Ask gcp to export all documents that have the name TextFileToConvertToPDF back as a PDF. Obviously this is not deleted from the Google document system.
 
 {{{
-.gcp.py -f pdf devraj@etk.com.au:/all/all/TextFileToConvertToPDF* .
+.gcp.py -f pdf username@gmail.com:/all/all/TextFileToConvertToPDF* .
 }}}
 
 === Formats ===
