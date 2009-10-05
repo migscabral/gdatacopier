@@ -60,7 +60,7 @@ The above command would create a document with the file name as the document tit
 Ask gcp to export all documents that have the name TextFileToConvertToPDF back as a PDF. Obviously this is not deleted from the Google document system.
 
 {{{
-.gcp.py -f pdf username@gmail.com:/all/all/TextFileToConvertToPDF* .
+./gcp.py -f pdf username@gmail.com:/all/all/TextFileToConvertToPDF* .
 }}}
 
 === Formats ===
