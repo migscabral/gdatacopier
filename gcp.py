@@ -11,11 +11,11 @@
 	GDataCopier is free software and comes with absolutely NO WARRANTY. Use 
 	of this software is completely at YOUR OWN RISK.
 	
-	Version 2.0.1
+	Version 2.0.2
 	
 """
 
-__version__ = "2.0.1"
+__version__ = "2.0.2"
 __author__  = "Devraj Mukherjee"
 
 """
@@ -127,7 +127,13 @@ def export_documents(source_path, target_path, options):
 	
 	if not os.path.isdir(target_path):
 		print "%s does not exists or you don't have write privelleges" % target_path
-		sys.exit(2)
+
+		user_answer = "NO"
+		user_answer = raw_input("make directory? (yes/NO): ")
+		if user_answer == "" or user_answer == "NO":
+			sys.exit(2)
+		else:
+			os.mkdir(target_path)
 
 	username, document_path = source_path.split(':')
 	
@@ -199,7 +205,14 @@ def export_documents(source_path, target_path, options):
 			continue
 
 		# Construct a file name for the export
-		export_filename = target_path + "/" + sanatize_filename(entry.title.text) + "." + export_extension
+		export_filename = None
+		if not options.create_user_dir:
+			export_filename = target_path + "/" + sanatize_filename(entry.title.text) + "." + export_extension
+		else:
+			if not os.path.isdir(target_path + "/" + entry.author[0].name.text):
+				os.mkdir(target_path + "/" + entry.author[0].name.text)
+				
+			export_filename = target_path + "/" + entry.author[0].name.text + "/" + sanatize_filename(entry.title.text) + "." + export_extension
 		
 		# Tell the user something about what we are doing
 		sys.stdout.write("%-30s -d-> %-50s - " % (entry.resourceId.text[0:30], export_filename[-50:]))
@@ -358,6 +371,8 @@ def parse_user_input():
 						help = 'download files that have changed on Google servers (download only option)')
 	parser.add_option('-o', '--overwrite', action = 'store_true', dest = 'overwrite', default = False,
 						help = 'overwrite files if they already exists on the local disk (download only option)')
+	parser.add_option('-c', '--create-user-dir', action = 'store_true', dest = 'create_user_dir', default = False,
+						help = 'copies documents to a sub-directory by owner name, if the directory doesn\'t exist it will be created')
 	parser.add_option('-p', '--password', dest = 'password', 
 						help = 'password to login to Google document servers, use with extreme caution, may be logged')
 	parser.add_option('-f', '--format', default = 'oo',
