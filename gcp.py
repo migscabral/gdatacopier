@@ -114,8 +114,10 @@ def get_appropriate_extension(entry, docs_type, desired_format):
 
 	# If no docs_type it means there are a mixture of things being exported
 	if desired_format == "oo" or docs_type == None:
-		if entry_document_type == "document" or entry_document_type == "presentation":
+		if entry_document_type == "document":
 			return "odt"
+		elif entry_document_type == "presentation":
+			return "ppt"
 		elif entry_document_type == "spreadsheet":
 			return "ods"
 		elif entry_document_type == "pdf":
