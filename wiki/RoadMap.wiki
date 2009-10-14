@@ -1,13 +1,15 @@
 #summary News and notes about the Development Version of GDataCopier.
 #labels Featured
 
-= Introduction =
+== Introduction ==
 
 GDataCopier is an active project, the following is our road map, it outlines new features and bug fixes for upcoming releases.
 
 == v2.0.2 ==
 
 Estimated release date 30th October 2009
+
+Currently available by checking out code in Subversion.
 
 *New Features*
 
