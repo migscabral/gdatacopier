@@ -1,0 +1,18 @@
+#summary News and notes about the Development Version of GDataCopier.
+#labels Featured
+
+= Introduction =
+
+GDataCopier is an active project, the following is our road map, it outlines new features and bug fixes for upcoming releases.
+
+== v2.0.2 ==
+
+Estimated release date 30th October 2009
+
+*New Features*
+
+  * Adds -c command line parameter, that creates a sub-directory per document owner for better organisation of backed up documents
+
+*Bug fixes*
+
+  * Defaults to PPT for presentations, ODF doesn't seem to be supported
