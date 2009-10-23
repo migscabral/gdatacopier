@@ -14,6 +14,7 @@ Currently available by checking out code in Subversion.
 *New Features*
 
   * Adds -c command line parameter, that creates a sub-directory per document owner for better organisation of backed up documents
+  * Allow user to change verbosity
 
 *Bug fixes*
 
