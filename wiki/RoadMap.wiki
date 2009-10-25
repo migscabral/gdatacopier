@@ -20,3 +20,8 @@ Currently available by checking out code in Subversion.
 *Bug fixes*
 
   * Defaults to PPT for presentations, ODF doesn't seem to be supported
+
+*Credits*
+
+  * gdazero for the document id append idea
+  * eszpee for suggesting the verbosity level idea
