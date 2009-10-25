@@ -33,6 +33,7 @@ try:
 	import time
 	import stat
 	import getpass
+	import base64
 except:
 	print "gcp failed to find some basic python modules, please validate the environment"
 	exit(1)
@@ -51,6 +52,13 @@ __accepted_doc_formats__ = ['doc', 'html', 'zip', 'odt', 'pdf', 'png', 'rtf', 't
 __accepted_slides_formats__ = ['pdf', 'png', 'ppt', 'swf', 'txt', 'zip', 'html', 'odt']
 __accepted_sheets_formats__ = ['xls', 'ods', 'txt', 'html', 'pdf', 'tsv', 'csv']
 __bad_chars__ = ['\\', '/', '&', ':']
+
+# Verbosity constants
+_VERBOSE_NOTHING = 0
+_VERBOSE_SUMMARY = 1
+_VERBOSE_FAILED = 2
+_VERBOSE_CHANGED = 3
+_VERBOSE_ALL = 4
 
 def signal_handler(signal, frame):
 	    print "\n[Interrupted] Bye Bye!"
@@ -135,7 +143,11 @@ def export_documents(source_path, target_path, options):
 		if user_answer == "" or user_answer == "NO":
 			sys.exit(2)
 		else:
-			os.mkdir(target_path)
+			try:
+				os.mkdir(target_path)
+			except:
+				print "\nfailed to created %s" % target_path
+				sys.exit(2)
 
 	username, document_path = source_path.split(':')
 	
@@ -209,12 +221,18 @@ def export_documents(source_path, target_path, options):
 		# Construct a file name for the export
 		export_filename = None
 		if not options.create_user_dir:
-			export_filename = target_path + "/" + sanatize_filename(entry.title.text) + "." + export_extension
+			export_filename = target_path + "/" + sanatize_filename(entry.title.text)
 		else:
 			if not os.path.isdir(target_path + "/" + entry.author[0].name.text):
 				os.mkdir(target_path + "/" + entry.author[0].name.text)
 				
-			export_filename = target_path + "/" + entry.author[0].name.text + "/" + sanatize_filename(entry.title.text) + "." + export_extension
+			export_filename = target_path + "/" + entry.author[0].name.text + "/" + sanatize_filename(entry.title.text)
+		
+		# Add a Base64 hash of the resource id if the user requires it
+		if options.add_document_id:
+			export_filename = export_filename + "-" + base64.b64encode(entry.resourceId.text)
+				
+		export_filename = export_filename  + "." + export_extension
 		
 		# Tell the user something about what we are doing
 		sys.stdout.write("%-30s -d-> %-50s - " % (entry.resourceId.text[0:30], export_filename[-50:]))
@@ -352,8 +370,9 @@ def import_documents(source_path, target_path, options):
 			failed_counter = failed_counter + 1
 
 		print entry.resourceId.text
-		
-	print "\n%i successful, %i not allowed, %i failed" % (success_counter, notallowed_counter, failed_counter)
+	
+	if options.verbosity >= _VERBOSE_SUMMARY:
+		print "\n%i successful, %i not allowed, %i failed" % (success_counter, notallowed_counter, failed_counter)
 	
 
 """
@@ -370,9 +389,13 @@ def parse_user_input():
 	parser = OptionParser(usage)
 
 	parser.add_option('-u', '--update', action = 'store_true', dest = 'update', default = False,
-						help = 'download files that have changed on Google servers (download only option)')
+						help = 'only downloads files that have changed on the Google document servers, remote time stamps are replicated')
+	parser.add_option('-v', '--verbose', dest = 'verbosity', default = 4, type="int",
+						help = 'change the verbosity level (defaults to all messages), 0 no messages, 1 summary only, 2 failed operations, 3 changed operations, 4 all messages')
 	parser.add_option('-o', '--overwrite', action = 'store_true', dest = 'overwrite', default = False,
 						help = 'overwrite files if they already exists on the local disk (download only option)')
+	parser.add_option('-i', '--doc-id', action = 'store_true', dest = 'add_document_id', default = False,
+						help = 'appends document id at the end of the file name, use this if you have multiple documents with the same name')
 	parser.add_option('-c', '--create-user-dir', action = 'store_true', dest = 'create_user_dir', default = False,
 						help = 'copies documents to a sub-directory by owner name, if the directory doesn\'t exist it will be created')
 	parser.add_option('-p', '--password', dest = 'password', 
@@ -386,6 +409,8 @@ def parse_user_input():
 		If arg1 is remote server then we are exporting documents, otherwise we are
 		importing documents into the Google document system
 	"""
+	
+	greet(options)
 	
 	if not len(args) == 2:
 		print "invalid or missing source or destination for copying documents"
@@ -423,15 +448,15 @@ def parse_user_input():
 
 
 # Prints Greeting
-def greet():
-	print "gcp %s, document copy utility. Copyright 2009 Eternity Technologies" % __version__
-	print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
+def greet(options):
+	if options.verbosity > _VERBOSE_NOTHING:
+		print "gcp %s, document copy utility. Copyright 2009 Eternity Technologies" % __version__
+		print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
 
 # main() is where things come together, this joins all the messages defined above
 # these messages must be executed in the defined order
 def main():
 	signal.signal(signal.SIGINT, signal_handler)
-	greet()						# Greet the user with a standard welcome message
 	parse_user_input()			# Check to see we have the right options or exit
 
 # Begin execution of the main method since we are at the bottom of the script	
