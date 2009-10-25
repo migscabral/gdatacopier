@@ -15,6 +15,7 @@ Currently available by checking out code in Subversion.
 
   * Adds -c command line parameter, that creates a sub-directory per document owner for better organisation of backed up documents
   * Allow user to change verbosity
+  * Adds -i to append the document id of the user to the filename, the id is base64 hashed
 
 *Bug fixes*
 
