@@ -412,6 +412,11 @@ def parse_user_input():
 	
 	greet(options)
 	
+	if not sys.getfilesystemencoding():
+		print "no encoding detected in your environment settings, try something like export LANG=en_US.UTF-8; "
+		sys.exit(1)
+		
+	
 	if not len(args) == 2:
 		print "invalid or missing source or destination for copying documents"
 		exit(1)
