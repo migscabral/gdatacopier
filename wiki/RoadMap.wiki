@@ -7,6 +7,8 @@ GDataCopier is an active project, the following is our road map, it outlines new
 
 == v2.0.3 ==
 
+Estimated Release: 30th November 2009
+
 *New Features*
 
   * Allow user to change verbosity
