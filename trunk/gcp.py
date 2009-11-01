@@ -371,8 +371,7 @@ def import_documents(source_path, target_path, options):
 
 		print entry.resourceId.text
 	
-	if options.verbosity >= _VERBOSE_SUMMARY:
-		print "\n%i successful, %i not allowed, %i failed" % (success_counter, notallowed_counter, failed_counter)
+	print "\n%i successful, %i not allowed, %i failed" % (success_counter, notallowed_counter, failed_counter)
 	
 
 """
@@ -390,8 +389,6 @@ def parse_user_input():
 
 	parser.add_option('-u', '--update', action = 'store_true', dest = 'update', default = False,
 						help = 'only downloads files that have changed on the Google document servers, remote time stamps are replicated')
-	parser.add_option('-v', '--verbose', dest = 'verbosity', default = 4, type="int",
-						help = 'change the verbosity level (defaults to all messages), 0 no messages, 1 summary only, 2 failed operations, 3 changed operations, 4 all messages')
 	parser.add_option('-o', '--overwrite', action = 'store_true', dest = 'overwrite', default = False,
 						help = 'overwrite files if they already exists on the local disk (download only option)')
 	parser.add_option('-i', '--doc-id', action = 'store_true', dest = 'add_document_id', default = False,
@@ -454,9 +451,8 @@ def parse_user_input():
 
 # Prints Greeting
 def greet(options):
-	if options.verbosity > _VERBOSE_NOTHING:
-		print "gcp %s, document copy utility. Copyright 2009 Eternity Technologies" % __version__
-		print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
+	print "gcp %s, document copy utility. Copyright 2009 Eternity Technologies" % __version__
+	print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
 
 # main() is where things come together, this joins all the messages defined above
 # these messages must be executed in the defined order
