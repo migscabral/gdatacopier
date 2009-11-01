@@ -5,17 +5,24 @@
 
 GDataCopier is an active project, the following is our road map, it outlines new features and bug fixes for upcoming releases.
 
+== v2.0.3 ==
+
+*New Features*
+
+  * Allow user to change verbosity
+
+
 == v2.0.2 ==
 
-Estimated release date 30th October 2009
+Released: 1st November 2009
 
 Currently available by checking out code in Subversion.
 
 *New Features*
 
   * Adds -c command line parameter, that creates a sub-directory per document owner for better organisation of backed up documents
-  * Allow user to change verbosity
   * Adds -i to append the document id of the user to the filename, the id is base64 hashed
+  * Fixes issue with detecting updating documents (critical)
 
 *Bug fixes*
 
