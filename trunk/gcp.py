@@ -258,7 +258,7 @@ def export_documents(source_path, target_path, options):
 		if options.update and os.path.isfile(export_filename):
 			file_modified_time = os.stat(export_filename).st_mtime
 			# If local file is older than remote file then download
-			if file_modified_time <= remote_access_time:
+			if file_modified_time >= remote_access_time:
 				print "UNCHANGED"
 				unchanged_counter = unchanged_counter + 1
 				continue
