@@ -21,6 +21,10 @@ doctype and foldername can be set to to the reserved word "all" where appropriat
 
 -f or --format export the files in a specific format, if not provided gcp chooses the open document formats. Please ensure you use a common format when exporting a combination of document types. Or refer to the section below for details on export formats.
 
+-c creates directories per document owner username 
+
+-i adds a base64 hash of the document at the end of the file name
+
 === Usage samples ===
 
 Imports all accepted files from /home/devraj to username@gmail.com. All unsupported formats will be ignored. gcp doesn't support recursively reading directories.
