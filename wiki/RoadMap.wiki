@@ -34,3 +34,4 @@ Currently available by checking out code in Subversion.
 
   * gdazero for the document id append idea
   * eszpee for suggesting the verbosity level idea
+  * Radu Negrean of [http://uniquelogodesign.com Unique Logo Design] for contributing the logo
