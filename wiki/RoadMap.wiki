@@ -11,6 +11,8 @@ Estimated Release: 15th December 2009
 
 *New Features*
 
+  * Introduce gmkdir to make directories on Google servers
+  * Introduce gmv to move documents from one folder to another on Google servers
   * Allow user to change verbosity
 
 
