@@ -169,6 +169,12 @@ def list_documents(server_string, options):
 		print "Failed, Bad Password!"
 	except gdata.service.Error:
 		print "Failed!"
+	except gdata.service.CaptchaRequired:
+		print "Captcha required, use web interface to fix this!"
+		sys.exit(2)
+	except:
+		print "Failed."
+		sys.exit(2)
 		
 	print "\n%i document(s), %i spreadsheet(s), %i presentation(s), %i pdf(s)" % (docs_counter, sheets_counter, slides_counter, pdf_counter)
 

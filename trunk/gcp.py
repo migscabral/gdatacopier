@@ -194,6 +194,12 @@ def export_documents(source_path, target_path, options):
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
 		sys.exit(2)
+	except gdata.service.CaptchaRequired:
+		print "Captcha required, use web interface to fix this!"
+		sys.exit(2)
+	except:
+		print "Failed."
+		sys.exit(2)
 		
 	# We must keep track of the docs token
 	docs_auth_token = gd_client.GetClientLoginToken()
