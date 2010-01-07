@@ -5,17 +5,17 @@
 	gcp
 	GDataCopier, http://gdatacopier.googlecode.com/
 	
-	Copyright 2009 Eternity Technologies.
+	Copyright 2010 Eternity Technologies.
 	Distributed under the terms and conditions of the GNU/GPL v3
 	
 	GDataCopier is free software and comes with absolutely NO WARRANTY. Use 
 	of this software is completely at YOUR OWN RISK.
 	
-	Version 2.0.2
+	Version 2.1
 	
 """
 
-__version__ = "2.0.2"
+__version__ = "2.1"
 __author__  = "Devraj Mukherjee"
 
 """
@@ -139,7 +139,7 @@ def export_documents(source_path, target_path, options):
 		print "%s does not exists or you don't have write privelleges" % target_path
 
 		user_answer = "NO"
-		user_answer = raw_input("make directory? (yes/NO): ")
+		user_answer = raw_input("attempt to make directory? (yes/NO): ")
 		if user_answer == "" or user_answer == "NO":
 			sys.exit(2)
 		else:
@@ -195,7 +195,7 @@ def export_documents(source_path, target_path, options):
 		print "Failed, Bad Password!"
 		sys.exit(2)
 	except gdata.service.CaptchaRequired:
-		print "Captcha required, use web interface to fix this!"
+		print "Captcha required, please login using the web interface and try again."
 		sys.exit(2)
 	except:
 		print "Failed."
@@ -403,6 +403,8 @@ def parse_user_input():
 						help = 'copies documents to a sub-directory by owner name, if the directory doesn\'t exist it will be created')
 	parser.add_option('-p', '--password', dest = 'password', 
 						help = 'password to login to Google document servers, use with extreme caution, may be logged')
+	parser.add_option('', '--password-file', dest = 'password_file', 
+						help = 'password may alternatviely be read from a file, provide full path of file')
 	parser.add_option('-f', '--format', default = 'oo',
 						help = 'file format to export documents to, ensure to use default if exporting mixed types (download only option)')
 						
@@ -426,6 +428,19 @@ def parse_user_input():
 	
 	document_source = args[0]
 	document_target = args[1]
+	
+	
+	"""
+		Password may be provided from file, if a parameter is provided we will attempt to
+		read this from the file
+	"""
+	
+	if not options.password_file == None:
+		try:
+			options.password = open(options.password_file).read().strip()
+		except:
+			print "Failed to read password from file, ensure file exists with sufficient privelleges"
+			sys.exit(2)
 	
 	"""
 		If password not provided as part of the command line arguments, prompt the user
@@ -457,7 +472,7 @@ def parse_user_input():
 
 # Prints Greeting
 def greet(options):
-	print "gcp %s, document copy utility. Copyright 2009 Eternity Technologies" % __version__
+	print "gcp %s, document copy utility. Copyright 2010 Eternity Technologies" % __version__
 	print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
 
 # main() is where things come together, this joins all the messages defined above
