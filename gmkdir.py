@@ -2,7 +2,7 @@
 
 """
 
-	gls
+	gmkdir
 	GDataCopier, http://gdatacopier.googlecode.com/
 	
 	Copyright 2010 Eternity Technologies.
@@ -38,7 +38,7 @@ try:
 	import gdata.docs
 	import gdata.docs.service
 except:
-	print "gls %s requires gdata-python-client v2.0+, fetch from Google at" % __version__
+	print "gmkdir %s requires gdata-python-client v2.0+, fetch from Google at" % __version__
 	print "<http://code.google.com/p/gdata-python-client/>"
 	exit(1)
 
@@ -91,7 +91,7 @@ def add_title_match_filter(document_query, name_filter):
 	Handles downloading of the document feed from Google and then
 	asking the display function to spit it out
 """
-def list_documents(server_string, options):
+def make_folder(server_string, options):
 	
 	username, document_path = server_string.split(':', 1)
 	
@@ -190,8 +190,8 @@ def is_remote_server_string(remote_address):
 	
 def parse_user_input():
 	
-	usage  = "usage: %prog [options] username@domain.com:/[doctype]/[foldername]/Title*\n"
-	usage += "              where [doctype] is docs, sheets, slides, pdf, folders"
+	usage  = "usage: %prog [options] username@domain.com:/[foldername]*\n"
+	usage += "              where [foldername] is the name of the folder you wish to create"
 	parser = OptionParser(usage)
 	
 	parser.add_option('-p', '--password', dest = 'password',
@@ -218,7 +218,7 @@ def parse_user_input():
 
 # Prints Greeting
 def greet():
-	print "gls %s, document list utility. Copyright 2010 Eternity Technologies" % __version__
+	print "gmkdir %s, folder creation utility. Copyright 2010 Eternity Technologies" % __version__
 	print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
 
 # main() is where things come together, this joins all the messages defined above
