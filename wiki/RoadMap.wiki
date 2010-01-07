@@ -14,7 +14,12 @@ Estimated Release: 31st January 2010
   * Introduce gmkdir to make directories on Google servers
   * Introduce gmv to move documents from one folder to another on Google servers
   * Allow user to change verbosity
+  * Fail gracefully on Captcha login requests
+  * Read passwords from a file
 
+*Credits*
+
+  * remi for submitting the patch to read passwords from a file
 
 == v2.0.2 ==
 
