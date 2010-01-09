@@ -13,6 +13,7 @@ Estimated Release: 31st January 2010
 
   * Introduce gmkdir to make directories on Google servers
   * Introduce gmv to move documents from one folder to another on Google servers
+  * Introduce grm to remove documents and folders
   * Allow user to change verbosity
   * Fail gracefully on Captcha login requests
   * Read passwords from a file
