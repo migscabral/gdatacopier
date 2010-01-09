@@ -137,17 +137,7 @@ def export_documents(source_path, target_path, options):
 	
 	if not os.path.isdir(target_path):
 		print "%s does not exists or you don't have write privelleges" % target_path
-
-		user_answer = "NO"
-		user_answer = raw_input("attempt to make directory? (yes/NO): ")
-		if user_answer == "" or user_answer == "NO":
-			sys.exit(2)
-		else:
-			try:
-				os.mkdir(target_path)
-			except:
-				print "\nfailed to created %s" % target_path
-				sys.exit(2)
+		sys.exit(2)
 
 	username, document_path = source_path.split(':')
 	
@@ -205,9 +195,13 @@ def export_documents(source_path, target_path, options):
 	docs_auth_token = gd_client.GetClientLoginToken()
 	sheets_auth_token = spreadsheets_client.GetClientLoginToken()
 		
-	sys.stdout.write("Fetching document list feeds from Google servers for %s ... " % (username))
+	if not options.silent:
+		sys.stdout.write("Fetching document list feeds from Google servers for %s ... " % (username))
+	
 	feed = gd_client.Query(document_query.ToUri())
-	print "done.\n"
+	
+	if not options.silent:
+		print "done.\n"
 	
 	# Counters
 	success_counter = 0
@@ -241,7 +235,8 @@ def export_documents(source_path, target_path, options):
 		export_filename = export_filename  + "." + export_extension
 		
 		# Tell the user something about what we are doing
-		sys.stdout.write("%-30s -d-> %-50s - " % (entry.resourceId.text[0:30], export_filename[-50:]))
+		if not options.silent:
+			sys.stdout.write("%-30s -d-> %-50s - " % (entry.resourceId.text[0:30], export_filename[-50:]))
 				
 		# Change authentication token if we are exporting spreadheets
 		if entry.GetDocumentType() == "spreadsheet":
@@ -265,7 +260,8 @@ def export_documents(source_path, target_path, options):
 			file_modified_time = os.stat(export_filename).st_mtime
 			# If local file is older than remote file then download
 			if file_modified_time >= remote_access_time:
-				print "UNCHANGED"
+				if not options.silent:
+					print "UNCHANGED"
 				unchanged_counter = unchanged_counter + 1
 				continue
 
@@ -273,7 +269,8 @@ def export_documents(source_path, target_path, options):
 			gd_client.Export(entry, export_filename)
 			os.utime(export_filename, (remote_access_time, remote_access_time))
 			success_counter = success_counter + 1
-			print "OK"
+			if not options.silent:
+				print "OK"
 		except gdata.service.Error:
 			print "SERVICE ERROR"
 			service_error_counter = service_error_counter + 1
@@ -395,6 +392,8 @@ def parse_user_input():
 
 	parser.add_option('-u', '--update', action = 'store_true', dest = 'update', default = False,
 						help = 'only downloads files that have changed on the Google document servers, remote time stamps are replicated')
+	parser.add_option('-s', '--silent', action = 'store_true', dest = 'silent', default = False,
+						help = 'increases verbosity, by default gcp runs in silent mode printing errors only')
 	parser.add_option('-o', '--overwrite', action = 'store_true', dest = 'overwrite', default = False,
 						help = 'overwrite files if they already exists on the local disk (download only option)')
 	parser.add_option('-i', '--doc-id', action = 'store_true', dest = 'add_document_id', default = False,
