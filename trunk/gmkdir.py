@@ -68,6 +68,10 @@ def make_folder(server_string, options):
 	if not is_email(username):
 		print "Usernames most be provided as your full Gmail address, hosted domains included."
 		sys.exit(2)
+		
+	if len(doc_param_parts) < 1:
+		print "no folder name provided, aborting!"
+		sys.exit(2)
 
 	# Get a handle to the document list service
 	sys.stdout.write("Logging into Google server as %s ... " % (username))
@@ -81,14 +85,16 @@ def make_folder(server_string, options):
 		document_query = gdata.docs.service.DocumentQuery()
 		document_query.categories.append('folder')
 		
-		sys.stdout.write("Fetching document list feeds from Google servers for %s ... " % (username))
+		new_folder_name = doc_param_parts[1]
+		
+		sys.stdout.write("Fetching folder list feeds from Google servers for %s ... " % (username))
 		feed = gd_client.Query(document_query.ToUri())
 		print "done.\n"
 		
 		for entry in feed.entry:
 			document_type = entry.GetDocumentType()
 			
-		folder_entry = gd_client.CreateFolder()
+		folder_entry = gd_client.CreateFolder(new_folder_name)
 		
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
@@ -120,16 +126,13 @@ def parse_user_input():
 	parser.add_option('-p', '--password', dest = 'password',
 						help = 'password for the user account, use with extreme caution. Could be stored in logs/history')
 						
-	parser.add_option('-d', '--debug', dest = 'debug', 
-						help = 'Increases verbosity and prints out Python error messages')
-						
 	(options, args) = parser.parse_args()
 	
 	# arg1 must be a remote server string to fetch document lists
 	
 	if not len(args) == 1 or (not is_remote_server_string(args[0])):
 		print "you most provide a remote server address as username@gmail.com:/[doctype]/[folder]"
-		exit(1)
+		sys.exit(1)
 
 	# If password not provided as part of the command line arguments, prompt the user
 	# to enter the password on the command line
@@ -137,7 +140,7 @@ def parse_user_input():
 	if options.password == None: 
 		options.password = getpass.getpass()
 
-	list_documents(args[0], options)
+	make_folder(args[0], options)
 
 # Prints Greeting
 def greet():

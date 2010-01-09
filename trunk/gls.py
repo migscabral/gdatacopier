@@ -197,9 +197,6 @@ def parse_user_input():
 	parser.add_option('-p', '--password', dest = 'password',
 						help = 'password for the user account, use with extreme caution. Could be stored in logs/history')
 						
-	parser.add_option('-d', '--debug', dest = 'debug', 
-						help = 'Increases verbosity and prints out Python error messages')
-						
 	(options, args) = parser.parse_args()
 	
 	# arg1 must be a remote server string to fetch document lists
