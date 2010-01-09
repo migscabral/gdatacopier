@@ -413,7 +413,7 @@ def parse_user_input():
 		If arg1 is remote server then we are exporting documents, otherwise we are
 		importing documents into the Google document system
 	"""
-	
+
 	greet(options)
 	
 	if not sys.getfilesystemencoding():
@@ -427,7 +427,10 @@ def parse_user_input():
 	
 	document_source = args[0]
 	document_target = args[1]
-	
+
+	if options.silent and not options.overwrite:
+		print "overwrite option must be used when running in silent mode, include -o in your command"
+		exit(1)
 	
 	"""
 		Password may be provided from file, if a parameter is provided we will attempt to
