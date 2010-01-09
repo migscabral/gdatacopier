@@ -2,7 +2,7 @@
 
 """
 
-	gls
+	grm
 	GDataCopier, http://gdatacopier.googlecode.com/
 	
 	Copyright 2010 Eternity Technologies.
@@ -31,14 +31,14 @@ try:
 	import signal
 	import getpass
 except:
-	print "gls failed to find some basic python modules, please validate the environment"
+	print "grm failed to find some basic python modules, please validate the environment"
 	exit(1)
 
 try:
 	import gdata.docs
 	import gdata.docs.service
 except:
-	print "gls %s requires gdata-python-client v2.0+, fetch from Google at" % __version__
+	print "grm %s requires gdata-python-client v2.0+, fetch from Google at" % __version__
 	print "<http://code.google.com/p/gdata-python-client/>"
 	exit(1)
 
@@ -57,41 +57,10 @@ def is_email(email):
             return True
     return False
 
-
 """
-	Helpers
+	Checks to see if folder exists, otherwise creates it
 """
-
-def add_category_filter(document_query, docs_type):
-	
-	# If the user provided a doctype then add a filter
-	if docs_type == "docs" or docs_type == "documents":
-		document_query.categories.append('document')
-	elif docs_type == "sheets" or docs_type == "spreadsheets":
-		document_query.categories.append('spreadsheet')
-	elif docs_type == "slides" or docs_type == "presentation":
-		document_query.categories.append('presentation')
-	elif docs_type == "folders":
-		document_query.categories.append('folder')
-	elif docs_type == "pdf":
-		document_query.categories.append('pdf')
-
-def add_title_match_filter(document_query, name_filter):
-	
-	# Add title match
-	if not name_filter == None:
-		if name_filter[len(name_filter) - 1: len(name_filter)] == "*":
-			document_query['title-exact'] = 'false'
-			document_query['title'] = name_filter[:len(name_filter) - 1]
-		else:
-			document_query['title-exact'] = 'true'
-			document_query['title'] = name_filter	
-
-"""
-	Handles downloading of the document feed from Google and then
-	asking the display function to spit it out
-"""
-def list_documents(server_string, options):
+def make_folder(server_string, options):
 	
 	username, document_path = server_string.split(':', 1)
 	
@@ -190,8 +159,8 @@ def is_remote_server_string(remote_address):
 	
 def parse_user_input():
 	
-	usage  = "usage: %prog [options] username@domain.com:/[doctype]/[foldername]/Title*\n"
-	usage += "              where [doctype] is docs, sheets, slides, pdf, folders"
+	usage  = "usage: %prog [options] username@domain.com:/[foldername]*\n"
+	usage += "              where [foldername] is the name of the folder you wish to create"
 	parser = OptionParser(usage)
 	
 	parser.add_option('-p', '--password', dest = 'password',
@@ -218,7 +187,7 @@ def parse_user_input():
 
 # Prints Greeting
 def greet():
-	print "gls %s, document list utility. Copyright 2010 Eternity Technologies" % __version__
+	print "grm %s, folder creation utility. Copyright 2010 Eternity Technologies" % __version__
 	print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
 
 # main() is where things come together, this joins all the messages defined above
