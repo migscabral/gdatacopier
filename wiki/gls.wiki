@@ -11,7 +11,7 @@ The server string closely resembles scp, please read the documentation to
 
 === Requirements ===
 
- * Python 2.5 
+ * Python 2.4
  * GData Python API 2.0.2+
 
 Tested under Mac OSX and Linux. Windows testing pending.
