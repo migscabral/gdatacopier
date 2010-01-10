@@ -204,8 +204,7 @@ def is_remote_server_string(remote_address):
 	
 def parse_user_input():
 	
-	usage  = "usage: %prog [options] username@domain.com:/[foldername]*\n"
-	usage += "              where [foldername] is the name of the folder you wish to create"
+	usage = "usage: %prog [options] username@domain.com:/[doctype]/[folder]/Title*"
 	parser = OptionParser(usage)
 	
 	parser.add_option('-p', '--password', dest = 'password',
