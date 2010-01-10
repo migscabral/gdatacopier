@@ -53,13 +53,6 @@ __accepted_slides_formats__ = ['pdf', 'png', 'ppt', 'swf', 'txt', 'zip', 'html',
 __accepted_sheets_formats__ = ['xls', 'ods', 'txt', 'html', 'pdf', 'tsv', 'csv']
 __bad_chars__ = ['\\', '/', '&', ':']
 
-# Verbosity constants
-_VERBOSE_NOTHING = 0
-_VERBOSE_SUMMARY = 1
-_VERBOSE_FAILED = 2
-_VERBOSE_CHANGED = 3
-_VERBOSE_ALL = 4
-
 def signal_handler(signal, frame):
 	    print "\n[Interrupted] Bye Bye!"
 	    sys.exit(2)
