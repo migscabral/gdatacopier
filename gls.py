@@ -167,8 +167,7 @@ def list_documents(server_string, options):
 		
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
-	except gdata.service.Error:
-		print "Failed!"
+		sys.exit(2)
 	except gdata.service.CaptchaRequired:
 		print "Captcha required, please login using the web interface and try again."
 		sys.exit(2)
