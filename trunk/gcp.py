@@ -53,6 +53,10 @@ __accepted_slides_formats__ = ['pdf', 'png', 'ppt', 'swf', 'txt', 'zip', 'html',
 __accepted_sheets_formats__ = ['xls', 'ods', 'txt', 'html', 'pdf', 'tsv', 'csv']
 __bad_chars__ = ['\\', '/', '&', ':']
 
+# Raised when more than one match of the document name is found
+class DuplicateDocumentNameFound(Exception):
+	pass
+
 def signal_handler(signal, frame):
 	    print "\n[Interrupted] Bye Bye!"
 	    sys.exit(2)
@@ -290,6 +294,13 @@ def get_folder_entry(folder_name, gd_client):
 			return entry
 			
 	return None
+
+# Searches for the name of the document through the 	
+def get_document_resource(feed, document_name):
+	for entry in feed.entry:
+		if entry.title == document_name:
+			return entry
+	return None
 	
 def import_documents(source_path, target_path, options):
 	
@@ -310,7 +321,6 @@ def import_documents(source_path, target_path, options):
 	gd_client = gdata.docs.service.DocsService(source="etk-gdatacopier-v2")
 
 	try:
-		
 		# Authenticate to the document service'
 		gd_client.ClientLogin(username, options.password)
 		print "done."
@@ -335,7 +345,17 @@ def import_documents(source_path, target_path, options):
 	# Counters
 	notallowed_counter = 0
 	failed_counter = 0
+	dup_name_counter = 0
+	updated_counter = 0
 	success_counter = 0
+	
+	if not options.silent:
+		sys.stdout.write("Fetching document list feeds from Google servers for %s ... " % (username))
+	
+	feed = gd_client.GetDocumentListFeed()
+	
+	if not options.silent:
+		print "done.\n"
 	
 	# Upload allowed documents to the Google system
 	for file_name in upload_filenames:
@@ -343,11 +363,13 @@ def import_documents(source_path, target_path, options):
 		extension = (file_name[len(file_name) - 4:]).upper()
 		extension = extension.replace(".", "")
 
-		sys.stdout.write("%-50s -u-> " % os.path.basename(file_name)[-50:])
+		if not options.silent:
+			sys.stdout.write("%-50s -u-> " % os.path.basename(file_name)[-50:])
 		
 		# Check to see that we are allowed to upload this document
 		if not extension in gdata.docs.service.SUPPORTED_FILETYPES:
-			print "NOT ALLOWED"
+			if not options.silent:
+				print "NOT ALLOWED"
 			notallowed_counter = notallowed_counter + 1
 			continue
 
@@ -356,18 +378,30 @@ def import_documents(source_path, target_path, options):
 		
 		entry = None
 		try:
-			if remote_folder == None:
-				entry = gd_client.Upload(media_source, os.path.basename(file_name))
+			existing_resource_name = get_document_resource(feed, file_name)
+			if existing_resource_name == None:
+				if remote_folder == None:
+					entry = gd_client.Upload(media_source, os.path.basename(file_name))
+				else:
+					entry = gd_client.Upload(media_source, os.path.basename(file_name), folder_or_uri=remote_folder)
 			else:
-				entry = gd_client.Upload(media_source, os.path.basename(file_name), folder_or_uri=remote_folder)
+				entry = gd_client.Put(media_source, existing_resource_name.GetEditMediaLink().href)
+				updated_counter = updated_counter + 1
+				
 			success_counter = success_counter + 1
+
+		except DuplicateDocumentNameFound:
+			if not options.silent:
+				print "DUPLICATE NAME"
+			dup_name_counter = dup_name_counter + 1
 		except:
-			print "FAILED"
+			if not options.silent:
+				print "FAILED"
 			failed_counter = failed_counter + 1
 
 		print entry.resourceId.text
 	
-	print "\n%i successful, %i not allowed, %i failed" % (success_counter, notallowed_counter, failed_counter)
+	print "\n%i successful, %i not allowed, %i failed, %i updated, %i duplicate names" % (success_counter, notallowed_counter, failed_counter, updated_counter, dup_name_counter)
 	
 
 """
@@ -412,7 +446,6 @@ def parse_user_input():
 	if not sys.getfilesystemencoding():
 		print "no encoding detected in your environment settings, try something like export LANG=en_US.UTF-8; "
 		sys.exit(1)
-		
 	
 	if not len(args) == 2:
 		print "invalid or missing source or destination for copying documents"
