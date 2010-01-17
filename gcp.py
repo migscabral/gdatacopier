@@ -385,6 +385,14 @@ def import_documents(source_path, target_path, options):
 				else:
 					entry = gd_client.Upload(media_source, os.path.basename(file_name), folder_or_uri=remote_folder)
 			else:
+				
+				if not options.overwrite:
+					user_answer = ""
+					while not user_answer == "NO" and not user_answer.upper() == "YES":
+						user_answer = raw_input("overwrite (yes/NO): ")
+						if user_answer == "": user_answer = "NO"
+					if user_answer == "NO": continue
+				
 				entry = gd_client.Put(media_source, existing_resource.GetEditMediaLink().href)
 				updated_counter = updated_counter + 1
 				
