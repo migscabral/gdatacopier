@@ -325,8 +325,14 @@ def import_documents(source_path, target_path, options):
 		gd_client.ClientLogin(username, options.password)
 		print "done."
 
+	except gdata.service.CaptchaRequired:
+		print "Captcha required, please login using the web interface and try again."
+		sys.exit(2)
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
+		sys.exit(2)
+	except:
+		print "Failed."
 		sys.exit(2)
 
 	# Upload folder name

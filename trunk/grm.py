@@ -217,7 +217,7 @@ def parse_user_input():
 	# arg1 must be a remote server string to fetch document lists
 	
 	if not len(args) == 1 or (not is_remote_server_string(args[0])):
-		print "you most provide a remote server address as username@gmail.com:/[doctype]/[folder]"
+		print "you most provide a remote server address as username@gmail.com:/[doctype]/[folder]/Title*"
 		exit(1)
 
 	# If password not provided as part of the command line arguments, prompt the user
