@@ -85,11 +85,26 @@ def add_title_match_filter(document_query, name_filter):
 		else:
 			document_query['title-exact'] = 'true'
 			document_query['title'] = name_filter
+			
+			
+"""
+	Checks to see if the desired folder exists
+"""
+
+def folder_name_exists(gd_client, folder_name):
+	folder_name_query = gdata.docs.service.DocumentQuery(categories=['folder'], params={'showfolders': 'true'})
+	# Destination folder must be an exact match
+	add_title_match_filter(folder_name_query, folder_name.replace('*', ''))
+	folder_feed = gd_client.Query(folder_name_query.ToUri())
+	if len(folder_feed) > 0:
+		return folder_feed[0]
+	return False
 
 """
-	Checks to see if folder exists, otherwise creates it
+	Makes a list of all documents that match the criteria and moves 
+	them to the desired folder
 """
-def move_documents(server_string, options):
+def move_documents(server_string, destination_folder, options):
 	
 	username, document_path = server_string.split(':', 1)
 	
@@ -139,11 +154,23 @@ def move_documents(server_string, options):
 		feed = gd_client.Query(document_query.ToUri())
 		print "done.\n"
 		
+		folder_resource = folder_name_exists(gd_client, destination_folder)
+		
 		for entry in feed.entry:
 			
-			print entry.title.text
-			#print '%-15s%-17s%-18s%-45s' % (document_type, entry.author[0].name.text[0:16], \
-			#	date_string, entry.title.text[0:45])
+			sys.stdout.write("%-50s -m-> " % os.path.basename(entry.title.text)[-50:])
+
+			try:
+				if destination_folder == "/":
+					gd_client.MoveOutOfFolder(entry)
+				else:
+					gd_client.MoveIntoFolder(entry, folder_resource)
+					
+				print "MOVED"
+				success_counter = success_counter + 1
+			except:
+				print "FAILED."
+				failure_counter = failure_counter + 1
 				
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
@@ -165,8 +192,8 @@ def move_documents(server_string, options):
 	Is able to match a remote server directive
 """
 def is_remote_server_string(remote_address):
-	re_remote_address = re.compile(r'[\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4}:/')
-	matched_strings = re_remote_address.findall(remote_address)
+	re_remote_re_remote_address = re.compile(r'[\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4}:/')
+	rings = re_remote_address.findall(remote_address)
 	return len(matched_strings) > 0
 
 	
@@ -197,7 +224,7 @@ def parse_user_input():
 	if options.password == None: 
 		options.password = getpass.getpass()
 
-	move_documents(args[0], options)
+	move_documents(args[0], args[1], options)
 
 # Prints Greeting
 def greet():
