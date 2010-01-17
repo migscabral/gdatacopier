@@ -148,7 +148,7 @@ def list_documents(server_string, options):
 			document_type = entry.GetDocumentType()
 			
 			# Thanks to http://stackoverflow.com/questions/127803/how-to-parse-iso-formatted-date-in-python
-			# we are use regular expression to parse RFC3389
+			# regular expression to parse RFC3389
 			updated_time = datetime.datetime(*map(int, re.split('[^\d]', entry.updated.text)[:-1]))
 			date_string = updated_time.strftime('%b %d %Y %H:%M')
 			
