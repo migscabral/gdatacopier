@@ -58,17 +58,44 @@ def is_email(email):
     return False
 
 """
+	Helpers
+"""
+
+def add_category_filter(document_query, docs_type):
+	
+	# If the user provided a doctype then add a filter
+	if docs_type == "docs" or docs_type == "documents":
+		document_query.categories.append('document')
+	elif docs_type == "sheets" or docs_type == "spreadsheets":
+		document_query.categories.append('spreadsheet')
+	elif docs_type == "slides" or docs_type == "presentation":
+		document_query.categories.append('presentation')
+	elif docs_type == "folders":
+		document_query.categories.append('folder')
+	elif docs_type == "pdf":
+		document_query.categories.append('pdf')
+
+def add_title_match_filter(document_query, name_filter):
+	
+	# Add title match
+	if not name_filter == None:
+		if name_filter[len(name_filter) - 1: len(name_filter)] == "*":
+			document_query['title-exact'] = 'false'
+			document_query['title'] = name_filter[:len(name_filter) - 1]
+		else:
+			document_query['title-exact'] = 'true'
+			document_query['title'] = name_filter
+
+"""
 	Checks to see if folder exists, otherwise creates it
 """
-def make_folder(server_string, options):
+def move_documents(server_string, options):
 	
 	username, document_path = server_string.split(':', 1)
 	
-	# Counters for the uploads
-	docs_counter = 0
-	sheets_counter = 0
-	slides_counter = 0
-	pdf_counter = 0
+	# Counters for the moves
+	success_counter = 0
+	failure_counter = 0
 	
 	if not is_email(username):
 		print "Usernames most be provided as your full Gmail address, hosted domains included."
@@ -114,30 +141,16 @@ def make_folder(server_string, options):
 		
 		for entry in feed.entry:
 			
-			document_type = entry.GetDocumentType()
-			
-			# Thanks to http://stackoverflow.com/questions/127803/how-to-parse-iso-formatted-date-in-python
-			# we are use regular expression to parse RFC3389
-			updated_time = datetime.datetime(*map(int, re.split('[^\d]', entry.updated.text)[:-1]))
-			date_string = updated_time.strftime('%b %d %Y %H:%M')
-			
-			print '%-15s%-17s%-18s%-45s' % (document_type, entry.author[0].name.text[0:16], \
-				date_string, entry.title.text[0:45])
+			print entry.title.text
+			#print '%-15s%-17s%-18s%-45s' % (document_type, entry.author[0].name.text[0:16], \
+			#	date_string, entry.title.text[0:45])
 				
-			# Icrease counters
-			if document_type == "document": 
-				docs_counter = docs_counter + 1
-			elif document_type == "spreadsheet": 
-				sheets_counter = sheets_counter + 1
-			elif document_type == "presentation":
-				slides_counter = slides_counter + 1
-			elif document_type == "pdf":
-				pdf_counter = pdf_counter + 1
-		
 	except gdata.service.BadAuthentication:
 		print "Failed, Bad Password!"
+		sys.exit(2)
 	except gdata.service.Error:
 		print "Failed!"
+		sys.exit(2)
 	except gdata.service.CaptchaRequired:
 		print "Captcha required, please login using the web interface and try again."
 		sys.exit(2)
@@ -145,7 +158,7 @@ def make_folder(server_string, options):
 		print "Failed."
 		sys.exit(2)
 		
-	print "\n%i document(s), %i spreadsheet(s), %i presentation(s), %i pdf(s)" % (docs_counter, sheets_counter, slides_counter, pdf_counter)
+	print "\n%i success, %i failed" % (success_counter, failure_counter)
 
 
 """
@@ -159,7 +172,7 @@ def is_remote_server_string(remote_address):
 	
 def parse_user_input():
 	
-	usage  = "usage: %prog [options] username@domain.com:/[foldername]*\n"
+	usage  = "usage: %prog [options] username@domain.com:/[doctype]/[foldername]/Title* [destination-folder]\n"
 	usage += "              where [foldername] is the name of the folder you wish to create"
 	parser = OptionParser(usage)
 	
@@ -173,6 +186,10 @@ def parse_user_input():
 	if not len(args) == 1 or (not is_remote_server_string(args[0])):
 		print "you most provide a remote server address as username@gmail.com:/[doctype]/[folder]"
 		exit(1)
+		
+	if not len(args) == 2:
+		print "you must provide a destination folder name, use / for root folder"
+		exit(1)
 
 	# If password not provided as part of the command line arguments, prompt the user
 	# to enter the password on the command line
@@ -180,7 +197,7 @@ def parse_user_input():
 	if options.password == None: 
 		options.password = getpass.getpass()
 
-	list_documents(args[0], options)
+	move_documents(args[0], options)
 
 # Prints Greeting
 def greet():
