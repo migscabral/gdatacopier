@@ -298,7 +298,7 @@ def get_folder_entry(folder_name, gd_client):
 # Searches for the name of the document through the 	
 def get_document_resource(feed, document_name):
 	for entry in feed.entry:
-		if entry.title == document_name:
+		if entry.title.text == document_name:
 			return entry
 	return None
 	
@@ -334,13 +334,12 @@ def import_documents(source_path, target_path, options):
 	doc_param_parts = document_path.split('/')
 
 	if len(doc_param_parts) > 1 and not doc_param_parts[1] == '':
+		# New line to make things look good
+		print "\n"
 		remote_folder = get_folder_entry(doc_param_parts[1], gd_client)
 		if remote_folder == None:
 			print "\nfolder name %s doesn't exists on your Google docs account" % doc_param_parts[1]
 			sys.exit(2)
-
-	# New line to make things look good
-	print "\n"
 	
 	# Counters
 	notallowed_counter = 0
@@ -377,15 +376,16 @@ def import_documents(source_path, target_path, options):
 		media_source = gdata.MediaSource(file_path=file_name, content_type=mime_type)
 		
 		entry = None
+		existing_resource = get_document_resource(feed, file_name)
+
 		try:
-			existing_resource_name = get_document_resource(feed, file_name)
-			if existing_resource_name == None:
+			if existing_resource == None:
 				if remote_folder == None:
 					entry = gd_client.Upload(media_source, os.path.basename(file_name))
 				else:
 					entry = gd_client.Upload(media_source, os.path.basename(file_name), folder_or_uri=remote_folder)
 			else:
-				entry = gd_client.Put(media_source, existing_resource_name.GetEditMediaLink().href)
+				entry = gd_client.Put(media_source, existing_resource.GetEditMediaLink().href)
 				updated_counter = updated_counter + 1
 				
 			success_counter = success_counter + 1
@@ -398,9 +398,12 @@ def import_documents(source_path, target_path, options):
 			if not options.silent:
 				print "FAILED"
 			failed_counter = failed_counter + 1
+		
+		if existing_resource == None:
+			print entry.resourceId.text
+		else:
+			print "UPDATED"
 
-		print entry.resourceId.text
-	
 	print "\n%i successful, %i not allowed, %i failed, %i updated, %i duplicate names" % (success_counter, notallowed_counter, failed_counter, updated_counter, dup_name_counter)
 	
 
