@@ -22,7 +22,7 @@ Estimated Release: 31st January 2010
 *Credits*
 
   * remi for submitting the patch to read passwords from a file
-  * Update contents of existing documents on Google servers, feature development sponsored by Patrick Hochstenbach of  [http://lib.ugent.be/ Universiteitsbiliotheek Gent Library]
+  * Update contents of existing documents on Google servers, feature development sponsored by Patrick Hochstenbach of  [http://lib.ugent.be/ Universiteitsbiliotheek Gent]
 
 
 == v2.0.2 ==
