@@ -7,6 +7,7 @@ GDataCopier is an active project, the following is our road map, it outlines new
 
 == v2.1 ==
 
+Current available for download under [http://gdatacopier.googlecode.com/files/gdatacopier-2.1.beta1.tgz Beta]
 Estimated Release: 31st January 2010
 
 *New Features*
