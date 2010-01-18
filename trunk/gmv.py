@@ -96,8 +96,8 @@ def folder_name_exists(gd_client, folder_name):
 	# Destination folder must be an exact match
 	add_title_match_filter(folder_name_query, folder_name.replace('*', ''))
 	folder_feed = gd_client.Query(folder_name_query.ToUri())
-	if len(folder_feed) > 0:
-		return folder_feed[0]
+	if folder_feed.entry: 
+		return folder_feed.entry[0]
 	return False
 
 """
@@ -181,9 +181,6 @@ def move_documents(server_string, destination_folder, options):
 	except gdata.service.CaptchaRequired:
 		print "Captcha required, please login using the web interface and try again."
 		sys.exit(2)
-	except:
-		print "Failed."
-		sys.exit(2)
 		
 	print "\n%i success, %i failed" % (success_counter, failure_counter)
 
@@ -192,8 +189,8 @@ def move_documents(server_string, destination_folder, options):
 	Is able to match a remote server directive
 """
 def is_remote_server_string(remote_address):
-	re_remote_re_remote_address = re.compile(r'[\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4}:/')
-	rings = re_remote_address.findall(remote_address)
+	re_remote_address = re.compile(r'[\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4}:/')
+	matched_strings = re_remote_address.findall(remote_address)
 	return len(matched_strings) > 0
 
 	
@@ -210,10 +207,10 @@ def parse_user_input():
 	
 	# arg1 must be a remote server string to fetch document lists
 	
-	if not len(args) == 1 or (not is_remote_server_string(args[0])):
+	if not len(args) == 2 or (not is_remote_server_string(args[0])):
 		print "you most provide a remote server address as username@gmail.com:/[doctype]/[folder]"
 		exit(1)
-		
+
 	if not len(args) == 2:
 		print "you must provide a destination folder name, use / for root folder"
 		exit(1)
