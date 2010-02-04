@@ -102,7 +102,7 @@ def list_documents(server_string, options):
 	pdf_counter = 0
 	
 	if not is_email(username):
-		print "Usernames most be provided as your full Gmail address, hosted domains included."
+		print "Usernames must be provided as your full Gmail address, hosted domains included."
 		sys.exit(2)
 
 	docs_type = None
