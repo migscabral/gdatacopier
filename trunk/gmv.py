@@ -113,7 +113,7 @@ def move_documents(server_string, destination_folder, options):
 	failure_counter = 0
 	
 	if not is_email(username):
-		print "Usernames most be provided as your full Gmail address, hosted domains included."
+		print "Usernames must be provided as your full Gmail address, hosted domains included."
 		sys.exit(2)
 
 	docs_type = None

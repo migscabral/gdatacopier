@@ -66,7 +66,7 @@ def make_folder(server_string, options):
 	doc_param_parts = document_path.split('/')
 	
 	if not is_email(username):
-		print "Usernames most be provided as your full Gmail address, hosted domains included."
+		print "Usernames must be provided as your full Gmail address, hosted domains included."
 		sys.exit(2)
 		
 	if len(doc_param_parts) < 1:
