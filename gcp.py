@@ -11,11 +11,11 @@
 	GDataCopier is free software and comes with absolutely NO WARRANTY. Use 
 	of this software is completely at YOUR OWN RISK.
 	
-	Version 2.1
+	Version 2.1.1
 	
 """
 
-__version__ = "2.1"
+__version__ = "2.1.1"
 __author__  = "Devraj Mukherjee"
 
 """
@@ -403,6 +403,15 @@ def import_documents(source_path, target_path, options):
 				updated_counter = updated_counter + 1
 				
 			success_counter = success_counter + 1
+			
+			"""
+				Print new resource id or indicate that the document has been updated
+			"""
+			if existing_resource == None and not entry == None:
+				print entry.resourceId.text
+			else:
+				print "UPDATED"
+
 
 		except DuplicateDocumentNameFound:
 			if not options.silent:
@@ -411,12 +420,7 @@ def import_documents(source_path, target_path, options):
 		except:
 			if not options.silent:
 				print "FAILED"
-			failed_counter = failed_counter + 1
-		
-		if existing_resource == None:
-			print entry.resourceId.text
-		else:
-			print "UPDATED"
+			failed_counter = failed_counter + 1		
 
 	print "\n%i successful, %i not allowed, %i failed, %i updated, %i duplicate names" % (success_counter, notallowed_counter, failed_counter, updated_counter, dup_name_counter)
 	
