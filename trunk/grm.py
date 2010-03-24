@@ -208,13 +208,17 @@ def parse_user_input():
 	
 	usage = "usage: %prog [options] username@domain.com:/[doctype]/[folder]/Title*"
 	parser = OptionParser(usage)
-	
+
+	parser.add_option('-s', '--silent', action = 'store_true', dest = 'silent', default = False,
+						help = 'decreases verbosity, supresses all messages but summaries and critical errors')	
 	parser.add_option('-p', '--password', dest = 'password',
 						help = 'password for the user account, use with extreme caution. Could be stored in logs/history')
 	parser.add_option('-f', '--force', action = 'store_true', dest = 'force', default = False,
 						help = 'forces delete of document objects, user is not prompted for confirmation')
 						
 	(options, args) = parser.parse_args()
+
+	greet(options)
 	
 	# arg1 must be a remote server string to fetch document lists
 	
@@ -231,7 +235,7 @@ def parse_user_input():
 	remove_doc_objects(args[0], options)
 
 # Prints Greeting
-def greet():
+def greet(options):
 	if not options.silent:
 		print "grm %s, folder creation utility. Copyright 2010 Eternity Technologies" % __version__
 		print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
@@ -240,7 +244,6 @@ def greet():
 # these messages must be executed in the defined order
 def main():
 	signal.signal(signal.SIGINT, signal_handler)
-	greet()						# Greet the user with a standard welcome message
 	parse_user_input()			# Check to see we have the right options or exit
 
 # Begin execution of the main method since we are at the bottom of the script	
