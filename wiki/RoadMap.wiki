@@ -23,6 +23,10 @@ Service release for v2.1
   * Traceback error message trapped on failures
   * Silent mode stops printing license and copyright
 
+*Credits:*
+
+  * mjbauer95 for the patches and ideas submitted
+
 == v2.1 ==
 
 Released: 31st January 2010
