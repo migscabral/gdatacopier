@@ -438,10 +438,10 @@ def parse_user_input():
 	usage = "usage: %prog [options] username@domain.com:/[doctype]/[folder]/Title* /home/directory"
 	parser = OptionParser(usage)
 
+	parser.add_option('-s', '--silent', action = 'store_true', dest = 'silent', default = False,
+						help = 'decreases verbosity, supresses all messages but summaries and critical errors')	
 	parser.add_option('-u', '--update', action = 'store_true', dest = 'update', default = False,
 						help = 'only downloads files that have changed on the Google document servers, remote time stamps are replicated')
-	parser.add_option('-s', '--silent', action = 'store_true', dest = 'silent', default = False,
-						help = 'increases verbosity, by default gcp runs in silent mode printing errors only')
 	parser.add_option('-o', '--overwrite', action = 'store_true', dest = 'overwrite', default = False,
 						help = 'overwrite files if they already exists on the local disk (download only option)')
 	parser.add_option('-i', '--doc-id', action = 'store_true', dest = 'add_document_id', default = False,
