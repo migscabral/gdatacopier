@@ -387,9 +387,9 @@ def import_documents(source_path, target_path, options):
 		try:
 			if existing_resource == None:
 				if remote_folder == None:
-					entry = gd_client.Upload(media_source, os.path.basename(file_name))
+					entry = gd_client.Upload(media_source, os.path.splitext(os.path.basename(file_name))[0])
 				else:
-					entry = gd_client.Upload(media_source, os.path.basename(file_name), folder_or_uri=remote_folder)
+					entry = gd_client.Upload(media_source, os.path.splitext(os.path.basename(file_name))[0], folder_or_uri=remote_folder)
 			else:
 				
 				if not options.overwrite:
