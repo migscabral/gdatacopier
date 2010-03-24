@@ -9,6 +9,16 @@ GDataCopier is an active project, the following is our road map, it outlines new
 
 We are now taking feature requests for our current development version 2.2
 
+== v2.1.1 ==
+
+Service release for v2.1
+
+  * Fixes minor typos
+  * Drops file extensions for imported document names
+  * Download PDF as PDF resolved
+  * Traceback error message trapped on failures
+  * Silent mode stops printing license and copyright
+
 == v2.1 ==
 
 Released: 31st January 2010
