@@ -225,8 +225,9 @@ def parse_user_input():
 
 # Prints Greeting
 def greet():
-	print "gmv %s, folder creation utility. Copyright 2010 Eternity Technologies" % __version__
-	print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
+	if not options.silent:
+		print "gmv %s, folder creation utility. Copyright 2010 Eternity Technologies" % __version__
+		print "Released under the GNU/GPL v3 at <http://gdatacopier.googlecode.com>\n"
 
 # main() is where things come together, this joins all the messages defined above
 # these messages must be executed in the defined order
