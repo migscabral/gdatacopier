@@ -9,6 +9,8 @@ GDataCopier is an active project, the following is our road map, it outlines new
 
 We are now taking feature requests for our current development version 2.2
 
+  * OAuth based authentication, so users don't have to provide usernames and passwords via command line or configuration files
+
 == v2.1.1 ==
 
 Released as Beta: 24th March 2010
