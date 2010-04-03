@@ -13,7 +13,7 @@ We are now taking feature requests for our current development version 2.2
 
 == v2.1.1 ==
 
-Released as Beta: 24th March 2010
+Released: 3rd April 2010
 
 Service release for v2.1
 
