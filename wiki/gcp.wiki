@@ -11,7 +11,7 @@ gcp allows you to export or import documents to and from the Google document sys
 
 doctype and foldername can be set to to the reserved word "all" where appropriate.
 
-and Over* is the name of the document, the asterisk indicates that gcp should copy all documents that start with Over.
+and `Over*` is the name of the document, the asterisk indicates that gcp should copy all documents that start with Over.
 
 === Options ===
 
