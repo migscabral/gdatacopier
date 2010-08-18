@@ -11,6 +11,15 @@ We are now taking feature requests for our current development version 2.2
 
   * OAuth based authentication, so users don't have to provide usernames and passwords via command line or configuration files
 
+== v2.1.2 ==
+
+Released: 18th August 2010
+
+  * Fixes download PDF as PDF issue
+  * Fixes file name encoding issues for non ascii character sets
+  * Allows long TLDs as remote server name .info etc
+  * Tested against GData 2.0.11 and Python 2.5
+
 == v2.1.1 ==
 
 Released: 3rd April 2010
