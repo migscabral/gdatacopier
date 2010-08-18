@@ -11,11 +11,11 @@
 	GDataCopier is free software and comes with absolutely NO WARRANTY. Use 
 	of this software is completely at YOUR OWN RISK.
 	
-	Version 2.1.1
+	Version 2.1.2
 	
 """
 
-__version__ = "2.1.1"
+__version__ = "2.1.2"
 __author__  = "Devraj Mukherjee"
 
 """
@@ -106,7 +106,7 @@ def add_title_match_filter(document_query, name_filter):
 def get_appropriate_extension(entry, docs_type, desired_format):
 	
 	entry_document_type = entry.GetDocumentType()
-	
+
 	# If docs_type is of specific type check for output format
 	if docs_type == "docs" or docs_type == "documents" or entry.GetDocumentType() == "document":
 		if __accepted_doc_formats__.count(desired_format) > 0: return desired_format
@@ -114,9 +114,9 @@ def get_appropriate_extension(entry, docs_type, desired_format):
 		if __accepted_sheets_formats__.count(desired_format) > 0: return desired_format
 	elif docs_type == "slides" or docs_type == "presentation" or entry.GetDocumentType() == "presentation":
 		if __accepted_slides_formats__.count(desired_format) > 0: return desired_format
-	elif docs_type == "pdf" and desired_format == "pdf":
+	elif docs_type == "pdf" or desired_format == "pdf":
 		return "pdf"
-
+		
 	# If no docs_type it means there are a mixture of things being exported
 	if desired_format == "oo" or docs_type == None:
 		if entry_document_type == "document":
@@ -263,7 +263,10 @@ def export_documents(source_path, target_path, options):
 				continue
 
 		try:
-			gd_client.Export(entry, export_filename)
+			if entry.GetDocumentType() == "pdf":
+				gd_client.Download(entry, export_filename)
+			else:
+				gd_client.Export(entry, export_filename)
 			os.utime(export_filename, (remote_access_time, remote_access_time))
 			success_counter = success_counter + 1
 			if not options.silent:
