@@ -68,7 +68,8 @@ def signal_handler(signal, frame):
 # Strips characters that are not acceptable as file names
 def sanatize_filename(filename):
 	
-	filename = filename.decode('UTF-8')
+	#filename = filename.decode('UTF-8')
+	filename = filename.decode(sys.getfilesystemencoding())
 	for bad_char in __bad_chars__:
 		filename = filename.replace(bad_char, '')
 		
@@ -263,6 +264,7 @@ def export_documents(source_path, target_path, options):
 				continue
 
 		try:
+			# Use Download instead of Export if the document is a PDF file
 			if entry.GetDocumentType() == "pdf":
 				gd_client.Download(entry, export_filename)
 			else:
