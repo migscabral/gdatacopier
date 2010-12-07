@@ -16,7 +16,7 @@
 """
 
 __version__ = "2.2.0"
-__author__  = "Devraj Mukherjee"
+__author__  = "Devraj Mukherjee, Matteo Canato"
 
 """
 	Imports the required modules
@@ -61,8 +61,8 @@ except:
     Default values read from configuration file
 """
 defaults = {
-    'gdatacopierdir' : '~/.gdatacopier/',
-    'rcfile' : 'gdatacopierrc',
+    'configdir' : '~/.gdatacopier/',
+    'config' : 'gdatacopierrc',
 }
 
 """
@@ -201,7 +201,7 @@ def list_documents(server_string, options):
 	except gdata.client.BadAuthentication:
 		LOG.error("Standard login failed. Bad Password!")
 		sys.exit(2)
-	except gdata.client.CaptchaRequired:
+	except gdata.client.CaptchaChallenge:
 		LOG.error("Captcha required, please login using the web interface and try again.")
 		sys.exit(2)
 	except gdata.client.Unauthorized:
@@ -233,15 +233,15 @@ def parse_user_input():
                             dest = 'password',
                             help = 'password for the user account, use with extreme caution. \
                                     Could be stored in logs/history')
-        parser.add_option('--gdatacopierdir',
-                            dest='gdatacopierdir',
+        parser.add_option('--configdir',
+                            dest='configdir',
                             action='store', 
-                            default=defaults['gdatacopierdir'],
+                            default=defaults['configdir'],
                             help='look in DIR for config/data files', metavar='DIR')
-        parser.add_option('--rcfile',
-                            dest='rcfile',
+        parser.add_option('--config',
+                            dest='config',
                             action='append',
-                            default=defaults['rcfile'],
+                            default=defaults['config'],
                             help='load configuration from FILE',
                             metavar='FILE')
         parser.add_option('--debug', 
@@ -285,27 +285,27 @@ def parse_user_input():
             exit(2)
 
         if (options.two_legged_oauth):
-            # Check if gdatacopierdir exists
-            gdatacopierdir_type = 'Default'
-            if options.gdatacopierdir != defaults['gdatacopierdir']:
-                gdatacopierdir_type = 'Specified'
-            gdatacopierdir = helpers.expand_user_vars(options.gdatacopierdir)
-            if not os.path.exists(gdatacopierdir):
+            # Check if configdir exists
+            configdir_type = 'Default'
+            if options.configdir != defaults['configdir']:
+                configdir_type = 'Specified'
+            configdir = helpers.expand_user_vars(options.configdir)
+            if not os.path.exists(configdir):
                 raise GDataCopierOperationError('%s config/data dir "%s" does not '
                         'exist - create or specify alternate directory with '
-                        '--gdatacopierdir option' % (gdatacopierdir_type, gdatacopierdir))
-            if not os.path.isdir(gdatacopierdir):
+                        '--configdir option' % (configdir_type, configdir))
+            if not os.path.isdir(configdir):
                 raise GDataCopierOperationError('%s config/data dir "%s" is not a '
                         'directory - fix or specify alternate directory with '
-                        '--gdatacopierdir option' % (gdatacopierdir_type, gdatacopierdir))
-            if not os.access(gdatacopierdir, os.W_OK):
+                        '--configdir option' % (configdir_type, configdir))
+            if not os.access(configdir, os.W_OK):
                 raise GDataCopierOperationError('%s config/data dir "%s" is not writable '
                         '- fix permissions or specify alternate directory with '
-                        '--gdatacopierdir option'% (gdatacopierdir_type, gdatacopierdir))
+                        '--configdir option'% (configdir_type, configdir))
 
             # Check if configuration file exists
-            path = os.path.join(os.path.expanduser(options.gdatacopierdir), options.rcfile)
-            LOG.debug('processing rcfile %s\n' % path)
+            path = os.path.join(os.path.expanduser(options.configdir), options.config)
+            LOG.debug('processing config %s\n' % path)
             if not os.path.exists(path):
                 raise GDataCopierOperationError('configuration file %s does not exist' % path)
             elif not os.path.isfile(path):
@@ -316,9 +316,8 @@ def parse_user_input():
                 An example of configuration file is this:
                     [oauth]
                     consumer_key: yourdomain.com
-                    consumer_secret: yourconsumerkey
+                    consumer_secret: rt3Fweg/AGrG0t3FwegB
             """
-
             try:
                 config = ConfigParser.ConfigParser()
                 config.read(path)
@@ -334,8 +333,10 @@ def parse_user_input():
             except GDataCopierConfigurationError, o:
                 raise GDataCopierConfigurationError('configuration file %s incorrect (%s)' % (path, o))
 
-	# If password not provided as part of the command line arguments, prompt the user
-	# to enter the password on the command line
+	"""
+		If password not provided as part of the command line arguments, prompt the user
+		to enter the password on the command line
+	"""
 	if (options.standard_login and options.password == None):
 		options.password = getpass.getpass()
 
@@ -381,7 +382,7 @@ def main():
         if type(tblist) != list:
             tblist = [tblist]
         for line in tblist:
-            log.critical('  %s\n' % line.rstrip())
+            LOG.critical('  %s\n' % line.rstrip())
         LOG.critical('\nPlease also include configuration information from running gls\n')
         sys.exit(4)
 

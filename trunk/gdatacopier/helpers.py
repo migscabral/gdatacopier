@@ -1,13 +1,24 @@
 #!/usr/bin/env python
 
 __version__ = "2.2.0"
-__author__  = "Devraj Mukherjee"
+__author__  = "Devraj Mukherjee, Matteo Canato"
+
+# Accepted formats for exporting files, these have to be used as file extensions
+# Removed the ".zip" file extensione because
+__accepted_doc_formats__ = ['doc', 'html', 'zip', 'odt', 'pdf', 'png', 'rtf', 'txt']
+__accepted_slides_formats__ = ['pdf', 'png', 'ppt', 'swf', 'txt', 'zip', 'html', 'odt']
+__accepted_sheets_formats__ = ['xls', 'ods', 'txt', 'html', 'pdf', 'tsv', 'csv']
+__accepted_draw_formats__ = ['png', 'jpeg', 'svg', 'pdf']
+__bad_chars__ = ['\\', '/', '&', ':']
 
 LOGGER_NAME = 'GDataCopier'
 
 try:
         import os
         import os.path
+        import sys
+        import mimetypes
+        mimetypes.init()
         from gdatacopier.exceptions import *
 except:
 	print "failed to find some basic python modules"
@@ -115,3 +126,82 @@ def get_folder_id_from_name(folder_name, gd_client):
         return "/%s/contents" % id
     else:
         raise GDataCopierFolderNotExists('folder \"%s\" not exists!' % folder_name)
+
+"""
+    Strips characters that are not acceptable as file names
+"""
+def sanatize_filename(filename):
+	#filename = filename.decode('UTF-8')
+	filename = filename.decode(sys.getfilesystemencoding())
+	for bad_char in __bad_chars__:
+		filename = filename.replace(bad_char, '')
+
+	filename = filename.lstrip().rstrip()
+	return filename.encode(sys.getfilesystemencoding())
+
+"""
+    Gets an extension that works with a file format
+"""
+def get_appropriate_extension(entry, docs_type, desired_format):
+        entry_document_type = entry.GetDocumentType()
+
+        # If no docs_type it means there are a mixture of things being exported.
+        # and the default format is OpenDocument (for OpenOffice)
+	if desired_format == "oo" or docs_type == None:
+		if entry_document_type == "document":
+			return "odt"
+		elif entry_document_type == "presentation":
+			return "ppt"
+		elif entry_document_type == "spreadsheet":
+			return "ods"
+		elif entry_document_type == "drawing":
+			return "png"
+		elif entry_document_type == "pdf":
+			return "pdf"
+                elif mimetypes.guess_extension(entry_document_type) != None:
+                        # If other file guess the string from mimetype.
+                        # The function returns the "dotted" file extension so
+                        # we remove the first char.
+                        return mimetypes.guess_extension(entry_document_type)[1:]
+                else:
+                        return None
+        # If docs_type is of specific type check for output format                    
+        else:
+            # Docs
+            if docs_type == "docs" or docs_type == "documents" or entry.GetDocumentType() == "document":
+                    if __accepted_doc_formats__.count(desired_format) > 0: return desired_format
+            # Sheets
+            elif docs_type == "sheets" or docs_type == "spreadsheets" or entry.GetDocumentType() == "spreadsheet":
+                    if __accepted_sheets_formats__.count(desired_format) > 0: return desired_format
+            # Slides
+            elif docs_type == "slides" or docs_type == "presentation" or entry.GetDocumentType() == "presentation":
+                    if __accepted_slides_formats__.count(desired_format) > 0: return desired_format
+            # Draws
+            elif docs_type == "draw" or docs_type == "drawing" or entry.GetDocumentType() == "drawing":
+                    if __accepted_draw_formats__.count(desired_format) > 0: return desired_format
+            # PDFs
+            elif docs_type == "pdf" or desired_format == "pdf":
+                    return "pdf"
+            # Others file
+            elif mimetypes.guess_extension(entry_document_type) != None:
+                    # If other file guess the string from mimetype.
+                    # The function returns the "dotted" file extension so
+                    # we remove the first char.
+                    return mimetypes.guess_extension(entry_document_type)[1:]
+            else:
+                    return None
+	return None
+
+def is_a_known_extension(ext):
+    if (ext in __accepted_doc_formats__) or (ext in __accepted_slides_formats__) \
+        or (ext in __accepted_sheets_formats__) or (ext in __accepted_draw_formats__):
+            return True
+    else:
+            return False
+
+"""
+    The following method should be used in gcp when arbitrary files upload will be
+    available not only for Google Apps for Business accounts.
+"""
+def get_mime_type(filename):
+    return mimetypes.guess_type(os.path.basename(filename))[0]
