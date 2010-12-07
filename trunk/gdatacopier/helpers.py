@@ -4,7 +4,6 @@ __version__ = "2.2.0"
 __author__  = "Devraj Mukherjee, Matteo Canato"
 
 # Accepted formats for exporting files, these have to be used as file extensions
-# Removed the ".zip" file extensione because
 __accepted_doc_formats__ = ['doc', 'html', 'zip', 'odt', 'pdf', 'png', 'rtf', 'txt']
 __accepted_slides_formats__ = ['pdf', 'png', 'ppt', 'swf', 'txt', 'zip', 'html', 'odt']
 __accepted_sheets_formats__ = ['xls', 'ods', 'txt', 'html', 'pdf', 'tsv', 'csv']
