@@ -18,6 +18,9 @@
 __version__ = "2.2.0"
 __author__  = "Devraj Mukherjee, Matteo Canato"
 
+# With Docs API v3.0 the URI are changed
+BASE_FEED = "/feeds/default"
+
 """
 	Imports the required modules
 """
@@ -140,6 +143,11 @@ def list_documents(server_string, options):
 	# Get a handle to the document list service
 	LOG.info("Logging into Google server as %s" % (username))
         gd_client = gdata.docs.client.DocsClient(source='etk-gdatacopier-v2')
+        """
+            NOTE: starting Jan 2011 Google Document List API will support only
+            SSL connection (spreedsheets aren't under SSL yet)
+            http://code.google.com/intl/it/apis/documents/forum.html?place=topic%2Fgoogle-documents-list-api%2FaEDGbZMul9s%2Fdiscussion
+        """
         gd_client.ssl = True                # Force all API requests through HTTPS
         gd_client.api_version = '3.0'       # Force API version 3.0
         
@@ -152,15 +160,12 @@ def list_documents(server_string, options):
             # Authenticate to the document service'
             helpers.login(username, oauth_values, options, gd_client)
 
-            # With Docs API v3.0 the URI are changed
-            base_feed = "/feeds/default"
-
             # If the user provided a folder type then add this here
-            if not folder_name == None and not folder_name == "all":
-                projection_folder = "full" + helpers.get_folder_id_from_name(folder_name, gd_client)
-                document_query = gdata.docs.service.DocumentQuery(feed=base_feed, projection=projection_folder)
+            if folder_name == None or folder_name == "all":
+                document_query = gdata.docs.service.DocumentQuery(feed=BASE_FEED)
             else:
-                document_query = gdata.docs.service.DocumentQuery(feed=base_feed)
+                projection_folder = "full" + helpers.get_folder_id_from_name(folder_name, gd_client)
+                document_query = gdata.docs.service.DocumentQuery(feed=BASE_FEED, projection=projection_folder)
 
             helpers.add_category_filter(document_query, docs_type)
             helpers.add_title_match_filter(document_query, name_filter)
@@ -283,6 +288,11 @@ def parse_user_input():
         if (options.two_legged_oauth and options.standard_login):
             print "You have to select only one authentication method"
             exit(2)
+
+        # Exit if user don't provide the login type
+        if not (options.two_legged_oauth or options.standard_login):
+            LOG.error("You have to select an authentication method: --standard_login OR --two_legged_oauth")
+            exit(3)
 
         if (options.two_legged_oauth):
             # Check if configdir exists

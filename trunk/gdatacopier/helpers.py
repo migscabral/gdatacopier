@@ -40,6 +40,12 @@ except:
 def expand_user_vars(s):
     return os.path.expanduser(os.path.expandvars(s))
 
+'''
+    Return a string with the filename (without extension and 
+'''
+def filename_from_path(filepath):
+    return os.path.splitext(os.path.basename(filepath))[0]
+
 """
 	Validate email address function courtsey using regular expressions
 	http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/65215

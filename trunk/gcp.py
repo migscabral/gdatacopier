@@ -18,6 +18,9 @@
 __version__ = "2.2.0"
 __author__  = "Devraj Mukherjee, Matteo Canato"
 
+# With Docs API v3.0 the URI are changed
+BASE_FEED = "/feeds/default"
+
 """
 	Imports the required modules 
 """
@@ -134,6 +137,11 @@ def export_documents(source_path, target_path, options):
 	# Get a handle to the document list service
         LOG.info("Logging into Google server as %s" % (username))
         gd_client = gdata.docs.client.DocsClient(source='etk-gdatacopier-v2')
+        """
+            NOTE: starting Jan 2011 Google Document List API will support only
+            SSL connection (spreedsheets aren't under SSL yet)
+            http://code.google.com/intl/it/apis/documents/forum.html?place=topic%2Fgoogle-documents-list-api%2FaEDGbZMul9s%2Fdiscussion
+        """
         gd_client.ssl = True                # Force all API requests through HTTPS
         gd_client.api_version = '3.0'       # Force API version 3.0
 
@@ -152,16 +160,13 @@ def export_documents(source_path, target_path, options):
                 spreadsheets_client = gdata.spreadsheet.service.SpreadsheetsService()
                 spreadsheets_client.ClientLogin(username, options.password)
 
-            # With Docs API v3.0 the URI are changed
-            base_feed = "/feeds/default"
-
             # If the user provided a folder type then add this here
-            if not folder_name == None and not folder_name == "all":
-                projection_folder = "full" + helpers.get_folder_id_from_name(folder_name, gd_client)
-                document_query = gdata.docs.service.DocumentQuery(feed=base_feed, projection=projection_folder)
+            if folder_name == None or folder_name == "all":
+                document_query = gdata.docs.service.DocumentQuery(feed=BASE_FEED)
             else:
-                document_query = gdata.docs.service.DocumentQuery(feed=base_feed)
-	
+                projection_folder = "full" + helpers.get_folder_id_from_name(folder_name, gd_client)
+                document_query = gdata.docs.service.DocumentQuery(feed=BASE_FEED, projection=projection_folder)
+
             helpers.add_category_filter(document_query, docs_type)
             helpers.add_title_match_filter(document_query, name_filter)
 
@@ -197,7 +202,7 @@ def export_documents(source_path, target_path, options):
                     if options.add_document_id:
                             export_filename = export_filename + "-" + base64.b64encode(entry.resourceId.text)
                     
-                    # TODO for arbitrary files (extension == None) check if they
+                    # For arbitrary files (extension == None) check if they
                     # already have an extension and preserve it
                     if export_extension != None:
                             export_filename = export_filename + "." + export_extension
@@ -277,29 +282,58 @@ def export_documents(source_path, target_path, options):
 	except Exception, e:
 		LOG.error("Failed. %s" % e)
 		sys.exit(2)
-	
-	
-def get_folder_entry(folder_name, gd_client):	
-	sys.stdout.write("Checking folder names on Google docs server ... ")
-	document_query = gdata.docs.service.DocumentQuery()
-	document_query.categories.append('folder')
-	feed = gd_client.Query(document_query.ToUri())	
-	print "done."
-	for entry in feed.entry:
-		if entry.title.text == folder_name:
-			return entry			
-	return None
 
-# Searches for the name of the document through the 	
-def get_document_resource(feed, document_name):
-	for entry in feed:
-		if entry.title.text == document_name:
-			return entry
-	return None
+"""
+    If the folder exists, returns the folder entry.
+    Otherwise returns None.
+"""
+def get_folder_entry(gd_client, folder_name):
+    document_query = gdata.docs.service.DocumentQuery(feed=BASE_FEED)
+
+    if not (folder_name == None or folder_name == "all"):
+        document_query.categories.append('folder')
+
+    LOG.debug("Sending a request for the URI: %s" % document_query.ToUri())
+    feed = gd_client.GetEverything(document_query.ToUri())
+
+    for entry in feed:
+        if entry.title.text == folder_name:
+            return entry
+    return None
+
+"""
+    If the document exists, returns the entry of the doc.
+    Otherwise returns None.
+"""
+def get_document_resource(gd_client, folder, doc_name):
+    filename = helpers.filename_from_path(doc_name)
+
+    if folder == None or folder == "all":
+        LOG.debug("Contents of folder root")
+        in_root = True
+        feed = gd_client.GetEverything(uri='/feeds/default/private/full/folder%3Aroot/contents/')
+    else:
+        LOG.debug("Contents of folder: " + folder.title.text)
+        in_root = False
+        feed = gd_client.GetEverything(uri=folder.content.src)
+
+    for doc in feed:
+        if doc.title.text == filename:
+            LOG.debug("Find document %s! Is also in folder(s) %s" % (doc.title.text,[f.title for f in doc.InFolders()]))
+            if in_root==False or (len(doc.InFolders())==0 and in_root==True):
+                return doc
+    return None
+
 	
 def import_documents(source_path, target_path, options):
 	upload_filenames = []
 	username, document_path = target_path.split(':')
+
+        folder_name = None
+        doc_param_parts = document_path.split('/')
+        
+        if len(doc_param_parts) > 1 and not doc_param_parts[1] == '':
+                folder_name = doc_param_parts[1]
 	
 	# File or Directory add the names of the uploads to a list 
 	if os.path.isdir(source_path):
@@ -308,10 +342,18 @@ def import_documents(source_path, target_path, options):
 			if not file_name[:1] == ".": upload_filenames.append(source_path + "/" + file_name)
 	elif os.path.isfile(source_path):
 		upload_filenames.append(source_path)
+        else:
+                LOG.error("The folder/file %s not exists!" % source_path)
+                sys.exit(2)
 
 	# Get a handle to the document list service
         LOG.info("Logging into Google server as %s" % (username))
         gd_client = gdata.docs.client.DocsClient(source='etk-gdatacopier-v2')
+        """
+            NOTE: starting Jan 2011 Google Document List API will support only
+            SSL connection (spreedsheets aren't under SSL yet)
+            http://code.google.com/intl/it/apis/documents/forum.html?place=topic%2Fgoogle-documents-list-api%2FaEDGbZMul9s%2Fdiscussion
+        """
         gd_client.ssl = True                # Force all API requests through HTTPS
         gd_client.api_version = '3.0'       # Force API version 3.0
 
@@ -326,18 +368,9 @@ def import_documents(source_path, target_path, options):
 
             LOG.info("Fetching document list feeds from Google servers for %s" % (username))
 
-            # Upload folder name
-            remote_folder = None
-            doc_param_parts = document_path.split('/')
-
-            #TODO testare questa parte
-            if len(doc_param_parts) > 1 and not doc_param_parts[1] == '':
-                    # New line to make things look good
-                    print "\n"
-                    remote_folder = get_folder_entry(doc_param_parts[1], gd_client)
-                    if remote_folder == None:
-                            LOG.error("\nfolder name %s doesn't exists on your Google docs account" % doc_param_parts[1])
-                            sys.exit(2)
+            # The folder where to upload must be a gdata.docs.data.DocsEntry object
+            # see http://code.google.com/intl/it/apis/documents/docs/3.0/developers_guide_python.html#UploadDocToAFolder
+            remote_folder = get_folder_entry(gd_client, folder_name)
 
             # Counters
             notallowed_counter = 0
@@ -346,13 +379,10 @@ def import_documents(source_path, target_path, options):
             updated_counter = 0
             success_counter = 0
 
-            feed = gd_client.GetEverything()  # makes multiple HTTP requests.
-
             # Upload allowed documents to the Google system
             for file_name in upload_filenames:
 
-                    extension = (file_name[len(file_name) - 4:]).upper()
-                    extension = extension.replace(".", "")
+                    extension = (file_name[len(file_name) - 4:]).upper().replace(".", "")
 
                     LOG.info("%-50s -u-> " % os.path.basename(file_name)[-50:])
 
@@ -363,7 +393,7 @@ def import_documents(source_path, target_path, options):
                         http://code.google.com/intl/it/apis/documents/docs/3.0/developers_guide_python.html#UploadingArbitraryFileTypes
                     """
                     if not extension in gdata.docs.data.MIMETYPES:
-                            LOG.error("FILETYPE NOT ALLOWED")
+                            LOG.error("FILETYPE NOT ALLOWED (%s)" % extension)
                             notallowed_counter = notallowed_counter + 1
                             continue
 
@@ -371,23 +401,25 @@ def import_documents(source_path, target_path, options):
                     media_source = gdata.data.MediaSource(file_path=file_name, content_type=mime_type)
 
                     entry = None
-                    existing_resource = get_document_resource(feed, file_name)
+                    existing_resource = get_document_resource(gd_client, remote_folder, file_name)
 
                     try:
                             if existing_resource == None:
                                     if remote_folder == None:
-                                            entry = gd_client.Upload(media_source, os.path.splitext(os.path.basename(file_name))[0])
+                                            entry = gd_client.Upload(media_source, helpers.filename_from_path(file_name))
                                     else:
-                                            entry = gd_client.Upload(media_source, os.path.splitext(os.path.basename(file_name))[0], folder_or_uri=remote_folder)
+                                            entry = gd_client.Upload(media_source, helpers.filename_from_path(file_name), folder_or_uri=remote_folder)
                             else:
                                     if not options.overwrite:
                                             user_answer = ""
                                             while not user_answer == "NO" and not user_answer.upper() == "YES":
                                                     user_answer = raw_input("overwrite (yes/NO): ")
                                                     if user_answer == "": user_answer = "NO"
-                                            if user_answer == "NO": continue
+                                            if user_answer == "NO":
+                                                    raise GDataCopierDuplicateDocumentNameFound
+                                                    continue
 
-                                    entry = gd_client.Put(media_source, existing_resource.GetEditMediaLink().href)
+                                    entry = gd_client.Update(existing_resource, media_source=media_source)
                                     updated_counter = updated_counter + 1
 
                             success_counter = success_counter + 1
@@ -396,12 +428,12 @@ def import_documents(source_path, target_path, options):
                                     Print new resource id or indicate that the document has been updated
                             """
                             if existing_resource == None and not entry == None:
-                                    print entry.resource_id.text
+                                LOG.info(entry.resource_id.text)
                             else:
-                                LOG.info("UPDATED")
+                                LOG.info("UPDATED %s" % helpers.filename_from_path(file_name))
 
                     except GDataCopierDuplicateDocumentNameFound:
-                            LOG.error("DUPLICATE NAME")
+                            LOG.error("DUPLICATE NAME %s" % helpers.filename_from_path(file_name))
                             dup_name_counter = dup_name_counter + 1
                     except Exception, e:
                             LOG.error("FAILED reason %s" % e)
@@ -537,6 +569,11 @@ def parse_user_input():
         if (options.two_legged_oauth and options.standard_login):
             LOG.error("You have to select only one authentication method")
             exit(2)
+
+        # Exit if user don't provide the login type
+        if not (options.two_legged_oauth or options.standard_login):
+            LOG.error("You have to select an authentication method: --standard_login OR --two_legged_oauth")
+            exit(3)
 
         if (options.two_legged_oauth):
             # Check if configdir exists
