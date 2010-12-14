@@ -120,9 +120,10 @@ def list_documents(server_string, options):
 	slides_counter  = 0
         draws_counter   = 0
 	pdf_counter     = 0
+        others_counter     = 0
 
 	if not helpers.is_email(username):
-            LOG.info("Usernames must be provided as your full Gmail address, hosted domains included.")
+            LOG.error("Usernames must be provided as your full Gmail address, hosted domains included.")
             sys.exit(2)
 
 	docs_type   = None
@@ -176,7 +177,7 @@ def list_documents(server_string, options):
 
             print 'User %s has a total of %s documents.' % (username, len(docs))
             if len(docs) != 0:
-                print '%-17s %-18s %-46s %-15s' % ('AUTHOR', 'DATE', 'TITLE', 'TYPE')
+                print '%-17s %-18s %-46s %-15s %s' % ('AUTHOR', 'DATE', 'TITLE', 'TYPE', 'FOLDER')
 
                 for entry in docs:
                         document_type = entry.GetDocumentType()
@@ -186,7 +187,7 @@ def list_documents(server_string, options):
                         updated_time = datetime.datetime(*map(int, re.split('[^\d]', entry.updated.text)[:-1]))
                         date_string = updated_time.strftime('%b %d %Y %H:%M')
 
-                        print '%-17s %-18s %-46s %-15s' % (entry.author[0].name.text[0:16], date_string, entry.title.text[0:45], document_type)
+                        print '%-17s %-18s %-46s %-15s %s' % (entry.author[0].name.text[0:16], date_string, entry.title.text[0:45], document_type[0:14], [f.title for f in entry.InFolders()])
 
                         # Increase counters
                         if document_type == "document":
@@ -199,9 +200,11 @@ def list_documents(server_string, options):
                                 draws_counter = draws_counter + 1
                         elif document_type == "pdf":
                                 pdf_counter = pdf_counter + 1
+                        else:
+                                others_counter = others_counter + 1
 
-                print "\n%i document(s), %i spreadsheet(s), %i presentation(s), %i pdf(s), %i drawing(s)" \
-                        % (docs_counter, sheets_counter, slides_counter, pdf_counter, draws_counter)
+                print "\n%i document(s), %i spreadsheet(s), %i presentation(s), %i pdf(s), %i drawing(s), %i other(s)" \
+                        % (docs_counter, sheets_counter, slides_counter, pdf_counter, draws_counter, others_counter)
                                 
 	except gdata.client.BadAuthentication:
 		LOG.error("Standard login failed. Bad Password!")
