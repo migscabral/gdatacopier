@@ -61,7 +61,7 @@ try:
         import logging
         LOG = logging.getLogger(helpers.LOGGER_NAME)
 except:
-	print "gls failed to find logging python modules, please validate the environment"
+	print "gcp failed to find logging python modules, please validate the environment"
 	exit(1)
 
 """
@@ -112,13 +112,17 @@ def setup_logger(options):
     if options.debug:
         LOG.debug('Gdata will be imported from ' + gdata.__file__)
 
-def export_documents(source_path, target_path, options):	
-	if not os.path.isdir(target_path):
+def export_documents(source_path, target_path, options):
+        username, document_path = source_path.split(':')
+
+        if not os.path.isdir(target_path):
             LOG.error("%s does not exists or you don't have write privelleges" % target_path)
             sys.exit(2)
 
-	username, document_path = source_path.split(':')
-	
+	if not helpers.is_email(username):
+            LOG.error("Usernames must be provided as your full Gmail address, hosted domains included.")
+            sys.exit(2)
+
 	docs_type = None
 	folder_name = None
 	name_filter = None
@@ -329,9 +333,13 @@ def import_documents(source_path, target_path, options):
 	upload_filenames = []
 	username, document_path = target_path.split(':')
 
+	if not helpers.is_email(username):
+            LOG.error("Usernames must be provided as your full Gmail address, hosted domains included.")
+            sys.exit(2)
+
         folder_name = None
         doc_param_parts = document_path.split('/')
-        
+
         if len(doc_param_parts) > 1 and not doc_param_parts[1] == '':
                 folder_name = doc_param_parts[1]
 	
