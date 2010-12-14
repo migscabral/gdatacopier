@@ -18,8 +18,6 @@
 __version__ = "2.2.0"
 __author__  = "Devraj Mukherjee, Matteo Canato"
 
-# With Docs API v3.0 the URI are changed
-BASE_FEED = "/feeds/default"
 
 """
 	Imports the required modules
@@ -163,10 +161,10 @@ def list_documents(server_string, options):
 
             # If the user provided a folder type then add this here
             if folder_name == None or folder_name == "all":
-                document_query = gdata.docs.service.DocumentQuery(feed=BASE_FEED)
+                document_query = gdata.docs.service.DocumentQuery(feed=helpers.BASE_FEED)
             else:
                 projection_folder = "full" + helpers.get_folder_id_from_name(folder_name, gd_client)
-                document_query = gdata.docs.service.DocumentQuery(feed=BASE_FEED, projection=projection_folder)
+                document_query = gdata.docs.service.DocumentQuery(feed=helpers.BASE_FEED, projection=projection_folder)
 
             helpers.add_category_filter(document_query, docs_type)
             helpers.add_title_match_filter(document_query, name_filter)

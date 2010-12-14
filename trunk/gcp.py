@@ -18,9 +18,6 @@
 __version__ = "2.2.0"
 __author__  = "Devraj Mukherjee, Matteo Canato"
 
-# With Docs API v3.0 the URI are changed
-BASE_FEED = "/feeds/default"
-
 """
 	Imports the required modules 
 """
@@ -166,10 +163,10 @@ def export_documents(source_path, target_path, options):
 
             # If the user provided a folder type then add this here
             if folder_name == None or folder_name == "all":
-                document_query = gdata.docs.service.DocumentQuery(feed=BASE_FEED)
+                document_query = gdata.docs.service.DocumentQuery(feed=helpers.BASE_FEED)
             else:
                 projection_folder = "full" + helpers.get_folder_id_from_name(folder_name, gd_client)
-                document_query = gdata.docs.service.DocumentQuery(feed=BASE_FEED, projection=projection_folder)
+                document_query = gdata.docs.service.DocumentQuery(feed=helpers.BASE_FEED, projection=projection_folder)
 
             helpers.add_category_filter(document_query, docs_type)
             helpers.add_title_match_filter(document_query, name_filter)
@@ -286,48 +283,6 @@ def export_documents(source_path, target_path, options):
 	except Exception, e:
 		LOG.error("Failed. %s" % e)
 		sys.exit(2)
-
-"""
-    If the folder exists, returns the folder entry.
-    Otherwise returns None.
-"""
-def get_folder_entry(gd_client, folder_name):
-    document_query = gdata.docs.service.DocumentQuery(feed=BASE_FEED)
-
-    if not (folder_name == None or folder_name == "all"):
-        document_query.categories.append('folder')
-
-    LOG.debug("Sending a request for the URI: %s" % document_query.ToUri())
-    feed = gd_client.GetEverything(document_query.ToUri())
-
-    for entry in feed:
-        if entry.title.text == folder_name:
-            return entry
-    return None
-
-"""
-    If the document exists, returns the entry of the doc.
-    Otherwise returns None.
-"""
-def get_document_resource(gd_client, folder, doc_name):
-    filename = helpers.filename_from_path(doc_name)
-
-    if folder == None or folder == "all":
-        LOG.debug("Contents of folder root")
-        in_root = True
-        feed = gd_client.GetEverything(uri='/feeds/default/private/full/folder%3Aroot/contents/')
-    else:
-        LOG.debug("Contents of folder: " + folder.title.text)
-        in_root = False
-        feed = gd_client.GetEverything(uri=folder.content.src)
-
-    for doc in feed:
-        if doc.title.text == filename:
-            LOG.debug("Find document %s! Is also in folder(s) %s" % (doc.title.text,[f.title for f in doc.InFolders()]))
-            if in_root==False or (len(doc.InFolders())==0 and in_root==True):
-                return doc
-    return None
-
 	
 def import_documents(source_path, target_path, options):
 	upload_filenames = []
@@ -378,7 +333,7 @@ def import_documents(source_path, target_path, options):
 
             # The folder where to upload must be a gdata.docs.data.DocsEntry object
             # see http://code.google.com/intl/it/apis/documents/docs/3.0/developers_guide_python.html#UploadDocToAFolder
-            remote_folder = get_folder_entry(gd_client, folder_name)
+            remote_folder = helpers.get_folder_entry(gd_client, folder_name)
 
             # Counters
             notallowed_counter = 0
@@ -409,7 +364,7 @@ def import_documents(source_path, target_path, options):
                     media_source = gdata.data.MediaSource(file_path=file_name, content_type=mime_type)
 
                     entry = None
-                    existing_resource = get_document_resource(gd_client, remote_folder, file_name)
+                    existing_resource = helpers.get_document_resource(gd_client, remote_folder, file_name)
 
                     try:
                             if existing_resource == None:

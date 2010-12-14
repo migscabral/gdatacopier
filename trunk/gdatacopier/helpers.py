@@ -11,6 +11,8 @@ __accepted_draw_formats__ = ['png', 'jpeg', 'svg', 'pdf']
 __bad_chars__ = ['\\', '/', '&', ':']
 
 LOGGER_NAME = 'GDataCopier'
+# With Docs API v3.0 the URI are changed
+BASE_FEED = "/feeds/default"
 
 try:
         import os
@@ -210,3 +212,40 @@ def is_a_known_extension(ext):
 """
 def get_mime_type(filename):
     return mimetypes.guess_type(os.path.basename(filename))[0]
+
+"""
+    If the folder exists, returns the folder entry.
+    Otherwise returns None.
+"""
+def get_folder_entry(gd_client, folder_name):
+    document_query = gdata.docs.service.DocumentQuery(feed=BASE_FEED)
+
+    if not (folder_name == None or folder_name == "all"):
+        document_query.categories.append('folder')
+
+    feed = gd_client.GetEverything(document_query.ToUri())
+
+    for entry in feed:
+        if entry.title.text == folder_name:
+            return entry
+    return None
+
+"""
+    If the document exists, returns the entry of the doc.
+    Otherwise returns None.
+"""
+def get_document_resource(gd_client, folder, doc_name):
+    filename = filename_from_path(doc_name)
+
+    if folder == None or folder == "all":
+        in_root = True
+        feed = gd_client.GetEverything(uri='/feeds/default/private/full/folder%3Aroot/contents/')
+    else:
+        in_root = False
+        feed = gd_client.GetEverything(uri=folder.content.src)
+
+    for doc in feed:
+        if doc.title.text == filename:
+            if in_root==False or (len(doc.InFolders())==0 and in_root==True):
+                return doc
+    return None
