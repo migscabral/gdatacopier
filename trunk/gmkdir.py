@@ -149,23 +149,7 @@ def make_folder(server_string, options):
             # Authenticate to the document service'
             helpers.login(username, oauth_values, options, gd_client)
 
-#            # The folder where to upload must be a gdata.docs.data.DocsEntry object
-#            # see http://code.google.com/intl/it/apis/documents/docs/3.0/developers_guide_python.html#UploadDocToAFolder
-#            remote_folder = helpers.get_folder_entry(gd_client, folder_name)
-#
-#            document_query = gdata.docs.service.DocumentQuery()
-#            document_query.categories.append('folder')
-
             LOG.info("Fetching folder list feeds from Google servers for %s ... " % (username))
-
-#            LOG.debug("Sending a request for the URI: %s" % document_query.ToUri())
-#            feed = gd_client.Query(document_query.ToUri())
-
-#            for entry in feed.entry:
-#                document_type = entry.GetDocumentType()
-
-            #new_folder = client.Create(gdata.docs.data.FOLDER_LABEL, 'My Folder')
-            #folder_entry = gd_client.CreateFolder(new_folder_name)
 
             existing_folder = helpers.get_folder_entry(gd_client, folder_name)
 
@@ -211,7 +195,7 @@ def parse_user_input():
 	parser.add_option('-s', '--silent',
                             action = 'store_true',
                             dest = 'silent',
-                            default = True,
+                            default = False,
                             help = 'decreases verbosity, supresses all messages '
                                     'but summaries and critical errors')
 	parser.add_option('-p', '--password',
