@@ -175,7 +175,7 @@ def list_documents(server_string, options):
 
             print 'User %s has a total of %s documents.' % (username, len(docs))
             if len(docs) != 0:
-                print '%-17s %-18s %-46s %-15s %s' % ('AUTHOR', 'DATE', 'TITLE', 'TYPE', 'FOLDER')
+                print '%-10s %-18s %-36s %-15s %s' % ('AUTHOR', 'DATE', 'TITLE', 'TYPE', 'FOLDER')
 
                 for entry in docs:
                         document_type = entry.GetDocumentType()
@@ -185,7 +185,7 @@ def list_documents(server_string, options):
                         updated_time = datetime.datetime(*map(int, re.split('[^\d]', entry.updated.text)[:-1]))
                         date_string = updated_time.strftime('%b %d %Y %H:%M')
 
-                        print '%-17s %-18s %-46s %-15s %s' % (entry.author[0].name.text[0:16], date_string, entry.title.text[0:45], document_type[0:14], [f.title for f in entry.InFolders()])
+                        print '%-10s %-18s %-36s %-15s %s' % (entry.author[0].name.text[0:9], date_string, entry.title.text[0:35], document_type[0:14], helpers.print_folders_name(entry))
 
                         # Increase counters
                         if document_type == "document":

@@ -249,3 +249,9 @@ def get_document_resource(gd_client, folder, doc_name):
             if in_root==False or (len(doc.InFolders())==0 and in_root==True):
                 return doc
     return None
+
+def print_folders_name(entry):
+    folders = ""
+    for f in entry.InFolders():
+        folders += "'" + f.title + "', "
+    return folders[:-2]
