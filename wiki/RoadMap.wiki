@@ -1,15 +1,18 @@
 #summary News and notes about the Development Version of GDataCopier.
 #labels Featured
-
-== Introduction ==
+<wiki:toc max_depth="1" />
 
 GDataCopier is an active project, the following is our road map, it outlines new features and bug fixes for upcoming releases.
 
-== v2.2 ==
+Current features on board for development and release as*v3.0*
 
-We are now taking feature requests for our current development version 2.2
-
+  * Python 2.7 compatibility
+  * Complete rewrite of command line scripts
+  * Doxygen generated documentation of API
   * OAuth based authentication, so users don't have to provide usernames and passwords via command line or configuration files
+
+
+== Releases ==
 
 == v2.1.2 ==
 
