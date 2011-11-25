@@ -9,6 +9,10 @@ Current features on board for development and release as*v3.0*
   * Python 2.7 compatibility
   * Complete rewrite of command line scripts
   * Doxygen generated documentation of API
+  * Any document policy support for backup
+  * File based configuration of scripts
+  * Address various reported content encoding issues, unicode characters and other non latin scripts
+  * GID based export
   * OAuth based authentication, so users don't have to provide usernames and passwords via command line or configuration files
 
 
