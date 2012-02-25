@@ -1,6 +1,29 @@
 #summary Development notes for Release 3.0.
 #labels Featured
 
+= Feature Set =
+
+GDataCopier aims to deliver these new features
+  
+  * OAuth 2.0 login, we might drop username / password based logins completely
+  * Admin level user impersonation support for Google Apps users
+  * Sync option, to prune documents on the local machine as they are deleted on the Cloud
+  * Support and test any document policy
+
+Also check the [http://code.google.com/p/gdatacopier/issues/list Issues list], we will fix all reported bugs.
+
+== System Requirements ==
+
+  * Python 2.6+
+  * [http://code.google.com/p/gdata-python-client/downloads/list GData Client Library] 2.0.16+
+  * Ability to establish HTTPS connections, check if you are using Proxies.
+
+Was developed and tested under OS X, tested under Linux. If you are using Windows and find any issues please report it to us.
+
+= GData API =
+
+GDataCopier is written in Python and uses the [http://code.google.com/apis/documents/docs/3.0/developers_guide_python.html GData Python API].
+
 = Authentication =
 
 Authentication switched to OAuth 2.0, you will *no longer* be able to use Username / Password based Authentication, instead you must authorise against Google's authentication service. 
