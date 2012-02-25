@@ -1,0 +1,10 @@
+#summary Development notes for Release 3.0.
+#labels Featured
+
+= Authentication =
+
+Authentication switched to OAuth 2.0, you will *no longer* be able to use Username / Password based Authentication, instead you must authorise against Google's authentication service. 
+
+This allows impersonating domain users if you are logged in as an Administrator.
+
+  * [http://code.google.com/apis/gdata/docs/auth/oauth.html#NoLibrary OAuth in the Google Data Protocol Client Libraries]
