@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 #  gdatacopier, Command line utilties to manage your Google docs
 #  http://gdatacopier.googlecode.com
@@ -18,4 +19,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-#
+#  
+
+try:
+    import gdatacopier.auth
+except:
+    print "gdc failed to find gdatacopier, ensure things are installed properly"
+    

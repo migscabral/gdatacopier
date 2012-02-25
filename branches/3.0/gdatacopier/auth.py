@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 #  gdatacopier, Command line utilties to manage your Google docs
 #  http://gdatacopier.googlecode.com
@@ -19,3 +20,18 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
+
+## @brief 
+#
+
+try:
+    import keyring
+except:
+    print "gdatacopier depends on Python keyring <http://pypi.python.org/pypi/keyring>, try: pip install keyring"
+    
+    
+## @brief
+#
+class TwoLeggedOAuthClient:
+    
+    
