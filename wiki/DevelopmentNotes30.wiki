@@ -69,6 +69,8 @@ Setting these values in GDataCopier
 gdc --register-oauth --client-id=xxx --consumer-secret=xxx
 }}}
 
+We are investigating storing this in the user's [http://pypi.python.org/pypi/keyring Keyring].
+
 Note this will be centric to a user, gdc writes preferences to your home directory .gdc/preferences
 
 This is an INI file, you can edit the values manually but it's recommended that you shouldn't.
