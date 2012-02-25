@@ -30,3 +30,7 @@ Setting these values in GDataCopier
 {{{
 gdc --register-oauth --client-id=xxx --consumer-secret=xxx
 }}}
+
+Note this will be centric to a user, gdc writes preferences to your home directory .gdc/preferences
+
+This is an INI file, you can edit the values manually but it's recommended that you shouldn't.
