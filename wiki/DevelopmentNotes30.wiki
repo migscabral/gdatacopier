@@ -15,6 +15,7 @@ GDataCopier aims to deliver these new features
   * Admin level user impersonation support for Google Apps users
   * Sync option, to prune documents on the local machine as they are deleted on the Cloud
   * Support and test any document policy
+  * API documentation via [http://www.stack.nl/~dimitri/doxygen/ Doxygen]
 
 Also check the [http://code.google.com/p/gdatacopier/issues/list Issues list], we will fix all reported bugs.
 
@@ -30,9 +31,10 @@ Was developed and tested under OS X, tested under Linux. If you are using Window
 
 GDataCopier is written in Python and uses the [http://code.google.com/apis/documents/docs/3.0/developers_guide_python.html GData Python API].
 
-= Python programming references =
+= Programming references =
 
   * [http://travelingfrontiers.wordpress.com/2010/08/22/how-to-add-colors-to-linux-command-line-output/ Adding Colour to Linux Command line utilities], talks about Python command line utilities.
+  * [http://wisdom.etk.com.au/index.php/Setting_up_mime-types_for_serving_HTML_content_out_of_Subversion Setup mime types for Subversion repo], useful for Doxygen based documentation.
 
 = Authentication =
 
