@@ -17,4 +17,4 @@ GDatacopier's development was sponsored by the following:
 
 == Developers ==
 
-  * Matteo Canato
+  * [http://www.canato.org/ Matteo Canato]
