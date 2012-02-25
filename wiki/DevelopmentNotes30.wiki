@@ -8,3 +8,4 @@ Authentication switched to OAuth 2.0, you will *no longer* be able to use Userna
 This allows impersonating domain users if you are logged in as an Administrator.
 
   * [http://code.google.com/apis/gdata/docs/auth/oauth.html#NoLibrary OAuth in the Google Data Protocol Client Libraries]
+  * [http://code.google.com/p/google-api-python-client/wiki/OAuth2 OAuth 2 login on the client side], examples, tips and tricks.
