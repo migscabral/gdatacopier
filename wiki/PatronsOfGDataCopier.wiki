@@ -1,0 +1,15 @@
+#summary Individuals and organisations that have supported GDataCopier's development.
+
+= Sponsorships =
+
+GDatacopier's development was sponsored by the following:
+
+   * [http://debortoli.com.au De Bortoli Wines] is one of the largest family owned wineries in Australia and is committed to Open Source and Open Standards. Amongst [http://en.wikipedia.org/wiki/De_Bortoli_Wines#Open_Source_projects_sponsored_by_De_Bortoli_Wines other projects] they funded the initial development of GDataCopier. Read their [http://en.wikipedia.org/wiki/De_bortoli_wines Wikipedia article] to learn more. The continue to fund the development of various features in GDataCopier
+   * [http://lib.ugent.be Universiteitsbiliotheek Gent] for sponsoring the development of the update document feature in gcp (released in 2.1)
+
+= Donations =
+
+   * [http://uniquelogodesign.com Unique Logo Design] designed and contributed the GDataCopier Logo (available for free download as well), we highly recommend their graphic design services.
+   * Spanning Sync, Inc.
+   * Antuan Shakhin
+   * Andrew Pearce
