@@ -7,6 +7,8 @@
 
 This is a working document for GDataCopier 3.0 development. Most of this information will eventually end up as official documentation for this project.
 
+Follow the development branch [http://code.google.com/p/gdatacopier/source/browse/#svn%2Fbranches%2F3.0 here]
+
 == Feature Set ==
 
 GDataCopier aims to deliver these new features
