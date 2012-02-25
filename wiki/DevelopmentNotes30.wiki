@@ -9,3 +9,24 @@ This allows impersonating domain users if you are logged in as an Administrator.
 
   * [http://code.google.com/apis/gdata/docs/auth/oauth.html#NoLibrary OAuth in the Google Data Protocol Client Libraries]
   * [http://code.google.com/p/google-api-python-client/wiki/OAuth2 OAuth 2 login on the client side], examples, tips and tricks.
+
+== OAuth 2.0 instructions ==
+
+You will require to register GDataCopier with Google's [https://code.google.com/apis/console/ API Console]. 
+
+  * Head to [https://code.google.com/apis/console/ Google's API Console]
+  * Click on API access
+  * Create Client ID
+  * Choose Installed Application
+  * Click create
+
+You will require the
+
+  * Client ID
+  * Consumer Secret
+
+Setting these values in GDataCopier
+
+{{{
+gdc --register-oauth --client-id=xxx --consumer-secret=xxx
+}}}
