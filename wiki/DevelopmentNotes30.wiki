@@ -29,7 +29,7 @@ Also check the [http://code.google.com/p/gdatacopier/issues/list Issues list], w
 
 Was developed and tested under OS X, tested under Linux. If you are using Windows and find any issues please report it to us.
 
-= GData API =
+== GData API ==
 
 GDataCopier is written in Python and uses the [http://code.google.com/apis/documents/docs/3.0/developers_guide_python.html GData Python API].
 
@@ -37,6 +37,7 @@ GDataCopier is written in Python and uses the [http://code.google.com/apis/docum
 
   * [http://travelingfrontiers.wordpress.com/2010/08/22/how-to-add-colors-to-linux-command-line-output/ Adding Colour to Linux Command line utilities], talks about Python command line utilities.
   * [http://wisdom.etk.com.au/index.php/Setting_up_mime-types_for_serving_HTML_content_out_of_Subversion Setup mime types for Subversion repo], useful for Doxygen based documentation.
+  * [http://pypi.python.org/pypi/keyring Python Keyring]
 
 = Authentication =
 
