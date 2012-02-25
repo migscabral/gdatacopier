@@ -1,7 +1,13 @@
 #summary Development notes for Release 3.0.
 #labels Featured
 
-= Feature Set =
+<wiki:toc max_depth="4" />
+
+= Introduction =
+
+This is a working document for GDataCopier 3.0 development. Most of this information will eventually end up as official documentation for this project.
+
+== Feature Set ==
 
 GDataCopier aims to deliver these new features
   
@@ -23,6 +29,10 @@ Was developed and tested under OS X, tested under Linux. If you are using Window
 = GData API =
 
 GDataCopier is written in Python and uses the [http://code.google.com/apis/documents/docs/3.0/developers_guide_python.html GData Python API].
+
+= Python programming references =
+
+  * [http://travelingfrontiers.wordpress.com/2010/08/22/how-to-add-colors-to-linux-command-line-output/ Adding Colour to Linux Command line utilities], talks about Python command line utilities.
 
 = Authentication =
 
