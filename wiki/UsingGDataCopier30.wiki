@@ -6,7 +6,26 @@
 
 = Authentication =
 
+These will be stored in the user's [http://pypi.python.org/pypi/keyring Keyring]. Please note you will need Keyring support installed, generally available by default on OS X, Linux and Windows.
+
+== Obtaining credentials ==
+
+You will require to register GDataCopier with Google's [https://code.google.com/apis/console/ API Console]. 
+
+  * Head to [https://code.google.com/apis/console/ Google's API Console]
+  * Click on API access
+  * Create Client ID
+  * Choose Installed Application
+  * Click create
+
+You will require the
+
+  * Client ID
+  * Consumer Secret
+
 == Logging In ==
+
+Setting these values in GDataCopier, repeat any number of times to reset the values. Note username is the default username, this can be changed per command as a parameter
 
 {{{
 gdc login -c your-client-id -s your-client-secret -u optional-default-username
