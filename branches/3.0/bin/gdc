@@ -21,10 +21,14 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #  
 
+__authors__ = ['Devraj Mukherjee <devraj@gmail.com>', 'Matteo Cantao <mcanato@gmail.com>']
+__version__ = "3.0"
+
 try:
     import argparse
 except:
     print "gdc failed to find core Python components, please validate your environment"
+
 
 ## @brief Sets up a Subparser for the logout command
 #
@@ -32,7 +36,7 @@ except:
 #
 def setup_mkdir_subparser(subparsers):
     
-    logout_parser = subparsers.add_parser(
+    mkdir_parser = subparsers.add_parser(
         "mkdir", 
         help="creates folders on Google doc servers")
 
@@ -84,19 +88,28 @@ def setup_login_subparser(subparsers):
     
     login_parser = subparsers.add_parser(
         "login", 
-        help="registers and validates two legged authentication")
+        help="registers and validates two legged authentication, use Google API console to obtain credentials")
     
     login_parser.add_argument(
         '--consumer-secret', '-s', 
-        help="", 
-        action='store', 
+        help="Consumer secret obtained from Google API console", 
+        action='store',
+        required=True, 
         dest='consumer-secret')
     
     login_parser.add_argument(
         '--consumer-key', '-k', 
-        help="", 
+        help="Consumer key obtained from Google API console", 
         action='store', 
+        required=True,
         dest='consumer-key')
+        
+    login_parser.add_argument(
+        '--username', '-u',
+        help="default username to use when interacting with Google doc servers, overridden by command line value",
+        action='store',
+        required=False,
+        dest='username')
 
 
 ## @brief Sets up the ArgParser and command line rules
@@ -110,8 +123,9 @@ def setup_args_parser():
         description="command line tool to automate management of Google docs.", 
         epilog="gdatacopier comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GNU GPLv2.")
     
-    subparsers = arg_parser.add_subparsers(help="")
+    subparsers = arg_parser.add_subparsers(dest="subparser_name")
 
+    # Setup various sub parsers / commands offered by gdc
     setup_login_subparser(subparsers)
     setup_logout_subparser(subparsers)
     setup_copy_subparser(subparsers)

@@ -30,8 +30,17 @@ except:
     print "gdatacopier depends on Python keyring <http://pypi.python.org/pypi/keyring>, try: pip install keyring"
     
     
-## @brief
-#
-class TwoLeggedOAuthClient:
+    
+class Provider(object):
+    
+    def register_two_legged_credentials(self):
+        pass
+        
+    def invalidate_two_ledgged_credentials(self):
+        pass
+        
+    def login(self):
+        pass
+        
     
     
