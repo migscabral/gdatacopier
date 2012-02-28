@@ -65,10 +65,16 @@ You will require the
   * Client ID
   * Consumer Secret
 
-Setting these values in GDataCopier
+Setting these values in GDataCopier, repeat any number of times to reset the values. Note username is the default username, this can be changed per command as a parameter
 
 {{{
 gdc login --client-id=xxx --consumer-secret=xxx --username=devraj@gmail.com
 }}}
 
-This will be stored in the user's [http://pypi.python.org/pypi/keyring Keyring]. Please note you will need Keyring support installed, generally available by default on OS X, Linux and Windows.
+to logout and forget the OAuth credentials.
+
+{{{
+gdc logout
+}}}
+
+These will be stored in the user's [http://pypi.python.org/pypi/keyring Keyring]. Please note you will need Keyring support installed, generally available by default on OS X, Linux and Windows.
