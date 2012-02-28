@@ -4,6 +4,13 @@
 
 == Requirements ==
 
+  * Python 2.6+
+  * [http://code.google.com/p/gdata-python-client/downloads/list GData Client Library] 2.0.16+ (Ubuntu users please ensure you have the right version).
+  * Ability to establish HTTPS connections, check if you are using Proxies.
+  * [http://pypi.python.org/pypi/keyring Python Keyring], available via easy_install or PIP.
+
+Was developed and tested under OS X, tested under Linux. If you are using Windows and find any issues please report it to us.
+
 = Authentication =
 
 These will be stored in the user's [http://pypi.python.org/pypi/keyring Keyring]. Please note you will need Keyring support installed, generally available by default on OS X, Linux and Windows.
