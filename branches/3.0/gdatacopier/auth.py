@@ -30,7 +30,6 @@ except:
     print "gdatacopier depends on Python keyring <http://pypi.python.org/pypi/keyring>, try: pip install keyring"
     
     
-    
 class Provider(object):
     
     def register_two_legged_credentials(self):

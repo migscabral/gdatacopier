@@ -22,7 +22,10 @@
 
 __all__ = ['auth']
 
-##
+## @defgroup exception Exception defined by GDataCopier
 #
-#  @defgroup exception Exception defined by GDataCopier
-#
+
+class ParserBuilder(object):
+    
+    def create_args_parser(self):
+        pass
