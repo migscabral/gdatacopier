@@ -98,11 +98,11 @@ def setup_login_subparser(subparsers):
         dest='consumer-secret')
     
     login_parser.add_argument(
-        '--consumer-key', '-k', 
-        help="Consumer key obtained from Google API console", 
+        '--client-id', '-c', 
+        help="Client ID obtained from Google API console", 
         action='store', 
         required=True,
-        dest='consumer-key')
+        dest='consumer-id')
         
     login_parser.add_argument(
         '--username', '-u',
