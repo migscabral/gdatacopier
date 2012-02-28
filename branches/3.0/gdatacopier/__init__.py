@@ -26,5 +26,3 @@ __all__ = ['auth']
 #
 #  @defgroup exception Exception defined by GDataCopier
 #
-
-
