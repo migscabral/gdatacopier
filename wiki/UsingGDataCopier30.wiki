@@ -13,7 +13,7 @@ gdc login -c your-client-id -s your-client-secret -u optional-default-username
 }}}
 
 {{{
-gdc login --client-id your-client-id --client-secret your-client-secret -username optional-default-username
+gdc login --client-id your-client-id --client-secret your-client-secret --username optional-default-username
 }}}
 
 == Logging Out ==
