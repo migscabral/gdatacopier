@@ -1,0 +1,27 @@
+#summary Getting started with GDataCopier 3.0.
+
+= Installation =
+
+== Requirements ==
+
+= Authentication =
+
+== Logging In ==
+
+== Logging Out ==
+
+== Default username and impersonating users ==
+
+= Asking for help =
+
+= Operations =
+
+== Copy ==
+
+== List ==
+
+== Delete ==
+
+== Sync ==
+
+== Directories ==
