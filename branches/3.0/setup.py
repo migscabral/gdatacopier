@@ -25,7 +25,7 @@ from distutils.core import setup
 setup(
     name="GDataCopier",
     version="3.0",
-    description="",
+    description="command line management tools for Google docs",
     author="Devraj Mukherjee, Matteo Canato",
     author_email="devraj@gmail.com",
     url="http://gdatacopier.googlecode.com",
