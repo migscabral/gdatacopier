@@ -39,6 +39,7 @@ GDataCopier is written in Python and uses the [http://code.google.com/apis/docum
   * [http://wisdom.etk.com.au/index.php/Setting_up_mime-types_for_serving_HTML_content_out_of_Subversion Setup mime types for Subversion repo], useful for Doxygen based documentation.
   * [http://pypi.python.org/pypi/keyring Python Keyring]
   * [http://code.google.com/p/gdata-python-client/source/browse/samples/oauth/TwoLeggedOAuthExample.py Python OAuth Two legged example], demonstrates user impersonation. 
+  * [http://docs.python.org/library/mimetypes.html Python mimetype package]
 
 = Authentication =
 
