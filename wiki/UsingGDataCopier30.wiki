@@ -9,17 +9,17 @@
 == Logging In ==
 
 {{{
-gdc login -c your-client-id -s your-client-secret -u optional-default-username
+spock:st devraj$ gdc login -c your-client-id -s your-client-secret -u optional-default-username
 }}}
 
 {{{
-gdc login --client-id your-client-id --client-secret your-client-secret -username optional-default-username
+spock:st devraj$ gdc login --client-id your-client-id --client-secret your-client-secret -username optional-default-username
 }}}
 
 == Logging Out ==
 
 {{{
-gdc logout
+spock:st devraj$ gdc logout
 }}}
 
 == Default username and impersonating users ==
