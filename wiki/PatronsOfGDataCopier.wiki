@@ -10,7 +10,6 @@ GDatacopier's development was sponsored by the following:
 
 == Donations ==
 
-   * [http://uniquelogodesign.com Unique Logo Design] designed and contributed the GDataCopier Logo (available for free download as well), we highly recommend their graphic design services.
    * Spanning Sync, Inc.
    * Antuan Shakhin
    * Andrew Pearce
@@ -18,3 +17,4 @@ GDatacopier's development was sponsored by the following:
 == Developers ==
 
   * [http://www.canato.org/ Matteo Canato]
+  * [http://uniquelogodesign.com Unique Logo Design] designed and contributed the GDataCopier Logo (available for free download as well), we highly recommend their graphic design services.
