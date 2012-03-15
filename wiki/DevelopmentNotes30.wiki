@@ -40,6 +40,7 @@ GDataCopier is written in Python and uses the [http://code.google.com/apis/docum
   * [http://pypi.python.org/pypi/keyring Python Keyring]
   * [http://code.google.com/p/gdata-python-client/source/browse/samples/oauth/TwoLeggedOAuthExample.py Python OAuth Two legged example], demonstrates user impersonation. 
   * [http://docs.python.org/library/mimetypes.html Python mimetype package]
+  * [http://support.google.com/a/bin/answer.py?hl=en&answer=162105 OAuth: Managing the OAuth key and secret]
 
 = Authentication =
 
