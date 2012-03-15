@@ -56,6 +56,8 @@ This allows impersonating domain users if you are logged in as an Administrator.
 
 [http://support.google.com/a/bin/answer.py?hl=en&answer=162105 OAuth: Managing the OAuth key and secret] seems to be available for Google Apps domains only. Unless we can figure out if Gmail accounts can obtain a shared secret for their accounts, two factor OAuth will not be a viable solution for authentication.
 
+Alternatively we have to explore the use of [http://code.google.com/apis/gdata/docs/auth/oauth.html three legged OAuth] for console apps.
+
 == OAuth 2.0 instructions ==
 
 You will require to register GDataCopier with Google's [https://code.google.com/apis/console/ API Console]. 
