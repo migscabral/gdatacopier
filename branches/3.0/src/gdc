@@ -21,8 +21,8 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #  
 
-__authors__ = ['Devraj Mukherjee <devraj@gmail.com>', 'Matteo Cantao <mcanato@gmail.com>']
-__version__ = "3.0"
+__author__  = 'devraj (Devraj Mukherjee)'
+__version__ = '3.0'
 
 try:
     import gdatacopier
@@ -37,6 +37,11 @@ def main():
 
     parser_builder = gdatacopier.ParserBuilder()
     args = parser_builder.setup_args_parser().parse_args()
+    
+    if args.subparser_name == 'login':
+        print "login"
+    elif args.subparser_name == 'logout':
+        print "logout"
     
 if __name__ == "__main__":
     main()

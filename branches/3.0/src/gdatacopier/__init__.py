@@ -83,7 +83,7 @@ class ParserBuilder(object):
 
         logout_parser = subparsers.add_parser(
             "logout", 
-            help="unregisters two legged authentication credentials")
+            help="unregisters three legged authentication credentials")
 
     ## @brief Sets up a Subparser for the login command
     #
@@ -93,28 +93,23 @@ class ParserBuilder(object):
 
         login_parser = subparsers.add_parser(
             "login", 
-            help="registers and validates two legged authentication, use Google API console to obtain credentials")
+            help="logins via three legged OAuth and stored credentials")
 
         login_parser.add_argument(
             '--consumer-secret', '-s', 
-            help="Consumer secret obtained from Google API console", 
+            help="Consumer secret registered with the Google API console", 
             action='store',
-            required=True, 
+            required=False, 
+            default='anonymous',
             dest='consumer-secret')
 
         login_parser.add_argument(
-            '--client-id', '-c', 
-            help="Client ID obtained from Google API console", 
+            '--consumer-key', '-k', 
+            help="Consumer key registered with the Google API console", 
             action='store', 
-            required=True,
-            dest='consumer-id')
-
-        login_parser.add_argument(
-            '--username', '-u',
-            help="default username to use when interacting with Google doc servers, overridden by command line value",
-            action='store',
             required=False,
-            dest='username')
+            default='anonymous',
+            dest='consumer-key')
 
 
     ## @brief Sets up the ArgParser and command line rules

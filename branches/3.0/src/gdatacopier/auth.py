@@ -23,23 +23,41 @@
 
 ## @brief 
 #
+#  With a little help from Kunal Shah
+#  http://code.google.com/p/gdata-python-client/source/browse/samples/oauth/oauth_example.py
+#
 
-try:
-    import keyring
-except:
-    print "gdatacopier depends on Python keyring <http://pypi.python.org/pypi/keyring>, try: pip install keyring"
-    
+import gdata.auth
+import gdata.docs.service
     
 class Provider(object):
     
-    def register_two_legged_credentials(self):
-        pass
+    def __init__(self, consumer_key='anonymous', consumer_secret='anonymous'):
+
+        self._consumer_key = consumer_key
+        self._consumer_secret = consumer_secret
         
-    def invalidate_two_ledgged_credentials(self):
-        pass
+        self._gd_client = gdata.docs.service.DocsService()
         
-    def login(self):
-        pass
+        self._gd_client.SetOAuthInputParameters(
+               gdata.auth.OAuthSignatureMethod.HMAC_SHA1,
+               self._consumer_key, consumer_secret=self._consumer_secret)
+               
+    
+    def get_auth_url(self):
+
+        request_token = self._gd_client.FetchOAuthRequestToken()
+        self._gd_client.SetOAuthToken(request_token)
+        auth_url = self.gd_client.GenerateOAuthAuthorizationURL()
+        
+        return auth_url
+        
+    def register_token(self):
+        self._gd_client.UpgradeToOAuthAccessToken()
+        
+    def logout(self):
+        self._gd_client.RevokeOAuthToken()
+        
         
     
     
