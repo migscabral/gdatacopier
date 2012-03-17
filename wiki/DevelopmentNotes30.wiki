@@ -40,8 +40,9 @@ GDataCopier is written in Python and uses the [http://code.google.com/apis/docum
   * [http://pypi.python.org/pypi/keyring Python Keyring]
   * [http://code.google.com/p/gdata-python-client/source/browse/samples/oauth/TwoLeggedOAuthExample.py Python OAuth Two legged example], demonstrates user impersonation. 
   * [http://docs.python.org/library/mimetypes.html Python mimetype package]
-  * [http://support.google.com/a/bin/answer.py?hl=en&answer=162105 OAuth: Managing the OAuth key and secret]
+  * [http://support.google.com/a/bin/answer.py?hl=en&answer=162105 Managing the OAuth key and secret]
   * [http://docs.python.org/library/webbrowser.html Python Web Browser Controller API], allows controlling a Web browser via  a Python script.
+  * [http://code.google.com/p/gdata-python-client/source/browse/samples/oauth/oauth_example.py Three Legged OAuth sample]
 
 = Authentication =
 
@@ -55,35 +56,8 @@ This allows impersonating domain users if you are logged in as an Administrator.
 
 == Concerns ==
 
-[http://support.google.com/a/bin/answer.py?hl=en&answer=162105 OAuth: Managing the OAuth key and secret] seems to be available for Google Apps domains only. Unless we can figure out if Gmail accounts can obtain a shared secret for their accounts, two factor OAuth will not be a viable solution for authentication.
+[http://support.google.com/a/bin/answer.py?hl=en&answer=162105 OAuth key and secret] is available for Google Apps domains only.
 
-Alternatively we have to explore the use of [http://code.google.com/apis/gdata/docs/auth/oauth.html three legged OAuth] for console apps.
-
-== OAuth 2.0 instructions ==
-
-You will require to register GDataCopier with Google's [https://code.google.com/apis/console/ API Console]. 
-
-  * Head to [https://code.google.com/apis/console/ Google's API Console]
-  * Click on API access
-  * Create Client ID
-  * Choose Installed Application
-  * Click create
-
-You will require the
-
-  * Client ID
-  * Consumer Secret
-
-Setting these values in GDataCopier, repeat any number of times to reset the values. Note username is the default username, this can be changed per command as a parameter
-
-{{{
-gdc login --client-id=xxx --consumer-secret=xxx --username=devraj@gmail.com
-}}}
-
-to logout and forget the OAuth credentials.
-
-{{{
-gdc logout
-}}}
+GDataCopier will use a three legged OAuth routine to ensure all Google accounts are supported [http://code.google.com/apis/gdata/docs/auth/oauth.html three legged OAuth].
 
 These will be stored in the user's [http://pypi.python.org/pypi/keyring Keyring]. Please note you will need Keyring support installed, generally available by default on OS X, Linux and Windows.
