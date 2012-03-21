@@ -27,14 +27,15 @@ __version__ = '3.0'
 
 ## @brief 
 #
-#  With a little help from Kunal Shah
-#  http://code.google.com/p/gdata-python-client/source/browse/samples/oauth/oauth_example.py
 #
 
 import gdata.gauth
 import gdata.docs.client
     
 class Provider(object):
+
+    def get_client(self):
+        return self._gd_client
     
     def __init__(self, docs_client, consumer_key='anonymous', consumer_secret='anonymous'):
 
