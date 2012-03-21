@@ -31,33 +31,31 @@ __version__ = '3.0'
 #  http://code.google.com/p/gdata-python-client/source/browse/samples/oauth/oauth_example.py
 #
 
-import gdata.auth
-import gdata.docs.service
+import gdata.gauth
+import gdata.docs.client
     
 class Provider(object):
     
-    def __init__(self, consumer_key='anonymous', consumer_secret='anonymous'):
+    def __init__(self, docs_client, consumer_key='anonymous', consumer_secret='anonymous'):
 
         self._consumer_key = consumer_key
         self._consumer_secret = consumer_secret
         
-        self._gd_client = gdata.docs.service.DocsService()
+        self._scopes = ['https://docs.google.com/feeds/']
         
-        self._gd_client.SetOAuthInputParameters(
-               gdata.auth.OAuthSignatureMethod.HMAC_SHA1,
-               self._consumer_key, consumer_secret=self._consumer_secret)
-               
-    
-    def get_auth_url(self):
+        self._gd_client = docs_client
+            
+    def get_auth_url(self, app_domain=None):
 
-        request_token = self._gd_client.FetchOAuthRequestToken()
-        self._gd_client.SetOAuthToken(request_token)
-        auth_url = self._gd_client.GenerateOAuthAuthorizationURL()
+        self._request_token = self._gd_client.GetOAuthToken(self._scopes, None, self._consumer_key, consumer_secret=self._consumer_secret)
+        auth_url = self._request_token.generate_authorization_url(google_apps_domain=app_domain)
+        return str(auth_url)
         
-        return auth_url
+    def get_access_token(self):
+        access_token = self._gd_client.GetAccessToken(self._request_token)
+        self._gd_client.access_token = access_token
+        return access_token
         
-    def register_token(self):
-        self._gd_client.UpgradeToOAuthAccessToken()
         
     def logout(self):
         self._gd_client.RevokeOAuthToken()

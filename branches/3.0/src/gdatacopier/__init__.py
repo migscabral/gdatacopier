@@ -21,7 +21,7 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #  
 
-__all__     = ['auth']
+__all__     = ['auth', 'ux']
 __author__  = 'devraj (Devraj Mukherjee)'
 __version__ = '3.0'
 
@@ -99,20 +99,12 @@ class ParserBuilder(object):
             help="logins via three legged OAuth and stored credentials")
 
         login_parser.add_argument(
-            '--consumer-secret', '-s', 
-            help="Consumer secret registered with the Google API console", 
+            '--apps-domain', '-d', 
+            help="Apps domain if authenticating against a Google Apps domain", 
             action='store',
-            required=False, 
-            default='anonymous',
-            dest='consumer-secret')
-
-        login_parser.add_argument(
-            '--consumer-key', '-k', 
-            help="Consumer key registered with the Google API console", 
-            action='store', 
             required=False,
-            default='anonymous',
-            dest='consumer-key')
+            default=None, 
+            dest='apps-domain')
 
 
     ## @brief Sets up the ArgParser and command line rules

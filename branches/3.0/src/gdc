@@ -24,27 +24,38 @@
 __author__  = 'devraj (Devraj Mukherjee)'
 __version__ = '3.0'
 
+import signal
+import sys
+
 try:
     import gdatacopier
     import gdatacopier.ux
     import gdatacopier.auth
 except:
     print "gdc can't find gdatacopier package, please ensure it's in your python path"
-    
+
+
+## @brief
+#
+def ctrlc_handler(signal, frame):
+    print ""
+    sys.exit(2)    
 
 ## @brief Executed if __name__ is __main__
 #    
 def main():
 
+    signal.signal(signal.SIGINT, ctrlc_handler)
+    
     parser_builder = gdatacopier.ParserBuilder()
     args = parser_builder.setup_args_parser().parse_args()
     
-    ux_handler = gdatacopier.ux.Handler(auth_provider=gdatacopier.auth.Provider(), args=args)
-    
+    ux_handler = gdatacopier.ux.Handler(args)
+
     if args.subparser_name == 'login':
         return ux_handler.login()
     elif args.subparser_name == 'logout':
-        print "logout"
+        return ux_handler.logout()
     
 if __name__ == "__main__":
     main()
