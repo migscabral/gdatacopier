@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 #  gdatacopier, Command line utilties to manage your Google docs
 #  http://gdatacopier.googlecode.com
@@ -20,7 +21,9 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #  
 
-__all__ = ['auth']
+__all__     = ['auth']
+__author__  = 'devraj (Devraj Mukherjee)'
+__version__ = '3.0'
 
 try:
     import argparse

@@ -21,6 +21,10 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
+__all__     = ['Provider']
+__author__  = 'devraj (Devraj Mukherjee)'
+__version__ = '3.0'
+
 ## @brief 
 #
 #  With a little help from Kunal Shah
@@ -48,7 +52,7 @@ class Provider(object):
 
         request_token = self._gd_client.FetchOAuthRequestToken()
         self._gd_client.SetOAuthToken(request_token)
-        auth_url = self.gd_client.GenerateOAuthAuthorizationURL()
+        auth_url = self._gd_client.GenerateOAuthAuthorizationURL()
         
         return auth_url
         

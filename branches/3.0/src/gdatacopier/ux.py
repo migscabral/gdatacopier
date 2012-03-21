@@ -19,32 +19,32 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-#  
+#
 
+__all__     = ['Handler']
 __author__  = 'devraj (Devraj Mukherjee)'
 __version__ = '3.0'
 
-try:
-    import gdatacopier
-    import gdatacopier.ux
-    import gdatacopier.auth
-except:
-    print "gdc can't find gdatacopier package, please ensure it's in your python path"
-    
+import webbrowser
+import socket
 
-## @brief Executed if __name__ is __main__
-#    
-def main():
+class Handler(object):
+    
+    def __init__(self, auth_provider, args):
+        self._auth_provider = auth_provider
+        self._args = args
+        
+    def login(self):
+        
+        try:
 
-    parser_builder = gdatacopier.ParserBuilder()
-    args = parser_builder.setup_args_parser().parse_args()
-    
-    ux_handler = gdatacopier.ux.Handler(auth_provider=gdatacopier.auth.Provider(), args=args)
-    
-    if args.subparser_name == 'login':
-        return ux_handler.login()
-    elif args.subparser_name == 'logout':
-        print "logout"
-    
-if __name__ == "__main__":
-    main()
+            auth_url = self._auth_provider.get_auth_url()
+            if not auth_url:
+                print "having trouble getting an auth url, check your network and try again"
+                
+            if not webbrowser.open(auth_url):
+                print "visit %s to authorise GDataCopier to use your account"
+
+        except socket.gaierror:
+            print "can't talk to Google servers, problem with your network?"
+            
