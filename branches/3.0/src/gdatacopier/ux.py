@@ -28,6 +28,7 @@ __version__ = '3.0'
 import webbrowser
 import socket
 import gdata.service
+import gdata.client
 
 import gdatacopier.auth
 
@@ -62,11 +63,11 @@ class Handler(object):
                 
             raw_input("once, you've authorised GDataCopier, hit enter to continue")
 
-            access_token self._auth_provider.get_access_token()
+            access_token = self._auth_provider.get_access_token()
 
         except socket.gaierror:
             print "can't talk to Google servers, problem with your network?"
-        except gdata.service.TokenUpgradeFailed:
+        except gdata.client.RequestError:
             print "unable to get OAuth token from Google, hit enter too soon?"
           
     ## @brief Revokes a OAuth token if available
