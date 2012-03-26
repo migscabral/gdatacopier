@@ -31,6 +31,8 @@ __version__ = '3.0'
 
 import gdata.gauth
 import gdata.docs.client
+
+import keyring
     
 class Provider(object):
 
@@ -42,6 +44,9 @@ class Provider(object):
         self._scopes = ['https://docs.google.com/feeds/']
         
         self._gd_client = docs_client
+        
+    def is_logged_in(self):
+        return False
             
     def get_auth_url(self, app_domain=None):
 
@@ -56,8 +61,14 @@ class Provider(object):
         return str(auth_url)
         
     def get_access_token(self):
-        access_token = self._gd_client.GetAccessToken(self._request_token)
-        self._gd_client.access_token = access_token
+        
+        access_token = None
+        
+        if self.is_logged_in():
+            pass
+        else:
+            access_token = self._gd_client.GetAccessToken(self._request_token)
+
         return access_token
                 
     def get_client(self):

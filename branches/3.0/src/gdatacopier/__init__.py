@@ -38,7 +38,7 @@ class OAuthCredentials(object):
     
     CONSUMER_KEY = "351782124357.apps.googleusercontent.com"
     CONSUMER_SECRET = "xC3varEAS9pq--71p22oFoye"
-
+    
 ## @brief Sets up the Argparser for GDataCopier
 #
 class ParserBuilder(object):
