@@ -44,6 +44,8 @@ GDataCopier is written in Python and uses the [http://code.google.com/apis/docum
   * [http://docs.python.org/library/webbrowser.html Python Web Browser Controller API], allows controlling a Web browser via  a Python script.
   * [http://code.google.com/p/gdata-python-client/source/browse/samples/oauth/oauth_example.py Three Legged OAuth sample]
 
+  * [http://packages.python.org/gdata/docs/impersonating.html Using administrative access to impersonate other domain users]
+
 = Authentication =
 
 Authentication switched to OAuth 2.0, you will *no longer* be able to use Username / Password based Authentication, instead you must authorise against Google's authentication service. 
