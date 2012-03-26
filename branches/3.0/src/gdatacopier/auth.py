@@ -92,7 +92,7 @@ class Provider(object):
         access_token = None
         
         if self.is_logged_in():
-            access_token = gdata.gauth.OAuthHmacToken(self._consumer_key, self.consumer_secret, self._keyring_proxy.token, self._keyring_proxy.token_secret, gdata.gauth.ACCESS_TOKEN)
+            access_token = gdata.gauth.OAuthHmacToken(self._consumer_key, self._consumer_secret, self._keyring_proxy.token, self._keyring_proxy.token_secret, gdata.gauth.ACCESS_TOKEN)
         else:
             access_token = self._gd_client.GetAccessToken(self._request_token)
             self._keyring_proxy.token = access_token.token
@@ -101,8 +101,8 @@ class Provider(object):
         return access_token
                 
     def logout(self):
-        self._keyring_proxy.token = None
-        self._keyring_proxy.token_secret = None
+        self._keyring_proxy.token = ""
+        self._keyring_proxy.token_secret = ""
         
         
     

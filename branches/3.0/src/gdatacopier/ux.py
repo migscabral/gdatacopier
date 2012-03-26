@@ -42,12 +42,16 @@ class Handler(object):
         self._args = args.__dict__
 
         self._gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3')
-        self._gd_client.ssl = True
+        self._gd_client.ssl = True        
 
         self._auth_provider = gdatacopier.auth.Provider(
             docs_client=self._gd_client, 
             consumer_key=gdatacopier.OAuthCredentials.CONSUMER_KEY, 
             consumer_secret=gdatacopier.OAuthCredentials.CONSUMER_SECRET)
+            
+        # If Logged in ensure we restore the access token
+        if self._auth_provider.is_logged_in():
+            self._gd_client.auth_token = self._auth_provider.get_access_token()
         
     ## @brief Attemptes to perform OAuth 2.0 login
     #
@@ -61,32 +65,30 @@ class Handler(object):
     def login(self):
 
         if self._auth_provider.is_logged_in():
-            print "Already logged in"
-        else:
+            print "already logged in, try logging out."
+            return
             
-            try:
+        try:
 
-                google_apps_domain = self._args['apps-domain']
-                auth_url = self._auth_provider.get_auth_url(google_apps_domain)
+            google_apps_domain = self._args['apps-domain']
+            auth_url = self._auth_provider.get_auth_url(google_apps_domain)
             
-                if not auth_url:
-                    print "having trouble getting an auth url, check your network and try again"
+            if not auth_url:
+                print "having trouble getting an auth url, check your network and try again"
                 
-                if not webbrowser.open(auth_url):
-                    print "visit %s to authorise GDataCopier to use your account" % auth_url
+            if not webbrowser.open(auth_url):
+                print "visit %s to authorise GDataCopier to use your account" % auth_url
                 
-                raw_input("once, you've authorised GDataCopier, hit enter to continue")
+            raw_input("once, you've authorised GDataCopier, hit enter to continue")
 
-                access_token = self._auth_provider.get_access_token()
-            
-                self._gd_client.auth_token = access_token
+            self._gd_client.auth_token = self._auth_provider.get_access_token()
                         
-            except socket.gaierror:
-                print "can't talk to Google servers, problem with your network?"
-            except gdata.client.RequestError:
-                print "unable to get OAuth token from Google, hit enter too soon?"
-            except keyring.backend.PasswordSetError:
-                print "error writing to keychain"
+        except socket.gaierror:
+            print "can't talk to Google servers, problem with your network?"
+        except gdata.client.RequestError:
+            print "unable to get OAuth token from Google, hit enter too soon?"
+        except keyring.backend.PasswordSetError:
+            print "error writing to keychain"
           
     ## @brief Revokes a OAuth token if available
     #  
@@ -97,6 +99,7 @@ class Handler(object):
             print "successfully revoked OAuth token, user logged out."
             
         except gdata.service.NonOAuthToken:
-            
             print "no OAuth token found, logout failed."
+        except keyring.backend.PasswordSetError:
+            print "error writing to keychain"
             
