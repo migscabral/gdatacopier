@@ -43,7 +43,7 @@ GDataCopier is written in Python and uses the [http://code.google.com/apis/docum
   * [http://support.google.com/a/bin/answer.py?hl=en&answer=162105 Managing the OAuth key and secret]
   * [http://docs.python.org/library/webbrowser.html Python Web Browser Controller API], allows controlling a Web browser via  a Python script.
   * [http://code.google.com/p/gdata-python-client/source/browse/samples/oauth/oauth_example.py Three Legged OAuth sample]
-  * [http://packages.python.org/gdata/docs/impersonating.html Using administrative access to impersonate other domain users]
+  * [http://packages.python.org/gdata/docs/impersonating.html Using administrative access to impersonate other domain users], explains how you can impersonate users if you are an Apps domain admin.
 
 = Authentication =
 
