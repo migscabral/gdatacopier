@@ -44,7 +44,7 @@ class KeyRingProxy(object):
     
     @property
     def token(self):
-        return keyring.get_password(self._service_name, 'token_secret')
+        return keyring.get_password(self._service_name, 'token')
         
     @token.setter
     def token(self, value):

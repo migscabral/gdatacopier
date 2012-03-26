@@ -27,11 +27,63 @@ __version__ = '3.0'
 
 import webbrowser
 import socket
+import datetime
+import re
+
 import gdata.service
 import gdata.client
 
 import gdatacopier.auth
+
+## @brief Represents a single Docs Entry, abstracts properties required by GDataCopier
+#
+class GDocEntry(object):
+    
+    def __init__(self, title, owner, last_modified_date, document_type):
+        self._title = title
+        self._owner = owner
+        self._last_modified_date = last_modified_date
+        self._document_type = document_type
         
+    @property
+    def title(self):
+        return self._title
+        
+    @property
+    def document_type(self):
+        return self._document_type
+        
+    @property
+    def date_string(self):
+        updated_time = datetime.datetime(*map(int, re.split('[^\d]', self._last_modified_date.text)[:-1]))
+        date_string = updated_time.strftime('%b %d %Y %H:%M')
+        return date_string
+        
+    
+## @brief Proxy client that encapsulates the use of GData Client
+#
+class GDocClientProxy(object):
+    
+    def __init__(self, docs_client):
+        self._gd_client = docs_client
+        
+    @property 
+    def auth_token(self):
+        return self._gd_client.auth_token
+        
+    @auth_token.setter
+    def auth_token(self, value):
+        self._gd_client.auth_token = value
+        
+    def get_docs_list(self, owner_filter=None, title_filter=None):
+        
+        documents = self._gd_client.GetAllResources()
+        filtered_docs_list = []
+
+        for resource in documents:
+            filtered_docs_list.append(GDocEntry(resource.title.text, None, last_modified_date=resource.updated, document_type=resource.GetResourceType()))
+            
+        return filtered_docs_list
 
 ## @brief Wrapper to encapsulate the user experience
 #
@@ -43,17 +95,20 @@ class Handler(object):
         
         self._args = args.__dict__
 
-        self._gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3')
-        self._gd_client.ssl = True        
+        _gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3')
+        _gd_client.ssl = True        
 
         self._auth_provider = gdatacopier.auth.Provider(
-            docs_client=self._gd_client, 
+            docs_client=_gd_client, 
             consumer_key=gdatacopier.OAuthCredentials.CONSUMER_KEY, 
             consumer_secret=gdatacopier.OAuthCredentials.CONSUMER_SECRET)
+
+        self._proxy_client = GDocClientProxy(docs_client=_gd_client)
             
         # If Logged in ensure we restore the access token
         if self._auth_provider.is_logged_in():
-            self._gd_client.auth_token = self._auth_provider.get_access_token()
+            self._proxy_client.auth_token = self._auth_provider.get_access_token()
+            
         
     ## @brief Attemptes to perform OAuth 2.0 login
     #
@@ -83,7 +138,7 @@ class Handler(object):
                 
             raw_input("once, you've authorised GDataCopier, hit enter to continue")
 
-            self._gd_client.auth_token = self._auth_provider.get_access_token()
+            self._proxy_client.auth_token = self._auth_provider.get_access_token()
                         
         except socket.gaierror:
             print "can't talk to Google servers, problem with your network?"
@@ -109,4 +164,9 @@ class Handler(object):
     ## @brief Lists filtered list of documents on Google servers
     #
     def list(self):
-        pass
+        
+        for doc in self._proxy_client.get_docs_list():
+            print "%-40s %-18s %s" % (doc.title[0:39], doc.date_string, doc.document_type)
+        
+            
+            
