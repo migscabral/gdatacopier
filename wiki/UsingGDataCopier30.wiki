@@ -61,7 +61,7 @@ gdc logout
 
 Once you've logged in you can list documents by using
 
-{{
+{{{
 gdc list
 }}}
 
