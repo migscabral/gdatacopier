@@ -56,6 +56,8 @@ def main():
         return ux_handler.login()
     elif args.subparser_name == 'logout':
         return ux_handler.logout()
+    elif args.subparser_name == "list":
+        return ux_handler.list()
     
 if __name__ == "__main__":
     main()

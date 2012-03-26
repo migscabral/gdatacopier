@@ -33,7 +33,9 @@ import gdata.client
 import gdatacopier.auth
         
 
-## @brief
+## @brief Wrapper to encapsulate the user experience
+#
+#
 #
 class Handler(object):
     
@@ -103,3 +105,8 @@ class Handler(object):
         except keyring.backend.PasswordSetError:
             print "error writing to keychain"
             
+            
+    ## @brief Lists filtered list of documents on Google servers
+    #
+    def list(self):
+        pass
