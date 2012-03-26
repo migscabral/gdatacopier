@@ -33,20 +33,47 @@ import gdata.gauth
 import gdata.docs.client
 
 import keyring
+
+
+## @brief
+#
+class KeyRingProxy(object):
     
+    def __init__(self):
+        self._service_name = "GDataCopier"
+    
+    @property
+    def token(self):
+        return keyring.get_password(self._service_name, 'token_secret')
+        
+    @token.setter
+    def token(self, value):
+        keyring.set_password(self._service_name, 'token', value)
+        
+    @property
+    def token_secret(self):
+        return keyring.get_password(self._service_name, 'token_secret')
+        
+    @token_secret.setter
+    def token_secret(self, value):
+        keyring.set_password(self._service_name, 'token_secret', value)
+    
+## @brief
+#
 class Provider(object):
 
     def __init__(self, docs_client, consumer_key='anonymous', consumer_secret='anonymous'):
 
         self._consumer_key = consumer_key
         self._consumer_secret = consumer_secret
+        self._keyring_proxy = KeyRingProxy()
         
         self._scopes = ['https://docs.google.com/feeds/']
         
         self._gd_client = docs_client
         
     def is_logged_in(self):
-        return False
+        return self._keyring_proxy.token and self._keyring_proxy.token_secret
             
     def get_auth_url(self, app_domain=None):
 
@@ -65,17 +92,17 @@ class Provider(object):
         access_token = None
         
         if self.is_logged_in():
-            pass
+            access_token = gdata.gauth.OAuthHmacToken(self._consumer_key, self.consumer_secret, self._keyring_proxy.token, self._keyring_proxy.token_secret, gdata.gauth.ACCESS_TOKEN)
         else:
             access_token = self._gd_client.GetAccessToken(self._request_token)
+            self._keyring_proxy.token = access_token.token
+            self._keyring_proxy.token_secret = access_token.token_secret
 
         return access_token
                 
-    def get_client(self):
-        return self._gd_client
-
     def logout(self):
-        self._gd_client.RevokeOAuthToken()
+        self._keyring_proxy.token = None
+        self._keyring_proxy.token_secret = None
         
         
     

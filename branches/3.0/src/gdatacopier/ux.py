@@ -29,32 +29,8 @@ import webbrowser
 import socket
 import gdata.service
 import gdata.client
-import keyring
 
 import gdatacopier.auth
-
-## @brief
-#
-class KeyRingProxy(object):
-    
-    def __init__(self):
-        self._service_name = "GDataCopier"
-    
-    @property
-    def token(self):
-        pass
-        
-    @token.setter
-    def token(self, value):
-        pass
-        
-    @property
-    def token_secret(self):
-        pass
-        
-    @token_secret.setter
-    def token_secret(self, value):
-        pass
         
 
 ## @brief
@@ -64,7 +40,6 @@ class Handler(object):
     def __init__(self, args):
         
         self._args = args.__dict__
-        self._keyring_proxy = KeyRingProxy()
 
         self._gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3')
         self._gd_client.ssl = True
@@ -105,13 +80,13 @@ class Handler(object):
                 access_token = self._auth_provider.get_access_token()
             
                 self._gd_client.auth_token = access_token
-            
-                #self._gd_client.auth_token = gdata.gauth.OAuthHmacToken("anonymous", "anonymous", access_token.token, access_token.token_secret, gdata.gauth.ACCESS_TOKEN)
-            
+                        
             except socket.gaierror:
                 print "can't talk to Google servers, problem with your network?"
             except gdata.client.RequestError:
                 print "unable to get OAuth token from Google, hit enter too soon?"
+            except keyring.backend.PasswordSetError:
+                print "error writing to keychain"
           
     ## @brief Revokes a OAuth token if available
     #  
