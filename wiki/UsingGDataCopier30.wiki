@@ -1,6 +1,10 @@
 #summary Getting started with GDataCopier 3.0.
 
+*WARNING*: This is documentation for the current DevelopmentNotes30 version. If you wish to use this then please refer to the [http://code.google.com/p/gdatacopier/source/browse/#svn%2Fbranches%2F3.0 svn branch].
+
 = Installation =
+
+Currently available only via SVN.
 
 == Requirements ==
 
