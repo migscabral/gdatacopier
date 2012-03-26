@@ -35,10 +35,15 @@ import gdatacopier.auth
 class Handler(object):
     
     def __init__(self, args):
-        self._gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3')
-        self._auth_provider = gdatacopier.auth.Provider(docs_client=self._gd_client)
         self._args = args.__dict__
-        self._gd_client = None
+
+        self._gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3')
+        self._gd_client.ssl = True
+
+        self._auth_provider = gdatacopier.auth.Provider(
+            docs_client=self._gd_client, 
+            consumer_key=gdatacopier.OAuthCredentials.CONSUMER_KEY, 
+            consumer_secret=gdatacopier.OAuthCredentials.CONSUMER_SECRET)
         
     ## @brief Attemptes to perform OAuth 2.0 login
     #
@@ -66,12 +71,13 @@ class Handler(object):
 
             access_token = self._auth_provider.get_access_token()
             
-            self._gd_client = self._auth_provider.get_client()
+            self._gd_client.auth_token = access_token
             
-            feed = self._gd_client.GetDocList()
-            for entry in feed.entry:
-                print entry.title.text
-
+            feed = self._gd_client.GetAllResources()
+            for resource in feed:
+                print resource.GetSelfLink()
+            #self._gd_client.auth_token = gdata.gauth.OAuthHmacToken("anonymous", "anonymous", access_token.token, access_token.token_secret, gdata.gauth.ACCESS_TOKEN)
+            
         except socket.gaierror:
             print "can't talk to Google servers, problem with your network?"
         except gdata.client.RequestError:
