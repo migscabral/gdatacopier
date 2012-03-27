@@ -54,6 +54,7 @@ This allows impersonating domain users if you are logged in as an Administrator.
   * [http://code.google.com/apis/gdata/docs/auth/oauth.html#NoLibrary OAuth in the Google Data Protocol Client Libraries]
   * [http://code.google.com/p/google-api-python-client/wiki/OAuth2 OAuth 2 login on the client side], examples, tips and tricks.
   * [http://gdatatips.blogspot.com.au/2008/11/2-legged-oauth-in-python.html 2 Legged OAuth in Python], blog post from Google developer blog.
+  * [http://googleappsdeveloper.blogspot.com.au/2011/09/python-oauth-20-google-data-apis.html OAuth 2.0 Python example]
 
 [http://support.google.com/a/bin/answer.py?hl=en&answer=162105 OAuth key and secret] is available for Google Apps domains only.
 
