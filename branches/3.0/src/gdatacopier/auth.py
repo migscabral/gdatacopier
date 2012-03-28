@@ -29,6 +29,8 @@ __version__ = '3.0'
 #
 #
 
+import gdatacopier
+
 import gdata.gauth
 import gdata.docs.client
 
@@ -62,29 +64,27 @@ class KeyRingProxy(object):
 #
 class Provider(object):
 
-    def __init__(self, docs_client, consumer_key='anonymous', consumer_secret='anonymous'):
+    def __init__(self, client_id='anonymous', client_secret='anonymous'):
 
-        self._consumer_key = consumer_key
-        self._consumer_secret = consumer_secret
+        self._client_id = client_id
+        self._client_secret = client_secret
         self._keyring_proxy = KeyRingProxy()
         
         self._scopes = ['https://docs.google.com/feeds/']
         
-        self._gd_client = docs_client
-        
     def is_logged_in(self):
         return self._keyring_proxy.token and self._keyring_proxy.token_secret
             
-    def get_auth_url(self, app_domain=None):
+    def get_auth_url(self):
 
-        self._request_token = self._gd_client.GetOAuthToken(self._scopes, None, self._consumer_key, consumer_secret=self._consumer_secret)
-        
-        auth_url = None
-        if app_domain:
-            auth_url = self._request_token.generate_authorization_url(google_apps_domain=app_domain)
-        else:
-            auth_url = self._request_token.generate_authorization_url()
-            
+        #self._request_token = self._gd_client.GetOAuthToken(self._scopes, None, self._client_id, consumer_secret=self._client_secret)
+        self._request_token = gdata.gauth.OAuth2Token(
+           client_id=self._client_id, 
+           client_secret=self._client_secret, 
+           scope=' '.join(self._scopes),
+           user_agent=gdatacopier.OAuthCredentials.USER_AGENT)
+           
+        auth_url = self._request_token.generate_authorize_url(redirect_url="http://localhost")
         return str(auth_url)
         
     def get_access_token(self):
@@ -92,7 +92,7 @@ class Provider(object):
         access_token = None
         
         if self.is_logged_in():
-            access_token = gdata.gauth.OAuthHmacToken(self._consumer_key, self._consumer_secret, self._keyring_proxy.token, self._keyring_proxy.token_secret, gdata.gauth.ACCESS_TOKEN)
+            access_token = gdata.gauth.OAuthHmacToken(self._client_id, self._client_secret, self._keyring_proxy.token, self._keyring_proxy.token_secret, gdata.gauth.ACCESS_TOKEN)
         else:
             access_token = self._gd_client.GetAccessToken(self._request_token)
             self._keyring_proxy.token = access_token.token

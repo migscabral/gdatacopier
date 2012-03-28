@@ -66,6 +66,7 @@ class GDocClientProxy(object):
     
     def __init__(self, docs_client):
         self._gd_client = docs_client
+        self._gd_client.xoauth_requestor_id = "brad@etk.com.au"
         
     @property 
     def auth_token(self):
@@ -100,8 +101,8 @@ class Handler(object):
 
         self._auth_provider = gdatacopier.auth.Provider(
             docs_client=_gd_client, 
-            consumer_key=gdatacopier.OAuthCredentials.CONSUMER_KEY, 
-            consumer_secret=gdatacopier.OAuthCredentials.CONSUMER_SECRET)
+            client_id=gdatacopier.OAuthCredentials.CLIENT_ID, 
+            client_secret=gdatacopier.OAuthCredentials.CLIENT_SECRET)
 
         self._proxy_client = GDocClientProxy(docs_client=_gd_client)
             
@@ -127,8 +128,7 @@ class Handler(object):
             
         try:
 
-            google_apps_domain = self._args['apps-domain']
-            auth_url = self._auth_provider.get_auth_url(google_apps_domain)
+            auth_url = self._auth_provider.get_auth_url()
             
             if not auth_url:
                 print "having trouble getting an auth url, check your network and try again"

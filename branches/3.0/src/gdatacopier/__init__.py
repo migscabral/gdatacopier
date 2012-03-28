@@ -33,11 +33,11 @@ except:
 ## @defgroup exception Exception defined by GDataCopier
 #
 
-
 class OAuthCredentials(object):
-    
-    CONSUMER_KEY = "351782124357.apps.googleusercontent.com"
-    CONSUMER_SECRET = "xC3varEAS9pq--71p22oFoye"
+
+    USER_AGENT = "GDataCopier-v3"
+    CLIENT_ID = "351782124357.apps.googleusercontent.com"
+    CLIENT_SECRET = "xC3varEAS9pq--71p22oFoye"
     
 ## @brief Sets up the Argparser for GDataCopier
 #
@@ -102,14 +102,6 @@ class ParserBuilder(object):
         login_parser = subparsers.add_parser(
             "login", 
             help="logins via three legged OAuth and stored credentials")
-
-        login_parser.add_argument(
-            '--apps-domain', '-d', 
-            help="Apps domain if authenticating against a Google Apps domain", 
-            action='store',
-            required=False,
-            default=None, 
-            dest='apps-domain')
 
 
     ## @brief Sets up the ArgParser and command line rules
