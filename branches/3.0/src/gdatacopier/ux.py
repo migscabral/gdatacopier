@@ -28,6 +28,7 @@ __version__ = '3.0'
 import webbrowser
 import socket
 import datetime
+import keyring
 import re
 
 import gdata.service
@@ -100,7 +101,6 @@ class Handler(object):
         _gd_client.ssl = True        
 
         self._auth_provider = gdatacopier.auth.Provider(
-            docs_client=_gd_client, 
             client_id=gdatacopier.OAuthCredentials.CLIENT_ID, 
             client_secret=gdatacopier.OAuthCredentials.CLIENT_SECRET)
 

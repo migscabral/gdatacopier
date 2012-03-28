@@ -94,7 +94,8 @@ class Provider(object):
         if self.is_logged_in():
             access_token = gdata.gauth.OAuthHmacToken(self._client_id, self._client_secret, self._keyring_proxy.token, self._keyring_proxy.token_secret, gdata.gauth.ACCESS_TOKEN)
         else:
-            access_token = self._gd_client.GetAccessToken(self._request_token)
+            #access_token = self._gd_client.GetAccessToken(self._request_token)
+            access_token = self._request_token.get_access_token()
             self._keyring_proxy.token = access_token.token
             self._keyring_proxy.token_secret = access_token.token_secret
 
