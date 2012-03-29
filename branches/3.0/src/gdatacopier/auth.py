@@ -52,13 +52,6 @@ class KeyRingProxy(object):
     def token(self, value):
         keyring.set_password(self._service_name, 'token', value)
         
-    @property
-    def token_secret(self):
-        return keyring.get_password(self._service_name, 'token_secret')
-        
-    @token_secret.setter
-    def token_secret(self, value):
-        keyring.set_password(self._service_name, 'token_secret', value)
     
 ## @brief
 #
@@ -73,7 +66,7 @@ class Provider(object):
         self._scopes = ['https://docs.google.com/feeds/']
         
     def is_logged_in(self):
-        return self._keyring_proxy.token and self._keyring_proxy.token_secret
+        return self._keyring_proxy.token
             
     def get_auth_url(self):
 
@@ -84,8 +77,11 @@ class Provider(object):
            scope=' '.join(self._scopes),
            user_agent=gdatacopier.OAuthCredentials.USER_AGENT)
            
-        auth_url = self._request_token.generate_authorize_url(redirect_url="http://localhost")
+        auth_url = self._request_token.generate_authorize_url(redirect_url="urn:ietf:wg:oauth:2.0:oob")
         return str(auth_url)
+        
+    def set_access_token(self, token):
+        self._keyring_proxy.token = token
         
     def get_access_token(self):
         

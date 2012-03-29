@@ -136,9 +136,10 @@ class Handler(object):
             if not webbrowser.open(auth_url):
                 print "visit %s to authorise GDataCopier to use your account" % auth_url
                 
-            raw_input("once, you've authorised GDataCopier, hit enter to continue")
+            token = raw_input("paste the auth token from your browser here: ")
+            
+            self._auth_provider.set_access_token(token)
 
-            self._proxy_client.auth_token = self._auth_provider.get_access_token()
                         
         except socket.gaierror:
             print "can't talk to Google servers, problem with your network?"
