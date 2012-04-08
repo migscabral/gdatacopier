@@ -62,3 +62,7 @@ This allows impersonating domain users if you are logged in as an Administrator.
 GDataCopier will use a three legged OAuth routine to ensure all Google accounts are supported [http://code.google.com/apis/gdata/docs/auth/oauth.html three legged OAuth].
 
 These will be stored in the user's [http://pypi.python.org/pypi/keyring Keyring]. Please note you will need Keyring support installed, generally available by default on OS X, Linux and Windows.
+
+= Documentation =
+
+Documentation of the internal API is generated via Doxygen, and is available via the [http://gdatacopier.googlecode.com/svn/branches/3.0/docs/html/index.html Subversion repository].
