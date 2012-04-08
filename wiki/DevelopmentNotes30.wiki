@@ -63,6 +63,22 @@ GDataCopier will use a three legged OAuth routine to ensure all Google accounts 
 
 These will be stored in the user's [http://pypi.python.org/pypi/keyring Keyring]. Please note you will need Keyring support installed, generally available by default on OS X, Linux and Windows.
 
+= OAuth 2 authentication lifecycle =
+
+{{{
+>>> import gdata.gauth
+>>> token = gdata.gauth.OAuth2Token(client_id="351782124357.apps.googleusercontent.com", client_secret="xC3varEAS9pq--71p22oFoye", scope="https://docs.google.com/feeds/", user_agent="GDataCopier")
+>>> token.generate_authorize_url(redirect_url="urn:ietf:wg:oauth:2.0:oob")
+'https://accounts.google.com/o/oauth2/auth?redirect_url=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scope=https%3A%2F%2Fdocs.google.com%2Ffeeds%2F&redirect_uri=oob&response_type=code&client_id=351782124357.apps.googleusercontent.com'
+>>> token.get_access_token("4/jAv7J7GiufaAsmAm6PUlT4ycPxK5")
+<gdata.gauth.OAuth2Token object at 0x10bfbb8d0>
+>>> import gdata.docs.client
+>>> gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3', auth_token="4/jAv7J7GiufaAsmAm6PUlT4ycPxK5")
+<gdata.docs.client.DocsClient object at 0x10c155510>
+>>> token.authorize(gd_client)
+>>> gd_client.GetAllResources()
+}}}
+
 = Documentation =
 
 Documentation of the internal API is generated via Doxygen, and is available via the [http://gdatacopier.googlecode.com/svn/branches/3.0/docs/html/index.html Subversion repository].
