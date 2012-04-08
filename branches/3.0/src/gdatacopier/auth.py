@@ -57,49 +57,32 @@ class KeyRingProxy(object):
 #
 class Provider(object):
 
-    def __init__(self, client_id='anonymous', client_secret='anonymous'):
+    def __init__(self, client_id, client_secret, scope, user_agent):
 
-        self._client_id = client_id
-        self._client_secret = client_secret
         self._keyring_proxy = KeyRingProxy()
-        
-        self._scopes = ['https://docs.google.com/feeds/']
+
+        self._request_token = gdata.gauth.OAuth2Token(
+           client_id=client_id, 
+           client_secret=client_secret, 
+           scope=' '.join(scope),
+           user_agent=user_agent)
         
     def is_logged_in(self):
         return self._keyring_proxy.token
-            
+        
     def get_auth_url(self):
 
-        #self._request_token = self._gd_client.GetOAuthToken(self._scopes, None, self._client_id, consumer_secret=self._client_secret)
-        self._request_token = gdata.gauth.OAuth2Token(
-           client_id=self._client_id, 
-           client_secret=self._client_secret, 
-           scope=' '.join(self._scopes),
-           user_agent=gdatacopier.OAuthCredentials.USER_AGENT)
-           
         auth_url = self._request_token.generate_authorize_url(redirect_url="urn:ietf:wg:oauth:2.0:oob")
         return str(auth_url)
         
     def set_access_token(self, token):
         self._keyring_proxy.token = token
         
-    def get_access_token(self):
-        
-        access_token = None
-        
-        if self.is_logged_in():
-            access_token = gdata.gauth.OAuthHmacToken(self._client_id, self._client_secret, self._keyring_proxy.token, self._keyring_proxy.token_secret, gdata.gauth.ACCESS_TOKEN)
-        else:
-            #access_token = self._gd_client.GetAccessToken(self._request_token)
-            access_token = self._request_token.get_access_token()
-            self._keyring_proxy.token = access_token.token
-            self._keyring_proxy.token_secret = access_token.token_secret
-
-        return access_token
+    def authorize(self, client):
+        return self._request_token.authorize(client)
                 
     def logout(self):
         self._keyring_proxy.token = ""
-        self._keyring_proxy.token_secret = ""
         
         
     

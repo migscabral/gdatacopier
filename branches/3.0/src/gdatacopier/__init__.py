@@ -38,6 +38,7 @@ class OAuthCredentials(object):
     USER_AGENT = "GDataCopier-v3"
     CLIENT_ID = "351782124357.apps.googleusercontent.com"
     CLIENT_SECRET = "xC3varEAS9pq--71p22oFoye"
+    SCOPE = ['https://docs.google.com/feeds/']
     
 ## @brief Sets up the Argparser for GDataCopier
 #

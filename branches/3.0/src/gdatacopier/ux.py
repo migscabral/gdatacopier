@@ -40,11 +40,11 @@ import gdatacopier.auth
 #
 class GDocEntry(object):
     
-    def __init__(self, title, owner, last_modified_date, document_type):
-        self._title = title
-        self._owner = owner
-        self._last_modified_date = last_modified_date
-        self._document_type = document_type
+    def __init__(self, resource):
+        self._title = resource.title.text
+        self._owner = None
+        self._last_modified_date = resource.updated
+        self._document_type = resource.GetResourceType()
         
     @property
     def title(self):
@@ -65,17 +65,14 @@ class GDocEntry(object):
 #
 class GDocClientProxy(object):
     
-    def __init__(self, docs_client):
-        self._gd_client = docs_client
-        self._gd_client.xoauth_requestor_id = "brad@etk.com.au"
-        
-    @property 
-    def auth_token(self):
-        return self._gd_client.auth_token
-        
-    @auth_token.setter
-    def auth_token(self, value):
-        self._gd_client.auth_token = value
+    def __init__(self, auth_provider):
+
+        self._auth_provider = auth_provider
+        self._gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3')
+        self._gd_client.ssl = True
+     
+    def authorize(self):
+        self._auth_provider.authorize(self._gd_client)
         
     def get_docs_list(self, owner_filter=None, title_filter=None):
         
@@ -83,7 +80,7 @@ class GDocClientProxy(object):
         filtered_docs_list = []
 
         for resource in documents:
-            filtered_docs_list.append(GDocEntry(resource.title.text, None, last_modified_date=resource.updated, document_type=resource.GetResourceType()))
+            filtered_docs_list.append(GDocEntry(resource))
             
         return filtered_docs_list
 
@@ -97,18 +94,17 @@ class Handler(object):
         
         self._args = args.__dict__
 
-        _gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3')
-        _gd_client.ssl = True        
-
         self._auth_provider = gdatacopier.auth.Provider(
             client_id=gdatacopier.OAuthCredentials.CLIENT_ID, 
-            client_secret=gdatacopier.OAuthCredentials.CLIENT_SECRET)
+            client_secret=gdatacopier.OAuthCredentials.CLIENT_SECRET,
+            scope=gdatacopier.OAuthCredentials.SCOPE,
+            user_agent=gdatacopier.OAuthCredentials.USER_AGENT)
 
-        self._proxy_client = GDocClientProxy(docs_client=_gd_client)
+        self._proxy_client = GDocClientProxy(auth_provider=self._auth_provider)
             
         # If Logged in ensure we restore the access token
         if self._auth_provider.is_logged_in():
-            self._proxy_client.auth_token = self._auth_provider.get_access_token()
+            self._proxy_client.authorize()
             
         
     ## @brief Attemptes to perform OAuth 2.0 login
