@@ -25,8 +25,9 @@ __all__     = ['Provider']
 __author__  = 'devraj (Devraj Mukherjee)'
 __version__ = '3.0'
 
-## @brief 
+## @brief Provides wrappers to authentication against Google services
 #
+#  Major implementation uses
 #
 
 import gdatacopier
@@ -37,7 +38,15 @@ import gdata.docs.client
 import keyring
 
 
-## @brief
+## @brief Provides a Proxy to the local Keychain service via Python's Keyring package
+#
+#  KeyRingProxy is used by the auth provider to store the OAuth 2 token, it can be used
+#  to securely store any other properties that GDatacopier might require.
+#
+#  Python keyring support is provided by
+#  http://pypi.python.org/pypi/keyring
+#
+#  available via pip or easy_install
 #
 class KeyRingProxy(object):
     
@@ -53,7 +62,8 @@ class KeyRingProxy(object):
         keyring.set_password(self._service_name, 'token', value)
         
     
-## @brief
+## @brief Provides a Wrapper for OAuth 2 authentication against Google APIs
+#
 #
 class Provider(object):
 
