@@ -67,15 +67,15 @@ These will be stored in the user's [http://pypi.python.org/pypi/keyring Keyring]
 
 {{{
 >>> import gdata.gauth
+>>> import gdata.docs.client
 >>> token = gdata.gauth.OAuth2Token(client_id="351782124357.apps.googleusercontent.com", client_secret="xC3varEAS9pq--71p22oFoye", scope="https://docs.google.com/feeds/", user_agent="GDataCopier")
 >>> token.generate_authorize_url(redirect_url="urn:ietf:wg:oauth:2.0:oob")
 'https://accounts.google.com/o/oauth2/auth?redirect_url=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scope=https%3A%2F%2Fdocs.google.com%2Ffeeds%2F&redirect_uri=oob&response_type=code&client_id=351782124357.apps.googleusercontent.com'
->>> token.get_access_token("4/jAv7J7GiufaAsmAm6PUlT4ycPxK5")
-<gdata.gauth.OAuth2Token object at 0x10bfbb8d0>
->>> import gdata.docs.client
->>> gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3', auth_token="4/jAv7J7GiufaAsmAm6PUlT4ycPxK5")
-<gdata.docs.client.DocsClient object at 0x10c155510>
+>>> token.get_access_token("4/rs66xrzTNHkPsHj_0fi0ykH4Hxze")
+<gdata.gauth.OAuth2Token object at 0x109ba2510>
+>>> gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3')
 >>> token.authorize(gd_client)
+<gdata.docs.client.DocsClient object at 0x109ba2710>
 >>> gd_client.GetAllResources()
 }}}
 
