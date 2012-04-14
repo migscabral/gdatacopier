@@ -1,0 +1,52 @@
+.TH "gdatacopier::auth::Provider" 3 "Sun Apr 8 2012" "Version 3" "GDataCopier" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+gdatacopier::auth::Provider \- 
+.PP
+Provides a Wrapper for OAuth 2 authentication against Google APIs\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "def \fB__init__\fP"
+.br
+.ti -1c
+.RI "def \fBis_logged_in\fP"
+.br
+.ti -1c
+.RI "def \fBget_auth_url\fP"
+.br
+.ti -1c
+.RI "def \fBset_access_token\fP"
+.br
+.ti -1c
+.RI "def \fBauthorize\fP"
+.br
+.ti -1c
+.RI "def \fBlogout\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Provides a Wrapper for OAuth 2 authentication against Google APIs\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "def \fBgdatacopier::auth::Provider::__init__\fP (self, client_id, client_secret, scope, user_agent)"
+.SH "Member Function Documentation"
+.PP 
+.SS "def \fBgdatacopier::auth::Provider::authorize\fP (self, client)"
+.SS "def \fBgdatacopier::auth::Provider::get_auth_url\fP (self)"
+.SS "def \fBgdatacopier::auth::Provider::is_logged_in\fP (self)"
+.SS "def \fBgdatacopier::auth::Provider::logout\fP (self)"
+.SS "def \fBgdatacopier::auth::Provider::set_access_token\fP (self, token)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for GDataCopier from the source code\&.
