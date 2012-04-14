@@ -29,6 +29,7 @@ import webbrowser
 import socket
 import datetime
 import keyring
+import mimetypes
 import re
 
 import gdata.service
@@ -68,7 +69,7 @@ class GDocClientProxy(object):
     def __init__(self, auth_provider):
 
         self._auth_provider = auth_provider
-        
+                
         self._gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3')
 
         if self._auth_provider.is_logged_in():
@@ -87,7 +88,8 @@ class GDocClientProxy(object):
             filtered_docs_list.append(GDocEntry(resource))
             
         return filtered_docs_list
-
+        
+        
 ## @brief Wrapper to encapsulate the user experience
 #
 #
@@ -143,7 +145,7 @@ class Handler(object):
         except keyring.backend.PasswordSetError:
             print "error writing to keychain"
           
-    ## @brief Revokes a OAuth token if available
+    ## @brief Revokes a OAuth2 token if available
     #  
     def logout(self):
         
@@ -161,8 +163,40 @@ class Handler(object):
     #
     def list(self):
         
+        totals = {}
+        
         for doc in self._proxy_client.get_docs_list():
-            print "%-40s %-18s %s" % (doc.title[0:39], doc.date_string, doc.document_type)
+
+            printable_name = doc.document_type
+
+            if mimetypes.guess_extension(doc.document_type):
+                printable_name = mimetypes.guess_extension(doc.document_type)[1:]
+            
+            print "%-40s %-18s %s" % (doc.title[0:39], doc.date_string, printable_name)
+            
+            if doc.document_type in totals:
+                totals[doc.document_type] = totals[doc.document_type] + 1
+            else:
+                totals[doc.document_type] = 1
+            
+        self._print_totals_string(totals)
+        
+        
+    ## @brief Turns a totals summary and prints out the string
+    #
+    def _print_totals_string(self, totals):
+        
+        totals_summary = ""
+        for type_name, type_count in totals.items():
+
+            printable_name = type_name
+
+            if mimetypes.guess_extension(type_name):
+                printable_name = mimetypes.guess_extension(type_name)[1:]
+                
+            totals_summary = "%s%i %s(s), " % (totals_summary, type_count, printable_name)
+            
+        print "\n%s" % totals_summary[:-2]
         
             
             
