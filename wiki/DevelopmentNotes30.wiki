@@ -84,7 +84,8 @@ These will be stored in the user's [http://pypi.python.org/pypi/keyring Keyring]
 Refresh tokens can be used to restore the session. Here's an example.
 
 {{{
->>> token2 = gdata.gauth.OAuth2Token(client_id="351782124357.apps.googleusercontent.com", client_secret="xC3varEAS9pq--71p22oFoye", scope="https://docs.google.com/feeds/", user_agent="GDataCopier", refresh_token='1/FVHD-VEKkmkRQAfJ04DjaiVhXrszMQGDLBhqncuXL_M')
+>>> my_refresh_token = token.refresh_token
+>>> token2 = gdata.gauth.OAuth2Token(client_id="351782124357.apps.googleusercontent.com", client_secret="xC3varEAS9pq--71p22oFoye", scope="https://docs.google.com/feeds/", user_agent="GDataCopier", refresh_token=my_refresh_token)
 >>> gd_client2 = gdata.docs.client.DocsClient(source='GDataCopier-v3')
 >>> token2.authorize(gd_client2)
 }}}
