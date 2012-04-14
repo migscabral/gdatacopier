@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+#  gdatacopier, Command line utilties to manage your Google docs
+#  http://gdatacopier.googlecode.com
+#
+#  Copyright (c) 2012, Eternity Technologies Pty Ltd.
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 2
+#  of the License, or (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#  
+
+__author__  = 'devraj (Devraj Mukherjee)'
+__version__ = '3.0'
+
+import signal
+import sys
+
+try:
+    import gdatacopier
+    import gdatacopier.ux
+    import gdatacopier.auth
+except:
+    print "gdc can't find gdatacopier package, please ensure it's in your python path"
+
+
+## @brief
+#
+def ctrlc_handler(signal, frame):
+    print ""
+    sys.exit(2)    
+
+## @brief Executed if __name__ is __main__
+#    
+def main():
+
+    signal.signal(signal.SIGINT, ctrlc_handler)
+    
+    parser_builder = gdatacopier.ParserBuilder()
+    args = parser_builder.setup_args_parser().parse_args()
+    
+    ux_handler = gdatacopier.ux.Handler(args)
+
+    if args.subparser_name == 'login':
+        return ux_handler.login()
+    elif args.subparser_name == 'logout':
+        return ux_handler.logout()
+    elif args.subparser_name == "list":
+        return ux_handler.list()
+    
+if __name__ == "__main__":
+    main()
