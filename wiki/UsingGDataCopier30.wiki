@@ -55,6 +55,12 @@ Once you've logged in you can list documents by using
 gdc list
 }}}
 
+GDataCopier does not filter on the type of document because you can use standard Unix tools like grep to achieve that result, e.g
+
+{{{
+gdc list | grep spreadsheet
+}}}
+
 == Delete ==
 
 == Sync ==
