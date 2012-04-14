@@ -25,9 +25,8 @@ __all__     = ['Provider']
 __author__  = 'devraj (Devraj Mukherjee)'
 __version__ = '3.0'
 
-## @brief Provides wrappers to authentication against Google services
+## @brief Provides wrappers to OAuth2 authentication for Google servers
 #
-#  Major implementation uses
 #
 
 import gdatacopier
