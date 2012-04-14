@@ -13,7 +13,7 @@ Follow the development branch [http://code.google.com/p/gdatacopier/source/brows
 
 GDataCopier aims to deliver these new features
   
-  * OAuth 2.0 login, we might drop username / password based logins completely 
+  * OAuth 2.0 login, we might drop username / password based logins completely *[completed]*
   * Admin level user impersonation support for Google Apps users
   * Sync option, to prune documents on the local machine as they are deleted on the Cloud
   * Support and test any document policy
