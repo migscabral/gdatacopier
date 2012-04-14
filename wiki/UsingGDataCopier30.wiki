@@ -23,18 +23,8 @@ These will be stored in the user's [http://pypi.python.org/pypi/keyring Keyring]
 
 GDataCopier uses three legged OAuth to login to the Docs service, it's able to remain logged in, this is handy if you are scripting GDataCopier to automate backups.
 
-The default behaviour is for you to login and grant permission each time you run the utility.
-
-If you are using a Gmail account
-
 {{{
 gdc login 
-}}}
-
-If you are using Google Apps then 
-
-{{{
-gdc login --apps-domain=etk.com.au
 }}}
 
 If the machine running GDataCopier has a graphical interface and Web browser, GDataCopier will attempt to launch your browser and allow you to login.
