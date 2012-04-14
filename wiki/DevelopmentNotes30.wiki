@@ -79,6 +79,16 @@ These will be stored in the user's [http://pypi.python.org/pypi/keyring Keyring]
 >>> gd_client.GetAllResources()
 }}}
 
+== Refresh token example ==
+
+Refresh tokens can be used to restore the session. Here's an example.
+
+{{{
+>>> token2 = gdata.gauth.OAuth2Token(client_id="351782124357.apps.googleusercontent.com", client_secret="xC3varEAS9pq--71p22oFoye", scope="https://docs.google.com/feeds/", user_agent="GDataCopier", refresh_token='1/FVHD-VEKkmkRQAfJ04DjaiVhXrszMQGDLBhqncuXL_M')
+>>> gd_client2 = gdata.docs.client.DocsClient(source='GDataCopier-v3')
+>>> token2.authorize(gd_client2)
+}}}
+
 = Documentation =
 
 Documentation of the internal API is generated via Doxygen, and is available via the [http://gdatacopier.googlecode.com/svn/branches/3.0/docs/html/index.html Subversion repository].
