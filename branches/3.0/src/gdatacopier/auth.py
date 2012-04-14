@@ -54,45 +54,68 @@ class KeyRingProxy(object):
         self._service_name = "GDataCopier"
     
     @property
-    def token(self):
-        return keyring.get_password(self._service_name, 'token')
+    def refresh_token(self):
+        return keyring.get_password(self._service_name, 'refresh_token')
         
-    @token.setter
-    def token(self, value):
-        keyring.set_password(self._service_name, 'token', value)
+    @refresh_token.setter
+    def refresh_token(self, value):
+        keyring.set_password(self._service_name, 'refresh_token', value)
         
     
 ## @brief Provides a Wrapper for OAuth 2 authentication against Google APIs
 #
+#  Uses refresh tokens to restore previously logged in sessions.
 #
 class Provider(object):
 
     def __init__(self, client_id, client_secret, scope, user_agent):
 
         self._keyring_proxy = KeyRingProxy()
-
-        self._request_token = gdata.gauth.OAuth2Token(
-           client_id=client_id, 
-           client_secret=client_secret, 
-           scope=' '.join(scope),
-           user_agent=user_agent)
         
+        if self.is_logged_in():
+            self._request_token = gdata.gauth.OAuth2Token(
+               client_id=client_id, 
+               client_secret=client_secret, 
+               scope=' '.join(scope),
+               user_agent=user_agent,
+               refresh_token=self._keyring_proxy.refresh_token)
+        else:
+            self._request_token = gdata.gauth.OAuth2Token(
+               client_id=client_id, 
+               client_secret=client_secret, 
+               scope=' '.join(scope),
+               user_agent=user_agent)
+            
+    
+    ## @brief Checks to see if user is logged in
+    #
     def is_logged_in(self):
-        return self._keyring_proxy.token
+        return self._keyring_proxy.refresh_token
         
+    ## @brief Get OAuth2 authentication URL
+    #
     def get_auth_url(self):
-
-        auth_url = self._request_token.generate_authorize_url(redirect_url="urn:ietf:wg:oauth:2.0:oob")
+        auth_url = self._request_token.generate_authorize_url(redirect_url="urn:ietf:wg:oauth:2.0:oob", access_type="offline")
         return str(auth_url)
         
-    def set_access_token(self, token):
-        self._keyring_proxy.token = token
+    ## @brief Attempts to validate an OAuth2 token, on success saves refresh token
+    # 
+    #  @returns string refresh token obtained from login
+    #
+    def get_access_token(self, token):
+        self._request_token.get_access_token(token)
+        self._keyring_proxy.refresh_token = self._request_token.refresh_token
+        return self._request_token.refresh_token
         
-    def authorize(self, client):
-        return self._request_token.authorize(client)
-                
+    ## @brief Authorizes a Google Docs client
+    #
+    def authorize_client(self, client):
+        self._request_token.authorize(client)
+
+    ## @brief Forget refresh token
+    #
     def logout(self):
-        self._keyring_proxy.token = ""
+        self._keyring_proxy.refresh_token = ""
         
         
     

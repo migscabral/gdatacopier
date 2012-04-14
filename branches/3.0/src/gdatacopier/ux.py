@@ -68,12 +68,16 @@ class GDocClientProxy(object):
     def __init__(self, auth_provider):
 
         self._auth_provider = auth_provider
-        self._gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3')
-        self._gd_client.ssl = True
-     
-    def authorize(self):
-        self._auth_provider.authorize(self._gd_client)
         
+        self._gd_client = gdata.docs.client.DocsClient(source='GDataCopier-v3')
+
+        if self._auth_provider.is_logged_in():
+            self._auth_provider.authorize_client(self._gd_client)
+            
+        self._gd_client.ssl = True
+
+    ## @brief Filters and returns a list of documents
+    #
     def get_docs_list(self, owner_filter=None, title_filter=None):
         
         documents = self._gd_client.GetAllResources()
@@ -101,10 +105,6 @@ class Handler(object):
             user_agent=gdatacopier.OAuthCredentials.USER_AGENT)
 
         self._proxy_client = GDocClientProxy(auth_provider=self._auth_provider)
-            
-        # If Logged in ensure we restore the access token
-        if self._auth_provider.is_logged_in():
-            self._proxy_client.authorize()
             
         
     ## @brief Attemptes to perform OAuth 2.0 login
@@ -134,8 +134,7 @@ class Handler(object):
                 
             token = raw_input("paste the auth token from your browser here: ")
             
-            self._auth_provider.set_access_token(token)
-
+            refresh_token = self._auth_provider.get_access_token(token)
                         
         except socket.gaierror:
             print "can't talk to Google servers, problem with your network?"
