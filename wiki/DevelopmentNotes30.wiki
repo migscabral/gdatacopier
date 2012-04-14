@@ -7,7 +7,7 @@
 
 This is a working document for GDataCopier 3.0 development. Most of this information will eventually end up as official documentation for this project.
 
-Follow the development branch [http://code.google.com/p/gdatacopier/source/browse/#svn%2Fbranches%2F3.0 here]
+Follow the development branch [https://gdatacopier.googlecode.com/svn/trunk here]
 
 == Feature Set ==
 
@@ -92,4 +92,4 @@ Refresh tokens can be used to restore the session. Here's an example.
 
 = Documentation =
 
-Documentation of the internal API is generated via Doxygen, and is available via the [http://gdatacopier.googlecode.com/svn/branches/3.0/docs/html/index.html Subversion repository].
+Documentation of the internal API is generated via Doxygen, and is available via the [http://gdatacopier.googlecode.com/svn/trunk/docs/html/index.html Subversion repository].
