@@ -33,6 +33,9 @@ except:
 ## @defgroup exception Exception defined by GDataCopier
 #
 
+
+## @brief Constants for OAuth2 authentication
+#
 class OAuthCredentials(object):
 
     USER_AGENT = "GDataCopier-v3"
@@ -73,6 +76,12 @@ class ParserBuilder(object):
         list_parser = subparsers.add_parser(
             "list", 
             help="lists / queries objects on the Google doc servers")
+            
+        list_parser.add_argument(
+            'document_path',
+            nargs='?'
+        )
+        
 
     ## @brief Sets up a Subparser for the logout command
     #
@@ -115,7 +124,7 @@ class ParserBuilder(object):
             prog="gdc", 
             description="command line tool to automate management of Google docs.", 
             epilog="gdatacopier comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GNU GPLv2.")
-
+            
         subparsers = arg_parser.add_subparsers(dest="subparser_name")
 
         # Setup various sub parsers / commands offered by gdc
