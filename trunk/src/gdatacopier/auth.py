@@ -116,6 +116,3 @@ class Provider(object):
     def logout(self):
         self._keyring_proxy.refresh_token = ""
         
-        
-    
-    
