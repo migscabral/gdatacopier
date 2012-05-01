@@ -26,6 +26,7 @@ __author__  = 'devraj (Devraj Mukherjee)'
 __version__ = '3.0'
 
 import datetime
+import re
 
 import gdata.service
 import gdata.client
