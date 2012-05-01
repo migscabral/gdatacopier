@@ -29,7 +29,8 @@ import sys
 
 try:
     import gdatacopier
-    import gdatacopier.ux
+    import gdatacopier.ui
+    import gdatacopier.ui.text    
     import gdatacopier.auth
 except:
     print "gdc can't find gdatacopier package, please ensure it's in your python path"
@@ -50,7 +51,7 @@ def main():
     parser_builder = gdatacopier.ParserBuilder()
     args = parser_builder.setup_args_parser().parse_args()
     
-    ux_handler = gdatacopier.ux.Handler(args)
+    ux_handler = gdatacopier.ui.text.Handler(args)
 
     if args.subparser_name == 'login':
         return ux_handler.login()

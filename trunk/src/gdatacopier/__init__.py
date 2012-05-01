@@ -56,6 +56,12 @@ class ParserBuilder(object):
         mkdir_parser = subparsers.add_parser(
             "mkdir", 
             help="creates folders on Google doc servers")
+            
+        mkdir_parser.add_argument(
+            'document_path',
+            nargs='?'
+        )    
+        
 
     ## @brief Sets up a Subparser for the logout command
     #
@@ -66,6 +72,11 @@ class ParserBuilder(object):
         delete_parser = subparsers.add_parser(
             "delete", 
             help="deletes objects on Google doc servers")
+        
+        delete_parser.add_argument(
+            'document_path',
+            nargs='?'
+        )    
 
     ## @brief Sets up a Subparser for the logout command
     #
@@ -81,7 +92,6 @@ class ParserBuilder(object):
             'document_path',
             nargs='?'
         )
-        
 
     ## @brief Sets up a Subparser for the logout command
     #
@@ -92,6 +102,16 @@ class ParserBuilder(object):
         copy_parser = subparsers.add_parser(
             "copy", 
             help="bi-directional copy of accepted documents")
+
+        copy_parser.add_argument(
+            'source_document_path',
+            nargs='?'
+        )
+
+        copy_parser.add_argument(
+            'target_document_path',
+            nargs='?'
+        )
 
     ## @brief Sets up a Subparser for the logout command
     #
@@ -124,7 +144,7 @@ class ParserBuilder(object):
             prog="gdc", 
             description="command line tool to automate management of Google docs.", 
             epilog="gdatacopier comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GNU GPLv2.")
-            
+                        
         subparsers = arg_parser.add_subparsers(dest="subparser_name")
 
         # Setup various sub parsers / commands offered by gdc
