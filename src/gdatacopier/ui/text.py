@@ -33,6 +33,10 @@ import gdata.client
 
 import gdatacopier.auth
 
+class RegexPatterns:
+    
+    EMAIL_AND_PATH = re.compile('([\w\-\.+]+@(\w[\w\-]+\.)+[\w\-]+):/[\w\-]+')
+
 ## @brief Wrapper to encapsulate the user experience
 #
 #
