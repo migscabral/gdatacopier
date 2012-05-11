@@ -87,7 +87,7 @@ class Handler(object):
                         
         except socket.gaierror:
             print "can't talk to Google servers, problem with your network?"
-        except gdata.client.RequestError:
+        except gdata.gauth.OAuth2AccessTokenError:
             print "unable to get OAuth token from Google, hit enter too soon?"
         except keyring.backend.PasswordSetError:
             print "error writing to keychain"
@@ -110,23 +110,29 @@ class Handler(object):
     #
     def list(self):
         
-        totals = {}
+        try:
+
+            totals = {}
         
-        for doc in self._proxy_client.get_docs_list():
+            for doc in self._proxy_client.get_docs_list():
 
-            printable_name = doc.document_type
+                printable_name = doc.document_type
 
-            if mimetypes.guess_extension(doc.document_type):
-                printable_name = mimetypes.guess_extension(doc.document_type)[1:]
+                if mimetypes.guess_extension(doc.document_type):
+                    printable_name = mimetypes.guess_extension(doc.document_type)[1:]
             
-            print "%-40s %-18s %s" % (doc.title[0:39], doc.date_string, printable_name)
+                print "%-40s %-18s %s" % (doc.title[0:39], doc.date_string, printable_name)
             
-            if doc.document_type in totals:
-                totals[doc.document_type] = totals[doc.document_type] + 1
-            else:
-                totals[doc.document_type] = 1
+                if doc.document_type in totals:
+                    totals[doc.document_type] = totals[doc.document_type] + 1
+                else:
+                    totals[doc.document_type] = 1
             
-        self._print_totals_string(totals)
+            self._print_totals_string(totals)
+        
+        except gdata.client.Unauthorized:
+            
+            print "you are either not logged in or are not allowed impersonate this user"
         
         
     ## @brief Turns a totals summary and prints out the string
