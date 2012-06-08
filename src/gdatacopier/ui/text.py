@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  gdatacopier, Command line utilties to manage your Google docs
+#  gdatacopier, Command line utilities to manage your Google docs
 #  http://gdatacopier.googlecode.com
 #
 #  Copyright (c) 2012, Eternity Technologies Pty Ltd.
