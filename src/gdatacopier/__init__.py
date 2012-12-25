@@ -21,7 +21,7 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #  
 
-__all__     = ['auth', 'ux']
+__all__     = ['auth', 'ui']
 __author__  = 'devraj (Devraj Mukherjee)'
 __version__ = '3.0'
 
