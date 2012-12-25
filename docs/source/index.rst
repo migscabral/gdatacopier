@@ -9,6 +9,7 @@ GDataCopier, a command line utility to manage Google Docs
 GDataCopier is a set of command line tools that ease management of Google Docs. GDataCopier is aimed towards power users / system adminstrators who are looking to automate management / backup of Google Docs. 
 
 .. toctree::
+   :numbered:
    :maxdepth: 2
 
    installation
@@ -25,8 +26,8 @@ GDataCopier provides comprehensive set of tools for System Administrators (mostl
 * filter documents based on folders, file names
 * supports hosted and gmail accounts
 * syncs date stamps with server
-* download updated files only (great for offsite backup implementations)
-* warn on overwrite (can override with parameters)
+* download updated files only
+* warn on overwrite 
 * summary of operations
 * update document content using gcp
 * move, remove, or make directories and organise your documents
